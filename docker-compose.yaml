@@ -1,0 +1,18 @@
+networks:
+  weather-wonder-backend:
+    name: weather-wonder
+    driver: bridge
+
+
+services:
+  geocoding:
+    build:
+      context: ./geocoding
+      dockerfile: Dockerfile.geocoding
+    container_name: ww-geocoding
+    ports:
+      - "5001:5000"
+    networks:
+      - "weather-wonder-backend"
+    env_file:
+      - "./geocoding/.env"
