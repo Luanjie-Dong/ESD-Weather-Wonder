@@ -24,18 +24,18 @@ HEADERS = {
 def add_location():
     """
     Endpoint to add a new location to Supabase.
-    Expects JSON payload with 'country', 'city', 'latitude', and 'longitude'.
+    Expects JSON payload with 'country', 'state', 'city', 'neighbourhood', 'latitude', and 'longitude'.
     """
     data = request.get_json()
 
     # Validate input data
-    required_fields = ['country', 'city', 'latitude', 'longitude']
+    required_fields = ['country', 'state', 'city', 'neighbourhood', 'latitude', 'longitude']
     if not all(field in data for field in required_fields):
         return jsonify({"error": f"Missing required fields: {required_fields}"}), 400
 
     # Check if location already exists in Supabase
     response = requests.get(
-        f"{SUPABASE_URL}/rest/v1/{SUPABASE_TABLE}?country=eq.{data['country']}&city_town=eq.{data['city']}&latitude=eq.{data['latitude']}&longitude=eq.{data['longitude']}",
+        f"{SUPABASE_URL}/rest/v1/{SUPABASE_TABLE}?country=eq.{data['country']}&state=eq.{data['state']}&city=eq.{data['city']}&neighbourhood=eq.{data['neighbourhood']}&latitude=eq.{data['latitude']}&longitude=eq.{data['longitude']}",
         headers=HEADERS
     )
     
@@ -48,7 +48,9 @@ def add_location():
     created_at = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")  # UTC timestamp
     payload = {
         "country": data['country'],
-        "city_town": data['city'],
+        "state": data['state'],
+        "city": data['city'],
+        "neighbourhood": data['neighbourhood'],
         "latitude": float(data['latitude']),
         "longitude": float(data['longitude']),
         "created_at": created_at
@@ -112,7 +114,6 @@ def get_location_by_coordinates():
 
     except requests.RequestException as e:
         return jsonify({"error": f"Request failed: {e}"}), 500
-
 
 
 @app.route('/')
