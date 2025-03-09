@@ -31,7 +31,9 @@ def encode_location_by_name(location_name):
                 "latitude": result["geometry"]["lat"],
                 "longitude": result["geometry"]["lng"],
                 "country": result.get("components", {}).get("country", "Unknown"),
-                "county": result["components"].get("county", ""),
+                "city": result["components"].get("city", ""),
+                "neighbourhood": result["components"].get("suburb", ""),
+                "state": result["components"].get("state", ""),
                 "formatted_location": result['formatted']
             }
         else:
