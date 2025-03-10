@@ -41,7 +41,6 @@ public class Current {
             float wind_mph, float wind_kph, int wind_degree, String wind_dir, float pressure_mb, float pressure_in,
             float precip_mm, float precip_in, int humidity, int cloud, int is_day, float uv, float gust_mph,
             float gust_kph) {
-        System.out.println("Parsing current last_updated");
         this.last_updated = LocalDateTime.parse(last_updated, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.last_updated_epoch = last_updated_epoch;
         this.temp_c = temp_c;

@@ -27,7 +27,6 @@ public class Location {
         this.country = country;
         this.tz_id = tz_id;
         this.localtime_epoch = localtime_epoch;
-        System.out.println("Parsing location localtime");
         this.localtime = LocalDateTime.parse(localtime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
 
