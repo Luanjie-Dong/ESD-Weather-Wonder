@@ -7,6 +7,8 @@ WORKDIR /location_weather
 
 COPY main.py .
 COPY .env .
+COPY jwt_utils.py .
+COPY auth.py .
 
 EXPOSE 5003
 

@@ -27,3 +27,18 @@ docker build -t location_weather .
 ```bash
 docker run -p 5003:5003 --env-file .env location_weather
 ```
+
+#### Auth
+1. Generate JWT Secret with OpenSSL
+```bash
+openssl random -base64 256
+```
+2. Update `.env` file with JWT Secret
+```bash
+JWT_SECRET = YOUR_JWT_SECRET
+```
+3. Share your JWT Secret with the other services that depend on you and call them
+4. Remember to also add in your service URL, then use this in your code to call the desired MS to make it dynamic
+```bash
+MICROSERVICE_URL = SERVICES_WHO_WILL_CALL_YOUR_MS_URL
+```
