@@ -1,0 +1,1208 @@
+{
+	"info": {
+		"_postman_id": "2c572435-6959-4220-9c1c-c8311797ab75",
+		"name": "ESD-Weather-Wonder",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "35045184"
+	},
+	"item": [
+		{
+			"name": "geocoding",
+			"item": [
+				{
+					"name": "wrapper encode",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"location\": \"Yishun Northpoint\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/encode",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"encode"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "sample",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"location\": \"Yishun Northpoint\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5000/encode",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"encode"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.0.4 Python/3.11.3"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 09 Mar 2025 02:36:24 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "253"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"city\": \"Singapore\",\n    \"country\": \"Singapore\",\n    \"formatted_location\": \"Northpoint City, Chong Pang, 930 Yishun Avenue 2, Singapore 769098, Singapore\",\n    \"latitude\": 1.4282062,\n    \"longitude\": 103.836264,\n    \"neighbourhood\": \"Yishun\",\n    \"state\": \"\"\n}"
+						}
+					]
+				},
+				{
+					"name": "wrapper decode",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"lat\":\"-32\",\n    \"lon\":\"115.76667\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5001/decode",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5001",
+							"path": [
+								"decode"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "sample",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"lat\":\"-32\",\n    \"lon\":\"115.76667\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5000/decode",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"decode"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.11.3"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 06 Mar 2025 04:04:49 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "75"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"location\": \"32, Departures, Fontibón, 110911 Bogota, Colombia\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "location_weather",
+			"item": [
+				{
+					"name": "update_weather",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"datetime\": \"2025-03-07T12:00:00\",\n    \"weather\": {\n        \"temp\": 29.5,\n        \"humidity\": 83,\n        \"description\": \"sunny\",\n        \"wind_speed\": 3.8,\n        \"feels_like\": 32.7\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5002/update_weather/east-coast-road",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"update_weather",
+								"east-coast-road"
+							]
+						},
+						"description": "### Description\n\nUpdates the latest weather information for a given location_id, endpoint will also take in the datetime to ensure that we can pull for a timeseries and specific dates"
+					},
+					"response": [
+						{
+							"name": "update_weather",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"datetime\": \"2025-03-07T12:00:00\",\n    \"weather\": {\n        \"temp\": 29.5,\n        \"humidity\": 83,\n        \"description\": \"sunny\",\n        \"wind_speed\": 3.8,\n        \"feels_like\": 32.7\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5002/weather/east-coast-road",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5002",
+									"path": [
+										"weather",
+										"east-coast-road"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.11.4"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 06 Mar 2025 18:51:54 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "57"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Weather forecast updated successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "get_weather",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5002/get_weather/east-coast-road/2025-03-05T12:00:00",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"get_weather",
+								"east-coast-road",
+								"2025-03-05T12:00:00"
+							]
+						},
+						"description": "### Description\n\nBasic endpoint to pull the latest weather forecasts available for given location_id (mandatory) and datetime(optional)\n\nYou may view the expected behaviours in the other test cases"
+					},
+					"response": [
+						{
+							"name": "get_weather valid loc_dt",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5002/weather/east-coast-road/2025-03-05T12:00:00",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5002",
+									"path": [
+										"weather",
+										"east-coast-road",
+										"2025-03-05T12:00:00"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.11.4"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 06 Mar 2025 18:52:21 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "216"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"datetime\": \"2025-03-05T12:00:00\",\n    \"location_id\": \"east-coast-road\",\n    \"weather\": {\n        \"description\": \"partly cloudy\",\n        \"feels_like\": 32.1,\n        \"humidity\": 85,\n        \"temp\": 28.5,\n        \"wind_speed\": 3.5\n    }\n}"
+						},
+						{
+							"name": "get_weather valid loc_dt",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5002/get_weather/east-coast-road",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5002",
+									"path": [
+										"get_weather",
+										"east-coast-road"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.11.4"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 06 Mar 2025 19:08:59 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "208"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"datetime\": \"2025-03-07T12:00:00\",\n    \"location_id\": \"east-coast-road\",\n    \"weather\": {\n        \"description\": \"sunny\",\n        \"feels_like\": 32.7,\n        \"humidity\": 83,\n        \"temp\": 29.5,\n        \"wind_speed\": 3.8\n    }\n}"
+						},
+						{
+							"name": "get_weather valid loc_dt",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5002/get_weather/orchard-road",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5002",
+									"path": [
+										"get_weather",
+										"orchard-road"
+									]
+								}
+							},
+							"status": "NOT FOUND",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.11.4"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 06 Mar 2025 19:09:09 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "36"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Location not found\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "location",
+			"item": [
+				{
+					"name": "get_locations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": [
+						{
+							"name": "get_locations",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:5000/locations",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"locations"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.13.1"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 08 Mar 2025 10:14:37 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "252"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"city\": \"Singapore\",\n        \"country\": \"Singapore\",\n        \"created_at\": \"2025-03-08T10:12:50.631579+00:00\",\n        \"latitude\": 1.3521,\n        \"location_id\": 5,\n        \"longitude\": 103.849,\n        \"neighbourhood\": \"Bishan East\",\n        \"state\": \"Singapore\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "add_location",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"country\": \"USA\",\r\n    \"city\": \"New York\",\r\n    \"latitude\": 40.7128,\r\n    \"longitude\": -74.0060\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/locations",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"locations"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "add_location_success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"country\": \"Singapore\",\r\n    \"state\": \"Singapore\",\r\n    \"city\": \"Singapore\",\r\n    \"neighbourhood\": \"Bishan East\",\r\n    \"latitude\": 1.3521,\r\n    \"longitude\": 103.8485\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5000/locations",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"locations"
+									]
+								}
+							},
+							"status": "CREATED",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.13.1"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 08 Mar 2025 10:12:50 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "282"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"location\": {\n        \"city\": \"Singapore\",\n        \"country\": \"Singapore\",\n        \"created_at\": \"2025-03-08T10:12:50.631579Z\",\n        \"latitude\": 1.3521,\n        \"longitude\": 103.8485,\n        \"neighbourhood\": \"Bishan East\",\n        \"state\": \"Singapore\"\n    },\n    \"message\": \"Location added successfully\"\n}"
+						},
+						{
+							"name": "add_location_exists",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"country\": \"Singapore\",\r\n    \"state\": \"Singapore\",\r\n    \"city\": \"Singapore\",\r\n    \"neighbourhood\": \"Bishan East\",\r\n    \"latitude\": 1.3521,\r\n    \"longitude\": 103.8485\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5000/locations",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"locations"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.13.1"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 08 Mar 2025 10:13:39 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "304"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"location\": {\n        \"city\": \"Singapore\",\n        \"country\": \"Singapore\",\n        \"created_at\": \"2025-03-08T10:12:50.631579+00:00\",\n        \"latitude\": 1.3521,\n        \"location_id\": 5,\n        \"longitude\": 103.849,\n        \"neighbourhood\": \"Bishan East\",\n        \"state\": \"Singapore\"\n    },\n    \"message\": \"Location already exists\"\n}"
+						}
+					]
+				},
+				{
+					"name": "get_id_by_coordinates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": [
+						{
+							"name": "get_id_by_coordinates_success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/locations/coordinates?latitude=40.7128&longitude=-74.0060",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"locations",
+										"coordinates"
+									],
+									"query": [
+										{
+											"key": "latitude",
+											"value": "40.7128"
+										},
+										{
+											"key": "longitude",
+											"value": "-74.0060"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.13.1"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 07 Mar 2025 14:17:45 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "23"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"location_id\": 3\n}"
+						},
+						{
+							"name": "get_id_by_coordinates_not_found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/locations/coordinates?latitude=40.7128&longitude=-0",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"locations",
+										"coordinates"
+									],
+									"query": [
+										{
+											"key": "latitude",
+											"value": "40.7128"
+										},
+										{
+											"key": "longitude",
+											"value": "-0"
+										}
+									]
+								}
+							},
+							"status": "NOT FOUND",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "Werkzeug/3.1.3 Python/3.13.1"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 07 Mar 2025 14:41:17 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "36"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"error\": \"Location not found\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "weather",
+			"item": [
+				{
+					"name": "Get Weather Forecast",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/forecast?country=Singapore&state=Singapore&city=Singapore&neighbourhood=Choa Chu Kang",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"forecast"
+							],
+							"query": [
+								{
+									"key": "country",
+									"value": "Singapore"
+								},
+								{
+									"key": "state",
+									"value": "Singapore"
+								},
+								{
+									"key": "city",
+									"value": "Singapore"
+								},
+								{
+									"key": "neighbourhood",
+									"value": "Choa Chu Kang"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current Weather",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/current?country=Singapore&state=Singapore&city=Singapore&neighbourhood=Choa Chu Kang",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"current"
+							],
+							"query": [
+								{
+									"key": "country",
+									"value": "Singapore"
+								},
+								{
+									"key": "state",
+									"value": "Singapore"
+								},
+								{
+									"key": "city",
+									"value": "Singapore"
+								},
+								{
+									"key": "neighbourhood",
+									"value": "Choa Chu Kang"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Weather Alert",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/alerts?country&state&city",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"alerts"
+							],
+							"query": [
+								{
+									"key": "country",
+									"value": null
+								},
+								{
+									"key": "state",
+									"value": null
+								},
+								{
+									"key": "city",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GraphQL Query",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/graphql",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Sign Up",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test-example@gmail.com\",\r\n    \"password\": \"AAASDAaa12312!!\",\r\n    \"username\": \"TestUser\",\r\n    \"country\": \"Singapore\",\r\n    \"state\": \"Singapore\",\r\n    \"city\": \"Singapore\"\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/signup",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/all-users",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"all-users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"BENNY\",\r\n    \"email\": \"test2-example@gmail.com\",\r\n    \"password\": \"XAASDAaa12312!!\",\r\n    \"country\": \"Singapore\",\r\n    \"state\": \"Singapore\",\r\n    \"city\": \"Singapore\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/user/94341d94-d6ae-4821-9e17-c30a59540206",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"94341d94-d6ae-4821-9e17-c30a59540206"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:5000/user/94341d94-d6ae-4821-9e17-c30a59540206",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"94341d94-d6ae-4821-9e17-c30a59540206"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/user/6d4d5946-50c6-4c11-b326-de48c2754204",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"user",
+								"6d4d5946-50c6-4c11-b326-de48c2754204"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"XAASDAaa12312!!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/reset_password/d22ae707-3703-44ed-abae-636edad8d1f2",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"reset_password",
+								"d22ae707-3703-44ed-abae-636edad8d1f2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Emails by Location",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:5000/emails-by-location",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"emails-by-location"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "emergency_monitoring",
+			"item": [
+				{
+					"name": "Check Alerts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8082/check-alerts",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"check-alerts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
