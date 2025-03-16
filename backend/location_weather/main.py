@@ -41,6 +41,11 @@ supabase = create_client(url, key)
 app = Flask(__name__)
 CORS(app)
 
+@app.route('/')
+def home():
+    print("Location Weather API is running!")
+    return "Location Weather API is running!"
+
 @app.route('/update_forecast/<location_id>', methods=['POST'])
 def update_forecast(location_id):
     try:
@@ -174,5 +179,7 @@ def get_forecast_by_datetime(location_id, dt_input):
     except Exception as e:
         return jsonify({"error": f"Error retrieving forecast: {str(e)}"}), 500
 
+## Todo: Setup publishing to pika from here
+
 if __name__ == '__main__':
-    app.run(port=5002, debug=True)
+    app.run(host='0.0.0.0', port=5003, debug=True)

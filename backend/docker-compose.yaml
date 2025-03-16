@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  # location_weather microservice
+  location_weather:
+    build: ./location_weather
+    ports:
+      - '5003:5003'
+    env_file:
+      - ./location_weather/.env
+    depends_on:
+      - rabbitmq
+    restart: on-failure
