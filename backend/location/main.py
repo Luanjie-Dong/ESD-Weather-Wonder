@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import os
 from dotenv import load_dotenv
+from flask_cors import CORS
 from datetime import datetime
 import requests
 
@@ -8,6 +9,8 @@ import requests
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
+
 
 # Supabase configuration (retrieved from environment variables)
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -22,10 +25,6 @@ HEADERS = {
 
 @app.route('/locations', methods=['POST'])
 def add_location():
-    """
-    Endpoint to add a new location to Supabase.
-    Expects JSON payload with 'country', 'state', 'city', 'neighbourhood', 'latitude', and 'longitude'.
-    """
     data = request.get_json()
 
     # Validate input data
@@ -42,7 +41,11 @@ def add_location():
     if response.status_code == 200:
         existing_locations = response.json()
         if existing_locations:
-            return jsonify({"message": "Location already exists", "location": existing_locations[0]}), 200
+            return jsonify({
+                "message": "Location already exists", 
+                "location": existing_locations[0],
+                "location_id": existing_locations[0].get('location_id')
+            }), 200
 
     # Generate unique location_id and insert new location into Supabase
     created_at = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")  # UTC timestamp
@@ -63,7 +66,20 @@ def add_location():
     )
 
     if response.status_code == 201:
-        return jsonify({"message": "Location added successfully", "location": payload}), 201
+        # Retrieve the newly created location to get its ID
+        new_location_response = requests.get(
+            f"{SUPABASE_URL}/rest/v1/{SUPABASE_TABLE}?created_at=eq.{created_at}",
+            headers=HEADERS
+        )
+        if new_location_response.status_code == 200:
+            new_location = new_location_response.json()[0]
+            return jsonify({
+                "message": "Location added successfully", 
+                "location": new_location,
+                "location_id": new_location.get('location_id')
+            }), 201
+        else:
+            return jsonify({"error": "Location created but unable to retrieve ID"}), 500
     else:
         return jsonify({"error": response.json()}), response.status_code
 
@@ -84,36 +100,6 @@ def get_locations():
         return jsonify({"error": response.json()}), response.status_code
 
 
-@app.route('/locations/coordinates', methods=['GET'])
-def get_location_by_coordinates():
-    """
-    Endpoint to retrieve a location_id by its coordinates (latitude and longitude) from Supabase.
-    Expects query parameters 'latitude' and 'longitude'.
-    """
-    latitude = request.args.get('latitude')
-    longitude = request.args.get('longitude')
-
-    if not latitude or not longitude:
-        return jsonify({"error": "Missing required query parameters: 'latitude' and 'longitude'"}), 400
-
-    try:
-        response = requests.get(
-            f"{SUPABASE_URL}/rest/v1/{SUPABASE_TABLE}?latitude=eq.{latitude}&longitude=eq.{longitude}",
-            headers=HEADERS
-        )
-
-        if response.status_code == 200:
-            locations = response.json()
-            if locations:
-                # Return only the location_id
-                return jsonify({"location_id": locations[0].get("location_id")}), 200
-            else:
-                return jsonify({"error": "Location not found"}), 404
-        else:
-            return jsonify({"error": response.json()}), response.status_code
-
-    except requests.RequestException as e:
-        return jsonify({"error": f"Request failed: {e}"}), 500
 
 
 @app.route('/')

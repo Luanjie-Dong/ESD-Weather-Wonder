@@ -7,8 +7,8 @@ app = Flask(__name__)
 CORS(app)
 
 # URLs for microservices
-geocoding_URL = "http://localhost:5000/"
-location_URL = "http://localhost:5002/"
+geocoding_URL = "http://localhost:5000/encode"
+location_URL = "http://localhost:5002/locations"
 userlocation_URL = "http://outsystems-server/userlocation/add_user_location"
 
 
@@ -81,7 +81,7 @@ def process_add_location(location_request):
     longitude = geocode_result["longitude"]
     country = geocode_result.get("country", "")
     state = geocode_result.get("state", "")
-    city = geocode_result.get("town", "")
+    city = geocode_result.get("city", "")
     neighbourhood = geocode_result.get("neighbourhood", "")
 
     # Step 2: Call Location Microservice
@@ -137,7 +137,10 @@ def process_add_location(location_request):
         }
     }
 
+@app.route("/")
+def home():
+    return "Add Location Service is running!"
 
 if __name__ == "__main__":
     print("This is flask for adding a location...")
-    app.run(host="0.0.0.0", port=5100, debug=True)
+    app.run(host="0.0.0.0", port=5010, debug=True)
