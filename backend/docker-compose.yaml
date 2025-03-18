@@ -1,5 +1,10 @@
 version: '3.8'
 
+networks:
+  weatherwonder_network:
+    driver: bridge
+    name: weatherwonder_network
+
 services:
   # location_weather microservice
   location_weather:
@@ -19,5 +24,15 @@ services:
     ports:
       - '5004:5004'
     env_file:
-      - ./geocding/.env
+      - ./geocoding/.env
+    restart: on-failure
+
+  user:
+    build: 
+      context: ./user
+      dockerfile: Dockerfile
+    ports:
+      - '5000:5000'
+    env_file:
+      - ./user/.env
     restart: on-failure

@@ -1,0 +1,154 @@
+_format_version: "3.0"
+
+services:
+  #######################################
+  # CREATE ONE USER
+  #######################################
+  - name: create-user-api
+    url: http://user:5000/signup
+    routes:
+      - name: create-user
+        paths:
+          - /api/v1/create_user
+        methods:
+          - POST
+        strip_path: false
+    plugins:
+      - name: key-auth
+        config:
+          key_names:
+            - weatherwonderapi_key
+      - name: oas-validation
+        config:
+          api_spec: |
+            openapi: 3.0.0
+            info:
+              title: Weather Wonder API
+              version: 1.0.0
+            paths:
+              /api/v1/create_user:
+                post:
+                  summary: Add a new user
+                  requestBody:
+                    required: true
+                    content:
+                      application/json:
+                        schema:
+                          type: object
+                          properties:
+                            email:
+                              type: string
+                            password:
+                              type: string
+                            username:
+                              type: string
+                            country:
+                              type: string
+                            state:
+                              type: string
+                            city:
+                              type: string
+                          required:
+                            - email
+                            - password
+                            - username
+                            - country
+                            - state
+                            - city
+                  responses:
+                    '200':
+                      description: User added successfully
+                    '404':
+                      description: User creation failed
+
+  #######################################
+  # GET USER INFORMATION
+  #######################################
+  - name: get-user-info-api
+    url: http://user:5000/user
+    routes:
+      - name: get-user
+        paths:
+          - /api/v1/get_user
+        methods:
+          - GET
+        strip_path: false
+    plugins:
+      - name: key-auth
+        config:
+          key_names:
+            - weatherwonderapi_key
+      
+  #######################################
+  # UPDATE USER INFORMATION
+  #######################################
+  - name: update-user-api
+    url: http://user:5000/user/{user_id}
+    routes:
+      - name: update-user
+        paths:
+          - /api/v1/update_user/{user_id}
+        methods:
+          - PUT
+        strip_path: True
+    plugins:
+      - name: key-auth
+        config:
+          key_names:
+            - weatherwonderapi_key
+      
+  
+
+  #######################################
+  # DELETE USER
+  #######################################
+  - name: delete-user-api
+    url: http://user:5000/user
+    routes:
+      - name: delete-user
+        paths:
+          - /api/v1/delete_user
+        methods:
+          - DELETE
+        strip_path: false
+    plugins:
+      - name: key-auth
+        config:
+          key_names:
+            - weatherwonderapi_key
+
+  #######################################
+  # LOCATION WEATHER
+  #######################################
+  - name: location-weather-api
+    url: http://location_weather:5003/get_weather
+    routes:
+      - name: delete-user
+        paths:
+          - /api/v1/delete_user
+        methods:
+          - DELETE
+        strip_path: false
+    plugins:
+      - name: key-auth
+        config:
+          key_names:
+            - weatherwonderapi_key
+
+#######################################
+# AUTHENTICATION KEY
+#######################################
+consumers:
+  - username: weatherwonder_app
+    keyauth_credentials:
+      - key: abc123xyz
+
+#######################################
+# RATE LIMITING
+#######################################
+plugins:
+  - name: rate-limiting
+    config:
+      minute: 100
+      policy: "local"
+      limit_by: "ip"
