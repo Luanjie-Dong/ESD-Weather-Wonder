@@ -11,3 +11,13 @@ services:
     depends_on:
       - rabbitmq
     restart: on-failure
+
+  geocding:
+    build: 
+      context: ./geocoding
+      dockerfile: Dockerfile.encoder
+    ports:
+      - '5004:5004'
+    env_file:
+      - ./geocding/.env
+    restart: on-failure
