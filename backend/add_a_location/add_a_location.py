@@ -7,12 +7,12 @@ app = Flask(__name__)
 CORS(app)
 
 # URLs for microservices
-geocoding_URL = "http://localhost:5000/encode"
-location_URL = "http://localhost:5002/locations"
+geocoding_URL = "http://host.docker.internal:5004/encode"
+location_URL = "http://host.docker.internal:5002/locations"
 userlocation_URL = "http://outsystems-server/userlocation/add_user_location"
 
 
-@app.route("/add_location", methods=['POST'])
+@app.route("/add_location", methods=["POST"])
 def add_location():
     """
     Composite microservice to add a location:
@@ -33,19 +33,34 @@ def add_location():
             # Handle unexpected errors
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
+            ex_str = (
+                str(e)
+                + " at "
+                + str(exc_type)
+                + ": "
+                + fname
+                + ": line "
+                + str(exc_tb.tb_lineno)
+            )
             print(ex_str)
 
-            return jsonify({
-                "code": 500,
-                "message": "add_location.py internal error: " + ex_str
-            }), 500
+            return (
+                jsonify(
+                    {
+                        "code": 500,
+                        "message": "add_location.py internal error: " + ex_str,
+                    }
+                ),
+                500,
+            )
 
     # If input is not JSON
-    return jsonify({
-        "code": 400,
-        "message": "Invalid JSON input: " + str(request.get_data())
-    }), 400
+    return (
+        jsonify(
+            {"code": 400, "message": "Invalid JSON input: " + str(request.get_data())}
+        ),
+        400,
+    )
 
 
 def process_add_location(location_request):
@@ -62,19 +77,22 @@ def process_add_location(location_request):
     if not address or not user_id or not label:
         return {
             "code": 400,
-            "message": "Missing required fields: 'address', 'user_id', and 'label'."
+            "message": "Missing required fields: 'address', 'user_id', and 'label'.",
         }
 
     # Step 1: Call Geocoding Microservice
     print("\n-----Invoking Geocoding microservice-----")
-    geocode_result = invoke_http(geocoding_URL, method="POST", json={"location": address})
+    geocode_result = invoke_http(
+        geocoding_URL, method="POST", json={"location": address}
+    )
     print("Geocode result:", geocode_result)
 
-    if geocode_result["code"] not in range(200, 300):
+
+    if "latitude" not in geocode_result or "longitude" not in geocode_result:
         return {
-            "code": geocode_result["code"],
-            "message": f"Failed to get geocode for address '{address}'.",
-            "data": geocode_result
+            "code": 500,
+            "message": f"Failed to get valid geocode for address '{address}'.",
+            "data": geocode_result,
         }
 
     latitude = geocode_result["latitude"]
@@ -83,7 +101,7 @@ def process_add_location(location_request):
     state = geocode_result.get("state", "")
     city = geocode_result.get("city", "")
     neighbourhood = geocode_result.get("neighbourhood", "")
-
+    
     # Step 2: Call Location Microservice
     print("\n-----Invoking Location microservice-----")
     location_payload = {
@@ -92,17 +110,28 @@ def process_add_location(location_request):
         "city": city,
         "neighbourhood": neighbourhood,
         "latitude": latitude,
-        "longitude": longitude
+        "longitude": longitude,
     }
-    
+
     location_result = invoke_http(location_URL, method="POST", json=location_payload)
     print("Location result:", location_result)
 
-    if location_result["code"] not in range(200, 300):
+    # Check if location_id is present in the result
+    if 'location_id' in location_result:
+        location_id = location_result['location_id']
+        print(f"Location ID: {location_id}")
+        
+        # Check if the location already existed
+        if location_result.get('message') == 'Location already exists':
+            print("Using existing location")
+        else:
+            print("New location created")
+    else:
+        # If location_id is not in the result, consider it an error
         return {
-            "code": location_result["code"],
-            "message": f"Failed to save location details.",
-            "data": location_result
+            "code": 500,
+            "message": "Failed to save or retrieve location details.",
+            "data": location_result,
         }
 
     location_id = location_result["location_id"]
@@ -113,17 +142,19 @@ def process_add_location(location_request):
         "user_id": user_id,
         "location_id": location_id,
         "label": label,
-        "address": address
+        "address": address,
     }
-    
-    userlocation_result = invoke_http(userlocation_URL, method="POST", json=userlocation_payload)
+
+    userlocation_result = invoke_http(
+        userlocation_URL, method="POST", json=userlocation_payload
+    )
     print("UserLocation result:", userlocation_result)
 
     if userlocation_result["code"] not in range(200, 300):
         return {
             "code": userlocation_result["code"],
             "message": f"Failed to associate location with user.",
-            "data": userlocation_result
+            "data": userlocation_result,
         }
 
     # Return success response
@@ -133,13 +164,15 @@ def process_add_location(location_request):
         "data": {
             "geocoding_data": geocode_result,
             "location_data": location_result,
-            "user_location_status": userlocation_result
-        }
+            "user_location_status": userlocation_result,
+        },
     }
+
 
 @app.route("/")
 def home():
     return "Add Location Service is running!"
+
 
 if __name__ == "__main__":
     print("This is flask for adding a location...")
