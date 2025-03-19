@@ -2,92 +2,38 @@ _format_version: "3.0"
 
 services:
   #######################################
-  # CREATE ONE USER
+  # USER MICROSERVICE
   #######################################
-  - name: create-user-api
-    url: http://user:5000/signup
+  - name: user-api
+    url: http://user:5000
     routes:
       - name: create-user
         paths:
           - /api/v1/create_user
         methods:
           - POST
-        strip_path: false
-    plugins:
-      - name: key-auth
-        config:
-          key_names:
-            - weatherwonderapi_key
-      - name: oas-validation
-        config:
-          api_spec: |
-            openapi: 3.0.0
-            info:
-              title: Weather Wonder API
-              version: 1.0.0
-            paths:
-              /api/v1/create_user:
-                post:
-                  summary: Add a new user
-                  requestBody:
-                    required: true
-                    content:
-                      application/json:
-                        schema:
-                          type: object
-                          properties:
-                            email:
-                              type: string
-                            password:
-                              type: string
-                            username:
-                              type: string
-                            country:
-                              type: string
-                            state:
-                              type: string
-                            city:
-                              type: string
-                          required:
-                            - email
-                            - password
-                            - username
-                            - country
-                            - state
-                            - city
-                  responses:
-                    '200':
-                      description: User added successfully
-                    '404':
-                      description: User creation failed
-
-  #######################################
-  # GET USER INFORMATION
-  #######################################
-  - name: get-user-info-api
-    url: http://user:5000/user
-    routes:
+        strip_path: True
       - name: get-user
         paths:
-          - /api/v1/get_user
+          - /api/v1/user/<string:user_id>
         methods:
           - GET
-        strip_path: false
-    plugins:
-      - name: key-auth
-        config:
-          key_names:
-            - weatherwonderapi_key
-      
-  #######################################
-  # UPDATE USER INFORMATION
-  #######################################
-  - name: update-user-api
-    url: http://user:5000/user/{user_id}
-    routes:
+        strip_path: True
       - name: update-user
         paths:
-          - /api/v1/update_user/{user_id}
+          - /api/v1/user/<string:user_id>
+        methods:
+          - PUT
+        strip_path: True
+      - name: delete-user
+        paths:
+          - /api/v1/user/<string:user_id>
+        methods:
+          - DELETE
+        strip_path: True
+      - name: reset-password
+        paths:
+          - /api/v1/reset_password/<string:user_id>
         methods:
           - PUT
         strip_path: True
@@ -96,44 +42,45 @@ services:
         config:
           key_names:
             - weatherwonderapi_key
-      
-  
+          key_in_header: true
+          key_in_query: false
 
+    
   #######################################
-  # DELETE USER
-  #######################################
-  - name: delete-user-api
-    url: http://user:5000/user
-    routes:
-      - name: delete-user
-        paths:
-          - /api/v1/delete_user
-        methods:
-          - DELETE
-        strip_path: false
-    plugins:
-      - name: key-auth
-        config:
-          key_names:
-            - weatherwonderapi_key
-
-  #######################################
-  # LOCATION WEATHER
+  # LOCATION WEATHER MICROSERVICE
   #######################################
   - name: location-weather-api
-    url: http://location_weather:5003/get_weather
+    url: http://location_weather:5003
     routes:
-      - name: delete-user
+      - name: get-weather
         paths:
-          - /api/v1/delete_user
+          - /api/v1/get_weather/<location_id>
         methods:
-          - DELETE
-        strip_path: false
+          - GET
+        strip_path: True
+      - name: get-weather-by-date
+        paths:
+          - /api/v1/get_weather/date/<location_id>/<date>
+        methods:
+          - GET
+        strip_path: True
+      - name: get-weather-by-datetime
+        paths:
+          - /api/v1/get_weather/datetime/<location_id>/<dt_input>
+        methods:
+          - GET
+        strip_path: True
+      
     plugins:
       - name: key-auth
         config:
           key_names:
             - weatherwonderapi_key
+          key_in_header: true
+          key_in_query: false
+      
+
+ 
 
 #######################################
 # AUTHENTICATION KEY

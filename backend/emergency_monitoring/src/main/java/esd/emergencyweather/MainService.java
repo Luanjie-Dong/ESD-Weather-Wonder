@@ -27,9 +27,8 @@ public class MainService {
             if (alerts.length > 0) {
                 for (Alert alert : alerts) {
                     if (alert.getEffective().isAfter(outdatedTime)) {
-                        // System.out.println(alert);
+                        mainWrapper.sendEmails(emailsByLocation.getEmails(), alert);
                     } 
-                    System.out.println(alert);
                 }
             } else {
                 System.out.println("No alerts found for " + emailsByLocation.getCountry() + ", " + emailsByLocation.getState() + ", " + emailsByLocation.getCity());

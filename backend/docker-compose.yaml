@@ -1,49 +1,103 @@
-version: '3.8'
+volumes:
+  rabbitmq_config:
+    name: esd_rabbitmq_config
 
 networks:
-  weatherwonder_network:
+  esd-weatherwonder:
     driver: bridge
-    name: weatherwonder_network
+    name: esd-weatherwonder
 
 services:
-  # location_weather microservice
-  location_weather:
-    build: ./location_weather
-    ports:
-      - '5003:5003'
-    env_file:
-      - ./location_weather/.env
-    restart: on-failure
+    # AMQP messaging
+    rabbitmq:
+        image: rabbitmq:3-management
+        environment:
+        - RABBITMQ_DEFAULT_PASS=secret
+        - RABBITMQ_DEFAULT_USER=myuser
+        ports:
+        - "5672:5672"  # For RabbitMQ server
+        - "15672:15672"  # For RabbitMQ management UI
+        restart: on-failure
+        volumes: 
+        - rabbitmq_config:/var/lib/rabbitmq
+        networks:
+        - esd-weatherwonder
 
-  geocoding:
-    build: 
-      context: ./geocoding
-      dockerfile: Dockerfile.encoder
-    ports:
-      - '5004:5004'
-    env_file:
-      - ./geocoding/.env
-    restart: on-failure
+    # user microservice
+    user:
+        build: ./user
+        ports:
+        - '5001:5001'
+        env_file:
+        - ./user/.env
+        depends_on:
+        - rabbitmq
+        restart: on-failure
+        networks:
+        - esd-weatherwonder
 
-  user:
-    build: 
-      context: ./user
-      dockerfile: Dockerfile
-    ports:
-      - '5000:5000'
-    env_file:
-      - ./user/.env
-    restart: on-failure
+    # location microservice
+    location:
+        build: ./location
+        ports:
+        - '5002:5002'
+        env_file:
+        - ./location/.env
+        depends_on:
+        - rabbitmq
+        restart: on-failure
+        networks:
+        - esd-weatherwonder
 
-  location:
-    build: 
-      context: ./location
-      dockerfile: Dockerfile
-    ports:
-      - '5002:5002'
-    env_file:
-      - ./location/.env
-    restart: on-failure
+    # location_weather microservice
+    location_weather:
+        build: ./location_weather
+        ports:
+        - '5003:5003'
+        env_file:
+        - ./location_weather/.env
+        depends_on:
+        - rabbitmq
+        restart: on-failure
+        networks:
+        - esd-weatherwonder
+
+    # geocoding microservice
+    geocoding:
+        build: 
+            context: ./geocoding
+            dockerfile: Dockerfile.encoder
+        ports:
+        - '5004:5004'
+        env_file:
+        - ./geocoding/.env
+        restart: on-failure
+        networks:
+        - esd-weatherwonder
+    
+    # weather microservice
+    weather:
+        build: ./weather
+        ports:
+        - '8081:8081'
+        env_file:
+        - ./weather/src/main/resources/.env
+        restart: on-failure
+        networks:
+        - esd-weatherwonder
+
+    # emergency_monitoring microservice
+    emergency_monitoring:
+        build: ./emergency_monitoring
+        ports:
+        - '8082:8082'
+        env_file:
+        - ./emergency_monitoring/src/main/resources/.env
+        depends_on:
+        - rabbitmq
+        restart: on-failure
+        networks:
+        - esd-weatherwonder
 
   add_a_location:
     build: 
