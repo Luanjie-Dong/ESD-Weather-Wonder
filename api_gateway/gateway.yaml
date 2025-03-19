@@ -5,7 +5,7 @@ services:
   # USER MICROSERVICE
   #######################################
   - name: user-api
-    url: http://user:5000
+    url: http://user:5001
     routes:
       - name: create-user
         paths:
@@ -15,25 +15,25 @@ services:
         strip_path: True
       - name: get-user
         paths:
-          - /api/v1/user/<string:user_id>
+          - /api/v1/user/{string:user_id}
         methods:
           - GET
         strip_path: True
       - name: update-user
         paths:
-          - /api/v1/user/<string:user_id>
+          - /api/v1/user/{string:user_id}
         methods:
           - PUT
         strip_path: True
       - name: delete-user
         paths:
-          - /api/v1/user/<string:user_id>
+          - /api/v1/user/{string:user_id}
         methods:
           - DELETE
         strip_path: True
       - name: reset-password
         paths:
-          - /api/v1/reset_password/<string:user_id>
+          - /api/v1/reset_password/{string:user_id}
         methods:
           - PUT
         strip_path: True
@@ -54,19 +54,19 @@ services:
     routes:
       - name: get-weather
         paths:
-          - /api/v1/get_weather/<location_id>
+          - /api/v1/get_weather/{location_id}
         methods:
           - GET
         strip_path: True
       - name: get-weather-by-date
         paths:
-          - /api/v1/get_weather/date/<location_id>/<date>
+          - /api/v1/get_weather/date/{location_id}/{date}
         methods:
           - GET
         strip_path: True
       - name: get-weather-by-datetime
         paths:
-          - /api/v1/get_weather/datetime/<location_id>/<dt_input>
+          - /api/v1/get_weather/datetime/{location_id}/{dt_input}
         methods:
           - GET
         strip_path: True
@@ -80,7 +80,7 @@ services:
           key_in_query: false
       
 
- 
+
 
 #######################################
 # AUTHENTICATION KEY

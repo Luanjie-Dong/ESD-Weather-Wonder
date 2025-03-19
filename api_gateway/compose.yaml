@@ -1,9 +1,9 @@
 volumes:
   pgdata:
-    name: esd-weatherwonder
+    name: esd-pgdata
 
 networks:
-  weatherwonder_network:
+  esd-weatherwonder:
     driver: bridge
     name: esd-weatherwonder
 
@@ -48,7 +48,7 @@ services:
       kong-database:
         condition: service_healthy
     volumes:
-      - ./gateway_test.yaml:/usr/local/kong/declarative/gateway.yaml
+      - ./gateway.yaml:/usr/local/kong/declarative/gateway.yaml
 
   #######################################
   # Kong: The API Gateway
