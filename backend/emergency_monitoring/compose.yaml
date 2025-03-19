@@ -1,8 +1,11 @@
 services:
-  rabbitmq:
-    image: 'rabbitmq:latest'
-    environment:
-      - 'RABBITMQ_DEFAULT_PASS=secret'
-      - 'RABBITMQ_DEFAULT_USER=myuser'
-    ports:
-      - '5672'
+  # AMQP messaging
+    # rabbitmq:
+    #     image: rabbitmq:3-management
+    #     environment:
+    #     - RABBITMQ_DEFAULT_PASS=secret
+    #     - RABBITMQ_DEFAULT_USER=myuser
+    #     ports:
+    #     - "5672:5672"  # For RabbitMQ server
+    #     - "15672:15672"  # For RabbitMQ management UI
+    #     restart: on-failure

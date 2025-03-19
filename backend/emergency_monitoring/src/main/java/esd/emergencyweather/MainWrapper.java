@@ -92,4 +92,8 @@ public class MainWrapper {
             return new Alert[0];
         }
     }
+
+    public void sendEmails(String[] emails, Alert alert) {
+        
+    }
 }
