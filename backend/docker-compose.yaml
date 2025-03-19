@@ -1,5 +1,3 @@
-version: '3.8'
-
 networks:
   weatherwonder_network:
     driver: bridge
@@ -13,8 +11,8 @@ services:
       - '5003:5003'
     env_file:
       - ./location_weather/.env
-    depends_on:
-      - rabbitmq
+    # depends_on:
+    #   - rabbitmq
     restart: on-failure
 
   geocding:
