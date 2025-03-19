@@ -9,7 +9,7 @@ CORS(app)
 # URLs for microservices
 geocoding_URL = "http://host.docker.internal:5004/encode"
 location_URL = "http://host.docker.internal:5002/locations"
-userlocation_URL = "http://outsystems-server/userlocation/add_user_location"
+userlocation_URL = "https://personal-6iiv53lb.outsystemscloud.com/UserLocationMicroservice/rest/AddUserLocation/userlocation"
 
 
 @app.route("/add_location", methods=["POST"])
@@ -87,7 +87,6 @@ def process_add_location(location_request):
     )
     print("Geocode result:", geocode_result)
 
-
     if "latitude" not in geocode_result or "longitude" not in geocode_result:
         return {
             "code": 500,
@@ -101,7 +100,7 @@ def process_add_location(location_request):
     state = geocode_result.get("state", "")
     city = geocode_result.get("city", "")
     neighbourhood = geocode_result.get("neighbourhood", "")
-    
+
     # Step 2: Call Location Microservice
     print("\n-----Invoking Location microservice-----")
     location_payload = {
@@ -117,12 +116,12 @@ def process_add_location(location_request):
     print("Location result:", location_result)
 
     # Check if location_id is present in the result
-    if 'location_id' in location_result:
-        location_id = location_result['location_id']
+    if "location_id" in location_result:
+        location_id = location_result["location_id"]
         print(f"Location ID: {location_id}")
-        
+
         # Check if the location already existed
-        if location_result.get('message') == 'Location already exists':
+        if location_result.get("message") == "Location already exists":
             print("Using existing location")
         else:
             print("New location created")
@@ -136,26 +135,43 @@ def process_add_location(location_request):
 
     location_id = location_result["location_id"]
 
+
     # Step 3: Call UserLocation Microservice
     print("\n-----Invoking UserLocation microservice-----")
-    userlocation_payload = {
-        "user_id": user_id,
-        "location_id": location_id,
-        "label": label,
-        "address": address,
+    userlocation_params = {
+        "UserId": user_id,
+        "LocationId": location_id,
+        "Label": label,
+        "Address": address,
     }
 
-    userlocation_result = invoke_http(
-        userlocation_URL, method="POST", json=userlocation_payload
-    )
-    print("UserLocation result:", userlocation_result)
+    # Construct URL with query parameters
+    userlocation_url_with_params = f"{userlocation_URL}?UserId={user_id}&LocationId={location_id}&Label={label}&Address={address}"
+    print("Constructed UserLocation URL:", userlocation_url_with_params)
 
-    if userlocation_result["code"] not in range(200, 300):
+    try:
+        # Send GET or POST request (depending on what the service expects)
+        userlocation_result = invoke_http(userlocation_url_with_params, method="POST")
+        print("UserLocation result:", userlocation_result)
+    except Exception as e:
         return {
-            "code": userlocation_result["code"],
-            "message": f"Failed to associate location with user.",
-            "data": userlocation_result,
+            "code": 500,
+            "message": f"Failed to call UserLocation Microservice: {str(e)}",
         }
+
+    # Check if 'code' exists in the response
+    if "code" in userlocation_result:
+        if userlocation_result["code"] not in range(200, 300):
+            return {
+                "code": userlocation_result["code"],
+                "message": f"Failed to associate location with user.",
+                "data": userlocation_result,
+            }
+    else:
+        # Handle cases where 'code' is missing
+        print("No 'code' field in response. Assuming success.")
+        # Optionally, you can log the full response for debugging
+        print("UserLocation response:", userlocation_result)
 
     # Return success response
     return {
@@ -167,6 +183,7 @@ def process_add_location(location_request):
             "user_location_status": userlocation_result,
         },
     }
+
 
 
 @app.route("/")

@@ -9,4 +9,5 @@ Docker Run:
 Run the container with port mapping and environment variables:
 
 bash
-2. docker run -p 5010:5010 add_a_location
+2. docker run --name add_a_location -p 5010:5010 add_a_location
+
