@@ -1,11 +1,11 @@
 volumes:
   pgdata:
-    name: weatherwonder_pgdata 
+    name: esd-pgdata
 
 networks:
-  weatherwonder_network:
+  esd-weatherwonder:
     driver: bridge
-    name: weatherwonder_network
+    name: esd-weatherwonder
 
 services:
 
@@ -17,7 +17,7 @@ services:
     platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
     restart: always
     networks:
-      - weatherwonder_network
+      - esd-weatherwonder
     env_file:
       - ./.env
     ports:
@@ -37,18 +37,17 @@ services:
     image: kong/kong-gateway:3.9
     platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
     command: >
-      sh -c "kong migrations bootstrap &&
-             kong config db_import /usr/local/kong/declarative/gateway.yaml"
+      sh -c "kong migrations bootstrap && kong config db_import /usr/local/kong/declarative/gateway.yaml"
     restart: on-failure
     networks:
-      - weatherwonder_network
+      - esd-weatherwonder
     env_file:
       - ./.env
     depends_on:
       kong-database:
         condition: service_healthy
     volumes:
-      - ./gateway_test.yaml:/usr/local/kong/declarative/gateway.yaml
+      - ./gateway.yaml:/usr/local/kong/declarative/gateway.yaml
 
   #######################################
   # Kong: The API Gateway
@@ -58,7 +57,7 @@ services:
     platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
     restart: always
     networks:
-      - weatherwonder_network
+      - esd-weatherwonder
     env_file:
       - ./.env
     depends_on:

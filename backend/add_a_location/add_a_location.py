@@ -2,14 +2,17 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os, sys
 from invokes import invoke_http  # Helper function to invoke HTTP services
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
 # URLs for microservices
-geocoding_URL = "http://host.docker.internal:5004/encode"
-location_URL = "http://host.docker.internal:5002/locations"
-userlocation_URL = "https://personal-6iiv53lb.outsystemscloud.com/UserLocationMicroservice/rest/AddUserLocation/userlocation"
+geocoding_URL = os.getenv("geocoding_URL")
+location_URL = os.getenv("location_URL")
+userlocation_URL = os.getenv("userlocation_URL")
 
 
 @app.route("/add_location", methods=["POST"])

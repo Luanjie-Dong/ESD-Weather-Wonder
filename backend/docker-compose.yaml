@@ -101,13 +101,16 @@ services:
         environment:
           RABBITMQ_HOST: rabbitmq
 
-    # add_a_location microservice
     add_a_location:
-        build: ./add_a_location
-        ports:
+      build: 
+        context: ./add_a_location
+        dockerfile: Dockerfile
+      ports:
         - '5010:5010'
-        restart: on-failure
-        depends_on:
+      env_file:
+        - ./add_a_location/.env
+      restart: on-failure
+      depends_on:
         - location
         - geocoding
         networks:
