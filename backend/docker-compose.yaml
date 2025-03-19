@@ -51,6 +51,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - '5010:5010'
+    env_file:
+      - ./add_a_location/.env
     restart: on-failure
     depends_on:
       - location
