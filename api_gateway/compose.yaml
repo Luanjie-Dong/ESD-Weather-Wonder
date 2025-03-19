@@ -37,8 +37,7 @@ services:
     image: kong/kong-gateway:3.9
     platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
     command: >
-      sh -c "kong migrations bootstrap &&
-             kong config db_import /usr/local/kong/declarative/gateway.yaml"
+      sh -c "kong migrations bootstrap && kong config db_import /usr/local/kong/declarative/gateway.yaml"
     restart: on-failure
     networks:
       - esd-weatherwonder
