@@ -1,0 +1,186 @@
+# Type for main Query
+type Query {
+    getForecast(country: String!, state: String!, city: String!, neighbourhood: String!): ForecastDAO
+    getCurrent(country: String!, state: String!, city: String!, neighbourhood: String!): CurrentDAO
+    getAlerts(country: String!, state: String!, city: String!): AlertDAO
+}
+
+# Type for Location
+type Location {
+    latitude: Float
+    longitude: Float
+    name: String
+    region: String
+    country: String
+    tz_id: String
+    localtime_epoch: Int
+    localtime: String
+}
+
+# Type for Alert
+type Alert {
+    headline: String
+    msgType: String
+    severity: String
+    urgency: String
+    areas: String
+    category: String
+    certainty: String
+    event: String
+    note: String
+    effective: String
+    expires: String
+    desc: String
+    instruction: String
+}
+
+# Type for Alerts
+type Alerts {
+    alert: [Alert]
+}
+
+# Type for AlertDAO
+type AlertDAO {
+    location: Location
+    alerts: Alerts
+}
+
+# Type for Astro
+type Astro {
+    sunrise: String
+    sunset: String
+    moonrise: String
+    moonset: String
+    moon_phase: String
+    moon_illumination: Float
+    is_moon_up: Int
+    is_sun_up: Int
+}
+
+# Type for Current
+type Current {
+    last_updated: String
+    last_updated_epoch: Int
+    temp_c: Float
+    temp_f: Float
+    feelslike_c: Float
+    feelslike_f: Float
+    windchill_c: Float
+    windchill_f: Float
+    heatindex_c: Float
+    heatindex_f: Float
+    dewpoint_c: Float
+    dewpoint_f: Float
+    condition_text: String
+    condition_icon: String
+    condition_code: Int
+    wind_mph: Float
+    wind_kph: Float
+    wind_degree: Int
+    wind_dir: String
+    pressure_mb: Float
+    pressure_in: Float
+    precip_mm: Float
+    precip_in: Float
+    humidity: Int
+    cloud: Int
+    is_day: Int
+    uv: Float
+    gust_mph: Float
+    gust_kph: Float
+}
+
+# Type for CurrentDAO
+type CurrentDAO {
+    location: Location
+    current: Current
+}
+
+# Type for Day
+type Day {
+    maxtemp_c: Float
+    maxtemp_f: Float
+    mintemp_c: Float
+    mintemp_f: Float
+    avgtemp_c: Float
+    avgtemp_f: Float
+    maxwind_kph: Float
+    maxwind_mph: Float
+    totalprecip_mm: Float
+    totalprecip_in: Float
+    totalsnow_cm: Float
+    avgvis_km: Float
+    avgvis_miles: Float
+    avghumidity: Int
+    condition_text: String
+    condition_icon: String
+    condition_code: Int
+    uv: Float
+    daily_will_it_rain: Int
+    daily_will_it_snow: Int
+    daily_chance_of_rain: Int
+    daily_chance_of_snow: Int
+}
+
+# Type for ForecastDay
+type ForecastDay {
+    date: String
+    date_epoch: Int
+    day: Day
+    astro: Astro
+    hour: [Hour]
+}
+
+# Type for Hour
+type Hour {
+    time_epoch: Int
+    time: String
+    temp_c: Float
+    temp_f: Float
+    condition_text: String
+    condition_icon: String
+    condition_code: Int
+    wind_mph: Float
+    wind_kph: Float
+    wind_degree: Int
+    wind_dir: String
+    pressure_mb: Float
+    pressure_in: Float
+    precip_mm: Float
+    precip_in: Float
+    snow_cm: Float
+    humidity: Int
+    cloud: Int
+    feelslike_c: Float
+    feelslike_f: Float
+    windchill_c: Float
+    windchill_f: Float
+    heatindex_c: Float
+    heatindex_f: Float
+    dewpoint_c: Float
+    dewpoint_f: Float
+    will_it_rain: Int
+    will_it_snow: Int
+    is_day: Int
+    vis_km: Float
+    vis_miles: Float
+    chance_of_rain: Int
+    chance_of_snow: Int
+    gust_mph: Float
+    gust_kph: Float
+    uv: Float
+    short_rad: Float
+    diff_rad: Float
+}
+
+# Type for Forecast
+type Forecast {
+    forecastDay: [ForecastDay]
+}
+
+# Type for ForecastDAO
+type ForecastDAO {
+    location: Location
+    current: Current
+    forecast: Forecast
+}
