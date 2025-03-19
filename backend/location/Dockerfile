@@ -16,5 +16,7 @@ EXPOSE 5002
 # Define environment variable
 ENV FLASK_APP=main.py
 
+COPY ./*.py .
+
 # Run main.py when the container launches
 CMD ["python","main.py"]
