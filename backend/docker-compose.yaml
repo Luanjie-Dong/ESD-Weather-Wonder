@@ -13,11 +13,9 @@ services:
       - '5003:5003'
     env_file:
       - ./location_weather/.env
-    depends_on:
-      - rabbitmq
     restart: on-failure
 
-  geocding:
+  geocoding:
     build: 
       context: ./geocoding
       dockerfile: Dockerfile.encoder
@@ -36,3 +34,24 @@ services:
     env_file:
       - ./user/.env
     restart: on-failure
+
+  location:
+    build: 
+      context: ./location
+      dockerfile: Dockerfile
+    ports:
+      - '5002:5002'
+    env_file:
+      - ./location/.env
+    restart: on-failure
+
+  add_a_location:
+    build: 
+      context: ./add_a_location
+      dockerfile: Dockerfile
+    ports:
+      - '5010:5010'
+    restart: on-failure
+    depends_on:
+      - location
+      - geocoding
