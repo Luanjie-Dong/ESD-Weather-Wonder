@@ -99,4 +99,15 @@ services:
         networks:
         - esd-weatherwonder
 
+    # add_a_location microservice
+    add_a_location:
+        build: 
+        context: ./add_a_location
+        dockerfile: Dockerfile
+        ports:
+        - '5010:5010'
+        restart: on-failure
+        depends_on:
+        - location
+        - geocoding
     
