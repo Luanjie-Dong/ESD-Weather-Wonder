@@ -101,9 +101,7 @@ services:
 
     # add_a_location microservice
     add_a_location:
-        build: 
-        context: ./add_a_location
-        dockerfile: Dockerfile
+        build: ./add_a_location
         ports:
         - '5010:5010'
         restart: on-failure
