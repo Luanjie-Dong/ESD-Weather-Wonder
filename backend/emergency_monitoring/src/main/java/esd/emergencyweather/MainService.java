@@ -30,6 +30,7 @@ public class MainService {
                         mainWrapper.sendEmails(emailsByLocation.getEmails(), alert);
                     } 
                 }
+                System.out.println("Finished sending latest alerts for " + emailsByLocation.getCountry() + ", " + emailsByLocation.getState() + ", " + emailsByLocation.getCity());
             } else {
                 System.out.println("No alerts found for " + emailsByLocation.getCountry() + ", " + emailsByLocation.getState() + ", " + emailsByLocation.getCity());
             }

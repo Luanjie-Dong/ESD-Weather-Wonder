@@ -24,9 +24,6 @@ public class MainWrapper {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${notification.ms.url}")
-    private String notificationMSUrl;
-
     @Value("${user.ms.url}")
     private String userMSUrl;
 
@@ -34,7 +31,7 @@ public class MainWrapper {
     private String weatherWrapperUrl;
     
     public EmailGroupbyLocation[] getEmailsByLocation() {
-        URI uri = UriComponentsBuilder.fromHttpUrl(userMSUrl + "/emails-by-location").build().toUri();
+        URI uri = UriComponentsBuilder.fromUriString(userMSUrl + "/emails-by-location").build().toUri();
         EmailsByLocationDAO emailsByLocationDAO = restTemplate.getForObject(uri, EmailsByLocationDAO.class);
         return emailsByLocationDAO.getEmails_by_location();
     }
@@ -94,6 +91,12 @@ public class MainWrapper {
     }
 
     public void sendEmails(String[] emails, Alert alert) {
-        
+        System.out.println("""
+                
+            Simulate sending alert:
+            %s
+            to emails:
+            %s
+                """.formatted(emails, alert));
     }
 }

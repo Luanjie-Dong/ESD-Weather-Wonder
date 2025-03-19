@@ -1,4 +1,4 @@
-package esd.emergencyweather.messaging;
+package esd.notification.messaging;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -25,7 +25,7 @@ public class Messager {
     private String rabbitmqHost;
 
     @Value("${spring.rabbitmq.port}")
-    private int rabbitmqPort = 5672;
+    private int rabbitmqPort;
 
     @Value("${spring.rabbitmq.username}")
     private String rabbitmqUsername;

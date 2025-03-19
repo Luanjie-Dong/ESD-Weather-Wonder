@@ -98,6 +98,8 @@ services:
         restart: on-failure
         networks:
         - esd-weatherwonder
+        environment:
+          RABBITMQ_HOST: rabbitmq
 
     # add_a_location microservice
     add_a_location:
@@ -110,4 +112,19 @@ services:
         - geocoding
         networks:
         - esd-weatherwonder
+
+    # notification microservice
+    notification:
+        build: ./notification
+        ports:
+        - '8083:8083'
+        env_file:
+        - ./notification/src/main/resources/.env
+        depends_on:
+        - rabbitmq
+        restart: on-failure
+        networks:
+        - esd-weatherwonder
+        environment:
+          RABBITMQ_HOST: rabbitmq
     
