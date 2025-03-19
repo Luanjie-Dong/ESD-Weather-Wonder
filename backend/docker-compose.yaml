@@ -113,7 +113,7 @@ services:
       depends_on:
         - location
         - geocoding
-        networks:
+      networks:
         - esd-weatherwonder
 
     # notification microservice
