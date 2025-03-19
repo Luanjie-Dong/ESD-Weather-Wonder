@@ -1,11 +1,11 @@
 volumes:
   pgdata:
-    name: weatherwonder_pgdata 
+    name: esd-weatherwonder
 
 networks:
   weatherwonder_network:
     driver: bridge
-    name: weatherwonder_network
+    name: esd-weatherwonder
 
 services:
 
@@ -17,7 +17,7 @@ services:
     platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
     restart: always
     networks:
-      - weatherwonder_network
+      - esd-weatherwonder
     env_file:
       - ./.env
     ports:
@@ -41,7 +41,7 @@ services:
              kong config db_import /usr/local/kong/declarative/gateway.yaml"
     restart: on-failure
     networks:
-      - weatherwonder_network
+      - esd-weatherwonder
     env_file:
       - ./.env
     depends_on:
@@ -58,7 +58,7 @@ services:
     platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
     restart: always
     networks:
-      - weatherwonder_network
+      - esd-weatherwonder
     env_file:
       - ./.env
     depends_on:
