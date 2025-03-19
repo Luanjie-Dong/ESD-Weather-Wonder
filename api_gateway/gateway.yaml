@@ -1,0 +1,101 @@
+_format_version: "3.0"
+
+services:
+  #######################################
+  # USER MICROSERVICE
+  #######################################
+  - name: user-api
+    url: http://user:5000
+    routes:
+      - name: create-user
+        paths:
+          - /api/v1/create_user
+        methods:
+          - POST
+        strip_path: True
+      - name: get-user
+        paths:
+          - /api/v1/user/<string:user_id>
+        methods:
+          - GET
+        strip_path: True
+      - name: update-user
+        paths:
+          - /api/v1/user/<string:user_id>
+        methods:
+          - PUT
+        strip_path: True
+      - name: delete-user
+        paths:
+          - /api/v1/user/<string:user_id>
+        methods:
+          - DELETE
+        strip_path: True
+      - name: reset-password
+        paths:
+          - /api/v1/reset_password/<string:user_id>
+        methods:
+          - PUT
+        strip_path: True
+    plugins:
+      - name: key-auth
+        config:
+          key_names:
+            - weatherwonderapi_key
+          key_in_header: true
+          key_in_query: false
+
+    
+  #######################################
+  # LOCATION WEATHER MICROSERVICE
+  #######################################
+  - name: location-weather-api
+    url: http://location_weather:5003
+    routes:
+      - name: get-weather
+        paths:
+          - /api/v1/get_weather/<location_id>
+        methods:
+          - GET
+        strip_path: True
+      - name: get-weather-by-date
+        paths:
+          - /api/v1/get_weather/date/<location_id>/<date>
+        methods:
+          - GET
+        strip_path: True
+      - name: get-weather-by-datetime
+        paths:
+          - /api/v1/get_weather/datetime/<location_id>/<dt_input>
+        methods:
+          - GET
+        strip_path: True
+      
+    plugins:
+      - name: key-auth
+        config:
+          key_names:
+            - weatherwonderapi_key
+          key_in_header: true
+          key_in_query: false
+      
+
+ 
+
+#######################################
+# AUTHENTICATION KEY
+#######################################
+consumers:
+  - username: weatherwonder_app
+    keyauth_credentials:
+      - key: abc123xyz
+
+#######################################
+# RATE LIMITING
+#######################################
+plugins:
+  - name: rate-limiting
+    config:
+      minute: 100
+      policy: "local"
+      limit_by: "ip"

@@ -524,7 +524,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://127.0.0.1:5000/locations",
+									"raw": "http://127.0.0.1:5002/locations",
 									"protocol": "http",
 									"host": [
 										"127",
@@ -583,7 +583,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:5000/locations",
+							"raw": "http://127.0.0.1:5002/locations",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -613,7 +613,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://127.0.0.1:5000/locations",
+									"raw": "http://127.0.0.1:5002/locations",
 									"protocol": "http",
 									"host": [
 										"127",
@@ -670,7 +670,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://127.0.0.1:5000/locations",
+									"raw": "http://127.0.0.1:5002/locations",
 									"protocol": "http",
 									"host": [
 										"127",
@@ -730,7 +730,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:5000/locations/coordinates?latitude=40.7128&longitude=-74.0060",
+									"raw": "http://localhost:5002/locations/coordinates?latitude=40.7128&longitude=-74.0060",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -786,7 +786,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:5000/locations/coordinates?latitude=40.7128&longitude=-0",
+									"raw": "http://localhost:5002/locations/coordinates?latitude=40.7128&longitude=-0",
 									"protocol": "http",
 									"host": [
 										"localhost"
