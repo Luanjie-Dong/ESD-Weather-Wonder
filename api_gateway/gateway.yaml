@@ -7,36 +7,46 @@ services:
   - name: user-api
     url: http://user:5001
     routes:
+      #/signup
       - name: create-user
         paths:
           - /api/v1/
         methods:
           - POST
         strip_path: True
+
+      #/user/<string:user_id>
       - name: get-user
         paths:
           - /api/v1/
         methods:
           - GET
         strip_path: True
+
+      #/user/<string:user_id>
       - name: update-user
         paths:
-          - /api/v1/user/
+          - /api/v1/
         methods:
           - PUT
         strip_path: True
+
+      #/user/<string:user_id>
       - name: delete-user
         paths:
           - /api/v1/
         methods:
           - DELETE
         strip_path: True
+
+      #/reset_password/<string:user_id>
       - name: reset-password
         paths:
           - /api/v1/
         methods:
           - PUT
         strip_path: True
+        
     plugins:
       - name: key-auth
         config:
