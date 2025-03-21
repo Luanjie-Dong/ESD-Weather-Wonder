@@ -33,6 +33,28 @@ def get_users():
             "message": str(e)
         }), 500
 
+@app.route("/get-user-emails")
+# RPC Call for custom SQL query on User table in Supabase
+def get_user_emails():
+    '''Performs RPC Call to retrieve emails of all user ids sent in. Accepts an array of user_ids'''
+    try:
+        data = request.get_json()
+        user_ids = data.get("user_ids")
+        response = supabase.rpc("get_user_emails", {"user_ids": user_ids}).execute()
+        print(type(response))
+        return jsonify({
+            "code": 201,
+            "count": len(response.data),
+            "emails_by_location": response.data
+        }), 201
+        
+    except Exception as e:
+        print("Supabase Error:", e)
+        return jsonify({
+            "code": 500,
+            "message": str(e)
+        }), 500
+
 @app.route("/emails-by-location")
 # RPC Call for custom SQL query on User table in Supabase
 def get_emails_by_location():
