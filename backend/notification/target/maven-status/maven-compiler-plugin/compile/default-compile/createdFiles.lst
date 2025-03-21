@@ -3,3 +3,4 @@ esd\notification\messaging\Messager.class
 esd\notification\messaging\Runner.class
 esd\notification\messaging\Receiver.class
 esd\notification\services\EmailService.class
+esd\notification\models\NotificationDAO.class

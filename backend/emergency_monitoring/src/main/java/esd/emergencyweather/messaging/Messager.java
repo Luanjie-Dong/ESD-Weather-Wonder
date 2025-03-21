@@ -58,20 +58,20 @@ public class Messager {
         return BindingBuilder.bind(queue).to(exchange).with("#.notification");
     }
 
-    @Bean
-    SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
-        MessageListenerAdapter listenerAdapter) {
-        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(queueName);
-        container.setMessageListener(listenerAdapter);
-        return container;
-    }
+    // @Bean
+    // SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
+    //     MessageListenerAdapter listenerAdapter) {
+    //     SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+    //     container.setConnectionFactory(connectionFactory);
+    //     container.setQueueNames(queueName);
+    //     container.setMessageListener(listenerAdapter);
+    //     return container;
+    // }
 
-    @Bean
-    MessageListenerAdapter listenerAdapter(Receiver receiver) {
-        return new MessageListenerAdapter(receiver, "receiveMessage");
-    }
+    // @Bean
+    // MessageListenerAdapter listenerAdapter(Receiver receiver) {
+    //     return new MessageListenerAdapter(receiver, "receiveMessage");
+    // }
 
     public static void main(String[] args) throws InterruptedException {
         SpringApplication.run(Messager.class, args).close();

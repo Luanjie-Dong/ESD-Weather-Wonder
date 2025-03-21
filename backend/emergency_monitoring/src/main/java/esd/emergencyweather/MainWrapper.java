@@ -1,5 +1,6 @@
 package esd.emergencyweather;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 
 import esd.emergencyweather.models.*;
+import esd.emergencyweather.messaging.Runner;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -29,6 +31,9 @@ public class MainWrapper {
 
     @Value("${weather.wrapper.url}")
     private String weatherWrapperUrl;
+
+    @Autowired
+    private Runner runner;
     
     public EmailGroupbyLocation[] getEmailsByLocation() {
         URI uri = UriComponentsBuilder.fromUriString(userMSUrl + "/emails-by-location").build().toUri();
@@ -91,12 +96,21 @@ public class MainWrapper {
     }
 
     public void sendEmails(String[] emails, Alert alert) {
-        System.out.println("""
-                
-            Simulate sending alert:
-            %s
-            to emails:
-            %s
-                """.formatted(emails, alert));
+
+        NotificationDAO notificationRequest = new NotificationDAO(
+            String.join(",", emails), 
+            "Emergency Weather Alert", 
+            alert.toEmailString()
+        );
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String jsonString = mapper.writeValueAsString(notificationRequest);
+            runner.run(jsonString);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

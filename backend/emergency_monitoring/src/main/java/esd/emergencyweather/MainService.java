@@ -26,9 +26,12 @@ public class MainService {
             Alert[] alerts = mainWrapper.getAlertsByLocation(emailsByLocation.getCountry(), emailsByLocation.getState(), emailsByLocation.getCity());
             if (alerts.length > 0) {
                 for (Alert alert : alerts) {
+                    // comment this out for testing
                     if (alert.getEffective().isAfter(outdatedTime)) {
                         mainWrapper.sendEmails(emailsByLocation.getEmails(), alert);
                     } 
+                    // uncomment this for testing
+                    // mainWrapper.sendEmails(emailsByLocation.getEmails(), alert);
                 }
                 System.out.println("Finished sending latest alerts for " + emailsByLocation.getCountry() + ", " + emailsByLocation.getState() + ", " + emailsByLocation.getCity());
             } else {

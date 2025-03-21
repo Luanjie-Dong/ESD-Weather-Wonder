@@ -44,15 +44,17 @@ def create_exchange(hostname, port, exchange_name, exchange_type, username, pass
 
     return connection, channel
 
-def create_queue(channel, exchange_name, queue_name, routing_key):
-    print(f"Bind to queue: {queue_name}")
-    channel.queue_declare(queue=queue_name, durable=True)
+def create_queue(channel, exchange_name, queue_name, routing_key, max_priority=10):
+    print(f"Creating queue: {queue_name} with routing key: {routing_key}")
+    args = {"x-max-priority": max_priority}
+    channel.queue_declare(queue=queue_name, durable=True, arguments=args)
     # 'durable' makes the queue survive broker restarts
 
     # bind the queue to the exchange via the routing_key
     channel.queue_bind(
         exchange=exchange_name, queue=queue_name, routing_key=routing_key
     )
+    print(f"Queue {queue_name} created and bound to exchange {exchange_name} with routing key {routing_key}")
 
 def main():
     connection, channel = create_exchange(
@@ -69,6 +71,7 @@ def main():
         exchange_name=exchange_name,
         queue_name="Notification",
         routing_key="#.notification",
+        max_priority=10
     )
 
     create_queue(

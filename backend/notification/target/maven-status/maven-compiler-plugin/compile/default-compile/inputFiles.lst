@@ -1,5 +1,6 @@
 C:\Users\regal\Documents\GitHub\ESD-Weather-Wonder\backend\notification\src\main\java\esd\notification\messaging\Messager.java
 C:\Users\regal\Documents\GitHub\ESD-Weather-Wonder\backend\notification\src\main\java\esd\notification\messaging\Receiver.java
 C:\Users\regal\Documents\GitHub\ESD-Weather-Wonder\backend\notification\src\main\java\esd\notification\messaging\Runner.java
+C:\Users\regal\Documents\GitHub\ESD-Weather-Wonder\backend\notification\src\main\java\esd\notification\models\NotificationDAO.java
 C:\Users\regal\Documents\GitHub\ESD-Weather-Wonder\backend\notification\src\main\java\esd\notification\NotificationApplication.java
 C:\Users\regal\Documents\GitHub\ESD-Weather-Wonder\backend\notification\src\main\java\esd\notification\services\EmailService.java

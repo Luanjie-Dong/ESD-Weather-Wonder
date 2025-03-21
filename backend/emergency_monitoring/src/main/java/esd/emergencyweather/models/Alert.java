@@ -93,11 +93,33 @@ public class Alert {
 
     public String toEmailString() {
         return """
-            %s: %s
-            This is an ongoing %s alert effective on %s till %s for the following areas: %s
+            <html>
+                <body>
+                    <h2>%s: %s</h2>
+                    <p>This is an ongoing %s alert effective from %s till %s for the following areas:</p>
+                    <ul>
+                        %s
+                    </ul>
+                    <p>%s</p>
+                </body>
+            </html>
+        """.formatted(
+            msgType != null ? msgType : "Alert",
+            headline,
+            event,
+            effective.format(DateTimeFormatter.ofPattern("MMMM dd, yyyy 'at' hh:mm a")),
+            expires.format(DateTimeFormatter.ofPattern("MMMM dd, yyyy 'at' hh:mm a")),
+            formatAreas(areas),
+            instruction
+        );
+    }
 
-            %s
-        """.formatted(msgType, headline, event, effective, expires, areas, instruction);
+    private String formatAreas(String areas) {
+        StringBuilder formattedAreas = new StringBuilder();
+        for (String area : areas.split("; ")) {
+            formattedAreas.append("<li>").append(area).append("</li>");
+        }
+        return formattedAreas.toString();
     }
 
     public String toString() {
@@ -106,5 +128,4 @@ public class Alert {
             Effective %s till %s
         """.formatted(msgType, headline, effective, expires);
     }
-    
 }

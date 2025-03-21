@@ -1,4 +1,5 @@
 esd\emergencyweather\MainService.class
+esd\emergencyweather\models\NotificationDAO.class
 esd\emergencyweather\models\ForecastDAO.class
 esd\emergencyweather\models\ForecastDay.class
 esd\emergencyweather\messaging\Messager.class
