@@ -1203,6 +1203,180 @@
 					"response": []
 				}
 			]
-		}
+		},
+        {
+			"name": "user_location",
+			"item": [
+				{
+					"name": "Create User Location",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"UserId\": \"user_2uDdAxTia2WmH4JmuDrUXA2Kepg\",\r\n    \"LocationId\": \"abc123\",\r\n    \"Label\": \"Test\",\r\n    \"Address\": \"Test address\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://personal-05fimycq.outsystemscloud.com/UserLocation/rest/v1/CreateUserLocation",
+							"protocol": "https",
+							"host": [
+								"personal-05fimycq",
+								"outsystemscloud",
+								"com"
+							],
+							"path": [
+								"UserLocation",
+								"rest",
+								"v1",
+								"CreateUserLocation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Locations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://personal-05fimycq.outsystemscloud.com/UserLocation/rest/v1/GetUserLocations",
+							"protocol": "https",
+							"host": [
+								"personal-05fimycq",
+								"outsystemscloud",
+								"com"
+							],
+							"path": [
+								"UserLocation",
+								"rest",
+								"v1",
+								"GetUserLocations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Locations By User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://personal-05fimycq.outsystemscloud.com/UserLocation/rest/v1/GetUserLocations/user/user_2uDdAxTia2WmH4JmuDrUXA2Kepg",
+							"protocol": "https",
+							"host": [
+								"personal-05fimycq",
+								"outsystemscloud",
+								"com"
+							],
+							"path": [
+								"UserLocation",
+								"rest",
+								"v1",
+								"GetUserLocations",
+								"user",
+								"user_2uDdAxTia2WmH4JmuDrUXA2Kepg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Locations By Location",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://personal-05fimycq.outsystemscloud.com/UserLocation/rest/v1/GetUserLocations/location/abc123",
+							"protocol": "https",
+							"host": [
+								"personal-05fimycq",
+								"outsystemscloud",
+								"com"
+							],
+							"path": [
+								"UserLocation",
+								"rest",
+								"v1",
+								"GetUserLocations",
+								"location",
+								"abc123"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Location",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"UserId\": \"user_2uDdAxTia2WmH4JmuDrUXA2Kepg\",\r\n    \"LocationId\": \"abc123\",\r\n    \"Label\": \"Test2\",\r\n    \"Address\": \"Test address\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://personal-05fimycq.outsystemscloud.com/UserLocation/rest/v1/UpdateUserLocation",
+							"protocol": "https",
+							"host": [
+								"personal-05fimycq",
+								"outsystemscloud",
+								"com"
+							],
+							"path": [
+								"UserLocation",
+								"rest",
+								"v1",
+								"UpdateUserLocation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User Location",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"UserId\": \"user_2uDdAxTia2WmH4JmuDrUXA2Kepg\",\r\n    \"LocationId\": \"abc123\",\r\n    \"Label\": \"Test2\",\r\n    \"Address\": \"Test address\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://personal-05fimycq.outsystemscloud.com/UserLocation/rest/v1/DeleteUserLocation",
+							"protocol": "https",
+							"host": [
+								"personal-05fimycq",
+								"outsystemscloud",
+								"com"
+							],
+							"path": [
+								"UserLocation",
+								"rest",
+								"v1",
+								"DeleteUserLocation"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+        }
 	]
 }
