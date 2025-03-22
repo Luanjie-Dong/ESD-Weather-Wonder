@@ -34,7 +34,7 @@ services:
   # Kong database migration
   #######################################
   kong-migration:
-    image: kong/kong-gateway:3.9
+    image: kong/kong-gateway:3.8
     platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
     command: >
       sh -c "kong migrations bootstrap && kong config db_import /usr/local/kong/declarative/gateway.yaml"
@@ -53,7 +53,7 @@ services:
   # Kong: The API Gateway
   #######################################
   kong:
-    image: kong/kong-gateway:3.9
+    image: kong/kong-gateway:3.8
     platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
     restart: always
     networks:

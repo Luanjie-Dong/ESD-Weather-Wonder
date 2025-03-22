@@ -1,0 +1,24 @@
+_format_version: "3.0"
+
+services:
+  #######################################
+  # ADD A LOCATION MICROSERVICE
+  #######################################
+  - name: add-user-location-api
+    url: http://add_a_location:5010
+    routes:
+      # /add_location
+      - name: add-location
+        paths:
+          - /api/v1/
+        methods:
+          - POST
+        strip_path: True
+      
+    plugins:
+      - name: key-auth
+        config:
+          key_names:
+            - weatherwonderapi_key
+          key_in_header: true
+          key_in_query: false

@@ -1,0 +1,49 @@
+_format_version: "3.0"
+
+services:
+  #######################################
+  # USER LOCATION MICROSERVICE
+  #######################################
+  - name: user-location-api
+    url: https://personal-05fimycq.outsystemscloud.com/UserLocation/rest/v1
+    routes:
+      #/CreateUserLocation
+      - name: create-user-location
+        paths:
+          - /api/v1/
+        methods:
+          - POST
+        strip_path: True
+
+      #/DeleteUserLocation
+      - name: delete-user-location
+        paths:
+          - /api/v1/
+        methods:
+          - DELETE
+        strip_path: True
+
+
+      #/GetUserLocations/user/{UserId}
+      - name: get-user-locations
+        paths:
+          - /api/v1/
+        methods:
+          - GET
+        strip_path: True
+        
+      #/UpdateUserLocation
+      - name: update-user-location
+        paths:
+          - /api/v1/
+        methods:
+          - PATCH
+        strip_path: True
+
+    plugins:
+      - name: key-auth
+        config:
+          key_names:
+            - weatherwonderapi_key
+          key_in_header: true
+          key_in_query: false

@@ -1,0 +1,40 @@
+_format_version: "3.0"
+
+services:
+  #######################################
+  # LOCATION WEATHER MICROSERVICE
+  #######################################
+  - name: location-weather-api
+    url: http://location_weather:5003
+    routes:
+      # /get_weather/<location_id>
+      - name: get-weather
+        paths:
+          - /api/v1/
+        methods:
+          - GET
+        strip_path: True
+
+      # /get_weather/date/<location_id>/<date>
+      - name: get-weather-by-date
+        paths:
+          - /api/v1/
+        methods:
+          - GET
+        strip_path: True
+
+      # /get_weather/datetime/<location_id>/<dt_input>
+      - name: get-weather-by-datetime
+        paths:
+          - /api/v1/
+        methods:
+          - GET
+        strip_path: True
+      
+    plugins:
+      - name: key-auth
+        config:
+          key_names:
+            - weatherwonderapi_key
+          key_in_header: true
+          key_in_query: false
