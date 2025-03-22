@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "2c572435-6959-4220-9c1c-c8311797ab75",
+		"_postman_id": "76243d9d-bab1-4267-a10e-1830cc922be0",
 		"name": "ESD-Weather-Wonder",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "35045184"
+		"_exporter_id": "5911746",
+		"_collection_link": "https://weatherwonder.postman.co/workspace/WeatherWonder-Workspace~fe29524e-88c4-4d39-8dcb-525db05cb866/collection/5911746-76243d9d-bab1-4267-a10e-1830cc922be0?action=share&source=collection_link&creator=5911746"
 	},
 	"item": [
 		{
@@ -328,15 +329,6 @@
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
 								"url": {
 									"raw": "http://localhost:5002/weather/east-coast-road/2025-03-05T12:00:00",
 									"protocol": "http",
@@ -388,15 +380,6 @@
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
 								"url": {
 									"raw": "http://localhost:5002/get_weather/east-coast-road",
 									"protocol": "http",
@@ -447,15 +430,6 @@
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
 								"url": {
 									"raw": "http://localhost:5002/get_weather/orchard-road",
 									"protocol": "http",
@@ -524,7 +498,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://127.0.0.1:5002/locations",
+									"raw": "http://127.0.0.1:5000/locations",
 									"protocol": "http",
 									"host": [
 										"127",
@@ -583,7 +557,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:5002/locations",
+							"raw": "http://127.0.0.1:5000/locations",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -613,7 +587,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://127.0.0.1:5002/locations",
+									"raw": "http://127.0.0.1:5000/locations",
 									"protocol": "http",
 									"host": [
 										"127",
@@ -670,7 +644,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://127.0.0.1:5002/locations",
+									"raw": "http://127.0.0.1:5000/locations",
 									"protocol": "http",
 									"host": [
 										"127",
@@ -730,7 +704,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:5002/locations/coordinates?latitude=40.7128&longitude=-74.0060",
+									"raw": "http://localhost:5000/locations/coordinates?latitude=40.7128&longitude=-74.0060",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -786,7 +760,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:5002/locations/coordinates?latitude=40.7128&longitude=-0",
+									"raw": "http://localhost:5000/locations/coordinates?latitude=40.7128&longitude=-0",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -985,7 +959,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:5000/signup",
+							"raw": "http://127.0.0.1:5001/signup",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -993,7 +967,7 @@
 								"0",
 								"1"
 							],
-							"port": "5000",
+							"port": "5001",
 							"path": [
 								"signup"
 							]
@@ -1019,7 +993,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:5000/all-users",
+							"raw": "http://127.0.0.1:5001/all-users",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -1027,7 +1001,7 @@
 								"0",
 								"1"
 							],
-							"port": "5000",
+							"port": "5001",
 							"path": [
 								"all-users"
 							]
@@ -1050,7 +1024,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:5000/user/94341d94-d6ae-4821-9e17-c30a59540206",
+							"raw": "http://127.0.0.1:5001/user/94341d94-d6ae-4821-9e17-c30a59540206",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -1058,7 +1032,7 @@
 								"0",
 								"1"
 							],
-							"port": "5000",
+							"port": "5001",
 							"path": [
 								"user",
 								"94341d94-d6ae-4821-9e17-c30a59540206"
@@ -1073,7 +1047,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://127.0.0.1:5000/user/94341d94-d6ae-4821-9e17-c30a59540206",
+							"raw": "http://127.0.0.1:5001/user/94341d94-d6ae-4821-9e17-c30a59540206",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -1081,7 +1055,7 @@
 								"0",
 								"1"
 							],
-							"port": "5000",
+							"port": "5001",
 							"path": [
 								"user",
 								"94341d94-d6ae-4821-9e17-c30a59540206"
@@ -1108,7 +1082,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:5000/user/6d4d5946-50c6-4c11-b326-de48c2754204",
+							"raw": "http://127.0.0.1:5001/user/6d4d5946-50c6-4c11-b326-de48c2754204",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -1116,7 +1090,7 @@
 								"0",
 								"1"
 							],
-							"port": "5000",
+							"port": "5001",
 							"path": [
 								"user",
 								"6d4d5946-50c6-4c11-b326-de48c2754204"
@@ -1140,7 +1114,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:5000/reset_password/d22ae707-3703-44ed-abae-636edad8d1f2",
+							"raw": "http://127.0.0.1:5001/reset_password/d22ae707-3703-44ed-abae-636edad8d1f2",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -1148,7 +1122,7 @@
 								"0",
 								"1"
 							],
-							"port": "5000",
+							"port": "5001",
 							"path": [
 								"reset_password",
 								"d22ae707-3703-44ed-abae-636edad8d1f2"
@@ -1163,7 +1137,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://127.0.0.1:5000/emails-by-location",
+							"raw": "http://127.0.0.1:5001/emails-by-location",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -1171,9 +1145,43 @@
 								"0",
 								"1"
 							],
-							"port": "5000",
+							"port": "5001",
 							"path": [
 								"emails-by-location"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Emails",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user_ids\": [\r\n        \"user_2uDdAxTia2WmH4JmuDrUXA2Kepg\",\r\n        \"user_2uDLoNGSGuRVOGwjAtdiPmZpylq\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5001/get-user-emails",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5001",
+							"path": [
+								"get-user-emails"
 							]
 						}
 					},
@@ -1204,7 +1212,7 @@
 				}
 			]
 		},
-        {
+		{
 			"name": "user_location",
 			"item": [
 				{
@@ -1377,6 +1385,6 @@
 					"response": []
 				}
 			]
-        }
+		}
 	]
 }
