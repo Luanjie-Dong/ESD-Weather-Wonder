@@ -130,4 +130,20 @@ services:
         - esd-weatherwonder
         environment:
           RABBITMQ_HOST: rabbitmq
+
+    # notify weather forecast microservice
+    notify_weather_forecast:
+        build: ./notify_weather_forecast
+        ports:
+        - '5020:5020'
+        env_file:
+        - ./notify_weather_forecast/.env
+        depends_on:
+        - user
+        - location_weather
+        - rabbitmq
+        restart: on-failure
+        networks:
+        - esd-weatherwonder
+
     
