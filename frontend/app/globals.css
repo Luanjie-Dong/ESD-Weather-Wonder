@@ -1,54 +1,132 @@
-@import "tailwindcss";
-@config "../tailwind.config.ts";
-
-@layer base {
-  :root {
-    --background: 255 255 255;
-    --foreground: 0 0 0;
-
-    --primary: 48 93% 82%;
-    --primary-foreground: 0 0% 0%;
-
-    --secondary: 18 91% 75%;
-    --secondary-foreground: 0 0% 0%;
-
-    --accent: 350 67% 69%;
-    --accent-foreground: 0 0% 100%;
-
-    --highlight: 315 38% 45%;
-    --highlight-foreground: 0 0% 100%;
-
-    --brand: 226 66% 36%;
-    --brand-foreground: 0 0% 100%;
-
-    --muted: 48 93% 92%;
-    --muted-foreground: 0 0% 40%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
-
-    --border: 48 93% 85%;
-    --input: 48 93% 85%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --ring: 48 93% 75%;
-
-    --radius: 0.5rem;
-  }
+/* Import Tailwind via CDN in layout.tsx instead of using directives */
+/* Custom variables */
+:root {
+  --background-color: white;
+  --text-color: black;
+  --primary-color: #f5f5f5;
+  --secondary-color: #faaa82;
+  --accent-color: #e07082;
+  --highlight-color: #a24892;
+  --brand-color: #203d98;
+  --muted-color: #f5f5f5;
+  --muted-text-color: #666666;
+  --border-color: #e6e6e6;
+  --radius: 0.5rem;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground font-sans;
-  }
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: var(--font-lato, sans-serif);
+  margin: 0;
+  padding: 0;
 }
 
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
 
+/* Utility classes */
+.bg-white {
+  background-color: white;
+}
+
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color);
+}
+
+.bg-accent {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.bg-highlight {
+  background-color: var(--highlight-color);
+  color: white;
+}
+
+.bg-brand {
+  background-color: var(--brand-color);
+  color: white;
+}
+
+.bg-muted {
+  background-color: var(--muted-color);
+}
+
+.text-brand {
+  color: var(--brand-color);
+}
+
+.text-muted-foreground {
+  color: var(--muted-text-color);
+}
+
+.border-border {
+  border-color: var(--border-color);
+}
+
+/* Layout classes */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.border-b {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.border-t {
+  border-top: 1px solid var(--border-color);
+}
+
+.h-16 {
+  height: 4rem;
+}
+
+.py-6 {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.text-center {
+  text-align: center;
+}

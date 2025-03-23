@@ -2,7 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Lato } from "next/font/google"
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
+import "./styles.css" // Make sure this file exists
 
 const lato = Lato({
   subsets: ["latin"],
@@ -11,9 +11,8 @@ const lato = Lato({
 })
 
 export const metadata: Metadata = {
-  title: "Weather Wonder",
+  title: "Weather Alert App",
   description: "Modern weather forecasting and alert system",
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -22,16 +21,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${lato.variable} font-sans`}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          {children}
-        </ThemeProvider>
-      </body>
+    <html lang="en">
+      <head>
+        {/* Add Tailwind CSS via CDN */}
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+      </head>
+      <body className={`${lato.variable} font-sans bg-white`}>{children}</body>
     </html>
   )
 }
-
-
-
-import './globals.css'

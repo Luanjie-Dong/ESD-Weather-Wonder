@@ -1,7 +1,6 @@
 import type { Config } from "tailwindcss"
-
 const config: Config = {
-  darkMode: ["class"],
+  darkMode: "class",
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -24,24 +23,12 @@ const config: Config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#FFE7A5",
+          DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "#FAAA82",
+          DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
-        },
-        accent: {
-          DEFAULT: "#E07082",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        highlight: {
-          DEFAULT: "#A24892",
-          foreground: "hsl(var(--highlight-foreground))",
-        },
-        brand: {
-          DEFAULT: "#203D98",
-          foreground: "hsl(var(--brand-foreground))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -50,6 +37,10 @@ const config: Config = {
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -66,7 +57,7 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["var(--font-lato)"],
+        sans: ["var(--font-lato)", "sans-serif"],
       },
     },
   },
@@ -74,4 +65,3 @@ const config: Config = {
 }
 
 export default config
-

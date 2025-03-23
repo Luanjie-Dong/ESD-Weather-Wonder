@@ -1,125 +1,123 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { MapPin, Cloud, AlertTriangle } from "lucide-react"
 import Link from "next/link"
-import Navbar from "@/components/navbar"
-import type { WeatherData } from "@/lib/types"
-import { getCurrentWeather } from "@/lib/weather-service"
-import WeatherForecastTabs from "@/components/weather-forecast-tabs"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { CloudLightning } from "lucide-react"
+import LoginForm from "./components/login-form"
 
-// Mark this as a Server Component by not using "use client"
-export default async function HomePage() {
-  // Server-side data fetching
-  const weather: WeatherData = await getCurrentWeather("San Francisco, CA")
-
+export default function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <Navbar />
-
-      <main className="flex-1 pb-16 pt-6 md:pb-6">
-        <div className="container space-y-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold md:text-3xl">Welcome back, Alex</h1>
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/profile">View Profile</Link>
-            </Button>
+    <div className="flex min-h-screen flex-col bg-white">
+      <header className="border-b border-gray-200 bg-white">
+        <div className="container flex h-16 items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CloudLightning className="h-6 w-6 text-brand" />
+            <span className="text-xl font-bold text-brand">WeatherAlert</span>
           </div>
+          <Button asChild variant="outline">
+            <Link href="?tab=login">Sign In</Link>
+          </Button>
+        </div>
+      </header>
 
-          {/* Current Weather Widget */}
-          <Card className="overflow-hidden bg-gradient-to-br from-primary to-secondary">
-            <CardContent className="p-6">
-              <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-                <div className="text-center md:text-left">
-                  <h2 className="text-xl font-bold">{weather.location}</h2>
-                  <p className="text-4xl font-bold">{weather.temperature}°F</p>
-                  <p className="text-sm">{weather.condition}</p>
-                </div>
-                <div className="flex flex-col items-center">
-                  <Cloud className="h-20 w-20 text-brand" />
-                  <div className="mt-2 grid grid-cols-3 gap-4 text-center">
-                    <div>
-                      <p className="text-xs">Humidity</p>
-                      <p className="font-bold">{weather.humidity}%</p>
-                    </div>
-                    <div>
-                      <p className="text-xs">Wind</p>
-                      <p className="font-bold">{weather.wind} mph</p>
-                    </div>
-                    <div>
-                      <p className="text-xs">UV Index</p>
-                      <p className="font-bold">{weather.uvIndex}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      <main className="flex-1 bg-white">
+        <div className="container grid items-center gap-6 pb-8 pt-6 md:grid-cols-2 md:py-10">
+          <div className="flex flex-col justify-center space-y-4">
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Stay ahead of the weather</h1>
+              <p className="text-muted-foreground md:text-xl">
+                Get real-time weather updates and emergency alerts for your favorite locations.
+              </p>
+            </div>
 
-          {/* Saved Locations */}
-          <div>
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold">Saved Locations</h2>
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/locations">Manage</Link>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button size="lg" asChild>
+                <Link href="?tab=signup">Get Started</Link>
+              </Button>
+              <Button variant="outline" size="lg">
+                Learn More
               </Button>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {weather.savedLocations.map((location) => (
-                <Card key={location.name} className="transition-all hover:shadow-md">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="flex items-center text-lg">
-                      <MapPin className="mr-2 h-4 w-4" />
-                      {location.name}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex items-center justify-between pb-4">
-                    <p className="text-2xl font-bold">{location.temp}</p>
-                    <Cloud className="h-8 w-8 text-brand" />
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+              <div className="rounded-lg bg-muted p-2">
+                <p className="text-2xl font-bold">100+</p>
+                <p className="text-xs text-muted-foreground">Countries</p>
+              </div>
+              <div className="rounded-lg bg-muted p-2">
+                <p className="text-2xl font-bold">10K+</p>
+                <p className="text-xs text-muted-foreground">Cities</p>
+              </div>
+              <div className="rounded-lg bg-muted p-2">
+                <p className="text-2xl font-bold">24/7</p>
+                <p className="text-xs text-muted-foreground">Alerts</p>
+              </div>
             </div>
           </div>
 
-          {/* Emergency Alerts */}
-          <div>
-            <h2 className="mb-4 text-xl font-bold">Emergency Alerts</h2>
+          <div className="flex justify-center">
+            <Tabs defaultValue="signup" className="w-full max-w-md">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                <TabsTrigger value="login">Log In</TabsTrigger>
+              </TabsList>
 
-            {weather.alerts.length > 0 ? (
-              weather.alerts.map((alert) => (
-                <Card key={alert.id} className="border-l-4 border-l-destructive bg-destructive/10">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center">
-                      <AlertTriangle className="mr-2 h-5 w-5 text-destructive" />
-                      <CardTitle className="text-lg text-destructive">{alert.title}</CardTitle>
+              <TabsContent value="signup" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Create an account</CardTitle>
+                    <CardDescription>Enter your information to create an account</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Name</Label>
+                      <Input id="name" placeholder="John Doe" />
                     </div>
-                    <CardDescription>
-                      {alert.location} - {alert.expires}
-                    </CardDescription>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input id="email" type="email" placeholder="john@example.com" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="password">Password</Label>
+                      <Input id="password" type="password" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="location">Default Location</Label>
+                      <Input id="location" placeholder="City, State" />
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button className="w-full">Create Account</Button>
+                  </CardFooter>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="login" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Log in</CardTitle>
+                    <CardDescription>Enter your credentials to access your account</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm">{alert.description}</p>
-                    <Button variant="destructive" size="sm" className="mt-2">
-                      View Details
-                    </Button>
+                    <LoginForm />
                   </CardContent>
+                  <CardFooter className="flex flex-col space-y-2">
+                    <Button variant="link" size="sm" className="w-full">
+                      Forgot password?
+                    </Button>
+                  </CardFooter>
                 </Card>
-              ))
-            ) : (
-              <Card>
-                <CardContent className="p-6 text-center text-muted-foreground">
-                  No active alerts for your locations
-                </CardContent>
-              </Card>
-            )}
+              </TabsContent>
+            </Tabs>
           </div>
-
-          {/* Weather Forecast */}
-          <WeatherForecastTabs forecast={weather.forecast} />
         </div>
       </main>
+
+      <footer className="bg-white py-6 border-t border-gray-200">
+        <div className="container text-center text-sm text-gray-500">© 2025 WeatherAlert. All rights reserved.</div>
+      </footer>
     </div>
   )
 }
-

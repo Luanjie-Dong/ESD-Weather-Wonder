@@ -1,0 +1,131 @@
+/* Custom styles */
+:root {
+    --background-color: white;
+    --text-color: black;
+    --primary-color: #f5f5f5;
+    --secondary-color: #faaa82;
+    --accent-color: #e07082;
+    --highlight-color: #a24892;
+    --brand-color: #203d98;
+    --muted-color: #f5f5f5;
+    --muted-text-color: #666666;
+    --border-color: #e6e6e6;
+    --radius: 0.5rem;
+  }
+  
+  body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: var(--font-lato, sans-serif);
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  
+  /* Utility classes */
+  .bg-white {
+    background-color: white;
+  }
+  
+  .bg-primary {
+    background-color: var(--primary-color);
+  }
+  
+  .bg-secondary {
+    background-color: var(--secondary-color);
+  }
+  
+  .bg-accent {
+    background-color: var(--accent-color);
+    color: white;
+  }
+  
+  .bg-highlight {
+    background-color: var(--highlight-color);
+    color: white;
+  }
+  
+  .bg-brand {
+    background-color: var(--brand-color);
+    color: white;
+  }
+  
+  .bg-muted {
+    background-color: var(--muted-color);
+  }
+  
+  .text-brand {
+    color: var(--brand-color);
+  }
+  
+  .text-muted-foreground {
+    color: var(--muted-text-color);
+  }
+  
+  .border-border {
+    border-color: var(--border-color);
+  }
+  
+  /* Layout classes */
+  .flex {
+    display: flex;
+  }
+  
+  .flex-col {
+    flex-direction: column;
+  }
+  
+  .min-h-screen {
+    min-height: 100vh;
+  }
+  
+  .items-center {
+    align-items: center;
+  }
+  
+  .justify-between {
+    justify-content: space-between;
+  }
+  
+  .gap-2 {
+    gap: 0.5rem;
+  }
+  
+  .border-b {
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .border-t {
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .h-16 {
+    height: 4rem;
+  }
+  
+  .py-6 {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+  
+  .text-sm {
+    font-size: 0.875rem;
+  }
+  
+  .text-xl {
+    font-size: 1.25rem;
+  }
+  
+  .font-bold {
+    font-weight: 700;
+  }
+  
+  .text-center {
+    text-align: center;
+  }
