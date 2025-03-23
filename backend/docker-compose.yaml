@@ -146,4 +146,19 @@ services:
         networks:
         - esd-weatherwonder
 
+    # poll_weather_forecast microservice
+    poll_weather_forecast:
+        build: ./poll_weather_forecast
+        ports:
+        - '5005:5005'
+        env_file:
+        - ./poll_weather_forecast/.env
+        depends_on:
+        - location
+        - weather
+        - location_weather
+        restart: on-failure
+        networks:
+        - esd-weatherwonder
+
     

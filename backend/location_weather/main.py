@@ -39,7 +39,7 @@ load_dotenv()
 url = os.environ.get("SUPABASE_URL")
 key = os.environ.get("SUPABASE_KEY")
 supabase = create_client(url, key)
-LOCATION_SERVICE_URL = os.environ.get("LOCATION_SERVICE_URL", "http://localhost:5002") #fallback
+LOCATION_SERVICE_URL = os.environ.get("LOCATION_SERVICE_URL", "http://location:5002") #fallback
 
 app = Flask(__name__)
 CORS(app)
@@ -78,19 +78,16 @@ def update_forecast(location_id):
         #     return jsonify({"error": "Location not found"}), 404
 
         data = request.get_json()
-        if not data or 'hour' not in data:
+        if not data or 'hourly_forecast' not in data:
             return jsonify({"error": "Missing hourly forecast data"}), 400
 
-        if not 'date' in data:
-            return jsonify({"error": "Missing date in forecast data"}), 400
+        if not 'forecast_day' in data:
+            return jsonify({"error": "Missing forecast_day in forecast data"}), 400
 
-        # Extract date and format it as YYYY-MM-DD
-        forecast_date = data['date']
-        
         record = {
             'location_id': location_id,
-            'forecast_day': forecast_date,
-            'hourly_forecast': data['hour']
+            'forecast_day': data['forecast_day'],
+            'hourly_forecast': data['hourly_forecast']
         }
         
         result = supabase.table('location_weather').insert(record).execute()
