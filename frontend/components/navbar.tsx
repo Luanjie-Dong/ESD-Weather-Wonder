@@ -19,7 +19,7 @@ export default function Navbar() {
     <nav className="fixed bottom-0 left-0 z-50 w-full border-t border-border bg-background md:relative md:border-b md:border-t-0">
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="hidden items-center gap-2 md:flex">
-          <span className="text-xl font-bold text-brand">WeatherAlert</span>
+          <span className="text-xl font-bold text-brand">Weather Wonder</span>
         </Link>
 
         <div className="flex w-full items-center justify-around md:w-auto md:justify-end md:gap-6">

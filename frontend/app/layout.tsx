@@ -11,7 +11,7 @@ const lato = Lato({
 })
 
 export const metadata: Metadata = {
-  title: "Weather Alert App",
+  title: "Weather Wonder",
   description: "Modern weather forecasting and alert system",
     generator: 'v0.dev'
 }
@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${lato.variable} font-sans`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           {children}
