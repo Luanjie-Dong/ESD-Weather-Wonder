@@ -9,7 +9,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# URLs for microservices
+# URLs for microservices loaded from environment variables
 geocoding_URL = os.getenv("geocoding_URL")
 location_URL = os.getenv("location_URL")
 userlocation_URL = os.getenv("userlocation_URL")
@@ -90,7 +90,7 @@ def process_add_location(location_request):
     )
     print("Geocode result:", geocode_result)
 
-    if "latitude" not in geocode_result or "longitude" not in geocode_result:
+    if not geocode_result or "latitude" not in geocode_result or "longitude" not in geocode_result:
         return {
             "code": 500,
             "message": f"Failed to get valid geocode for address '{address}'.",
@@ -118,18 +118,7 @@ def process_add_location(location_request):
     location_result = invoke_http(location_URL, method="POST", json=location_payload)
     print("Location result:", location_result)
 
-    # Check if location_id is present in the result
-    if "location_id" in location_result:
-        location_id = location_result["location_id"]
-        print(f"Location ID: {location_id}")
-
-        # Check if the location already existed
-        if location_result.get("message") == "Location already exists":
-            print("Using existing location")
-        else:
-            print("New location created")
-    else:
-        # If location_id is not in the result, consider it an error
+    if not location_result or "location_id" not in location_result:
         return {
             "code": 500,
             "message": "Failed to save or retrieve location details.",
@@ -138,43 +127,31 @@ def process_add_location(location_request):
 
     location_id = location_result["location_id"]
 
-
     # Step 3: Call UserLocation Microservice
     print("\n-----Invoking UserLocation microservice-----")
-    userlocation_params = {
+    userlocation_payload = {
         "UserId": user_id,
         "LocationId": location_id,
         "Label": label,
         "Address": address,
     }
 
-    # Construct URL with query parameters
-    userlocation_url_with_params = f"{userlocation_URL}?UserId={user_id}&LocationId={location_id}&Label={label}&Address={address}"
-    print("Constructed UserLocation URL:", userlocation_url_with_params)
-
     try:
-        # Send GET or POST request (depending on what the service expects)
-        userlocation_result = invoke_http(userlocation_url_with_params, method="POST")
+        userlocation_result = invoke_http(userlocation_URL, method="POST", json=userlocation_payload)
         print("UserLocation result:", userlocation_result)
+        
+        if not userlocation_result or ("Errors" in userlocation_result and userlocation_result["Errors"]):
+            return {
+                "code": 400,
+                "message": f"Failed to associate location with user.",
+                "data": userlocation_result,
+            }
+        
     except Exception as e:
         return {
             "code": 500,
             "message": f"Failed to call UserLocation Microservice: {str(e)}",
         }
-
-    # Check if 'code' exists in the response
-    if "code" in userlocation_result:
-        if userlocation_result["code"] not in range(200, 300):
-            return {
-                "code": userlocation_result["code"],
-                "message": f"Failed to associate location with user.",
-                "data": userlocation_result,
-            }
-    else:
-        # Handle cases where 'code' is missing
-        print("No 'code' field in response. Assuming success.")
-        # Optionally, you can log the full response for debugging
-        print("UserLocation response:", userlocation_result)
 
     # Return success response
     return {
@@ -188,10 +165,9 @@ def process_add_location(location_request):
     }
 
 
-
 @app.route("/")
 def home():
-    return "Add Location Service is running!"
+    return jsonify({"status": "Add Location Service is running!"})
 
 
 if __name__ == "__main__":
