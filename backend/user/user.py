@@ -1,9 +1,18 @@
+import json
 from flask import Flask, request, jsonify
 import os
+import pika
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
 load_dotenv()
+
+RABBITMQ_HOST = os.getenv("AMQP_HOST")
+RABBITMQ_PORT = int(os.getenv("AMQP_PORT"))
+USERNAME = os.getenv("AMQP_USER")
+PASSWORD = os.getenv("AMQP_PASS")
+EXCHANGE_NAME = os.getenv("EXCHANGE_NAME")
+
 
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
@@ -77,7 +86,15 @@ def get_emails_by_location():
 @app.route("/signup", methods=['POST'])
 def register_user():
     """
-    Registers user into Supabase Auth and DB
+    Registers a new user in both Supabase Auth and the application database.
+
+    This function creates a new user account using Supabase's authentication service,
+    and also stores user-related metadata (e.g., email, username) in a separate
+    user profile table within the Supabase database.
+
+    Raises:
+        Exception: If user registration fails due to invalid input, duplicate accounts, 
+        or service unavailability.
     """
     try:
         data = request.get_json()
@@ -104,6 +121,8 @@ def register_user():
             .insert({"user_id": user_id, "email": email, "username": username, "country": country, "state": state, "city": city})
             .execute()
         )
+
+        publishUserNotification(response.data[0])
             
         return jsonify(
             {
@@ -124,6 +143,64 @@ def register_user():
             }
 
         ), 500
+    
+def publishUserNotification(user):
+    """Publishes a message through
+    RabbitMQ to Notification Queue with routing key 'user.notification'
+    """
+    ROUTING_KEY = "user.notification"
+    QUEUE = "Notification"
+
+    subject = "Welcome to WeatherWonder!"
+    content = f"""
+        <html>
+            <body>
+                <h2>Welcome, {user['username']}!</h2>
+                <p>Thank you for signing up with WeatherWonder.</p>
+                <p>We've registered your account with the following details:</p>
+                <ul>
+                    <li>Email: {user['email']}</li>
+                    <li>Location: {user['city']}, {user['country']}</li>
+                    <li>Username: {user['username']}</li>
+                </ul>
+                <p>You'll start receiving daily weather forecasts soon.</p>
+                <p>If you have any questions, feel free to reach out to our support team.</p>
+                <br>
+                <p>Cheers,<br>The WeatherWonder Team</p>
+            </body>
+        </html>
+    """
+    msg = {
+        "recipients": user["email"],
+        "subject": subject,
+        "content": content,
+        "bcc": False                    
+    }
+
+
+    credentials = pika.PlainCredentials(USERNAME, PASSWORD)
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host=RABBITMQ_HOST, port=RABBITMQ_PORT, credentials=credentials)
+    )
+    channel = connection.channel()
+
+    channel.exchange_declare(exchange=EXCHANGE_NAME, exchange_type="topic", durable=True)
+
+    channel.queue_declare(queue=QUEUE, durable=True, arguments={"x-max-priority": 10})
+    channel.queue_bind(exchange=EXCHANGE_NAME, queue=QUEUE, routing_key=ROUTING_KEY) 
+
+    channel.basic_publish(
+        exchange=EXCHANGE_NAME,
+        routing_key=ROUTING_KEY,
+        body=json.dumps(msg),
+        properties=pika.BasicProperties(delivery_mode=2)
+    )
+
+    print(f"✅ Sent test message to {EXCHANGE_NAME} with routing key '{ROUTING_KEY}'")
+
+    connection.close()
+
+    return
     
 @app.route("/reset_password/<string:user_id>", methods=['PUT'])
 def change_password(user_id):

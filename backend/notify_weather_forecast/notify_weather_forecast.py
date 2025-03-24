@@ -44,18 +44,36 @@ def processLocationWeather(body):
     location_id = body['location_id']
     print(f" [x] Processing location Id: {location_id}")
 
-    userlocation_resp = queryUserLocations(location_id)
-    if not userlocation_resp:
+    userlocations = queryUserLocations(location_id)
+    if not userlocations:
         print("No users found for location")
         return
 
-    emails = queryUserEmails(userlocation_resp)
-    if not emails:
+    users = queryUserEmails(userlocations)
+    if not users:
         print("No emails returned")
         return
+    
+    full_package_users = packageEmailLocation(users, userlocations)
 
-    print(f"Publishing Email List: {emails}")
-    publishMessage(emails, body['weather'])
+    print(f"Publishing Email List: {users}")
+    publishMessage(full_package_users, body['hourlyForecast'])
+
+def packageEmailLocation(users, userlocations):
+    result = []
+    for user in users:
+        userid = user["user_id"]
+        email = user["email"]
+        for location in userlocations:
+            if location["UserId"] == userid:
+                result.append({
+                    "userid": userid,
+                    "email": email,
+                    "label": location["Label"],
+                    "address": location["Address"]
+                })
+
+    return result
 
 
 def queryUserLocations(location_id):
@@ -80,13 +98,14 @@ def queryUserEmails(userlocation):
         response = requests.get(f"{USER_URL}/get-user-emails", json=user_ids, timeout=5)
         response.raise_for_status()
         users_rpc = response.json()
-        return [user["email"] for user in users_rpc.get("emails_by_location", [])]
+
+        return [user for user in users_rpc.get("emails_by_location", [])]
     except requests.RequestException as e:
         print(f"Email fetch error: {e}")
     return None
 
 
-def publishMessage(emails, weather):
+def publishMessage(users, weather):
     global channel
     if not channel:
         print("No channel available for publishing.")
@@ -95,13 +114,54 @@ def publishMessage(emails, weather):
     # Publish to Notification
     channel.queue_declare(queue=PUBLISHER_QUEUE_NAME, durable=True, arguments={"x-max-priority": 10})
     channel.queue_bind(exchange=EXCHANGE_NAME, queue=PUBLISHER_QUEUE_NAME, routing_key=PUBLISHER_ROUTING_KEY) 
-    
-    for email in emails:
-        content = f"{weather['description']}, temperature: {weather['temp']}°C, feels like {weather['feels_like']}°C, wind speed: {weather['wind_speed']}km/h, humidity: {weather['humidity']}%"
-        print("CONTENT:",content)
+
+    forecast = weather[0]
+
+    for user in users:
+        content = f"""
+        <html>
+            <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; background-color: #f9f9f9; padding: 20px;">
+                <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                    <h2 style="color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">
+                        Daily Weather Forecast – {user["label"]}
+                    </h2>
+                    <p style="font-size: 16px; margin-bottom: 10px;">
+                        <strong>Location:</strong> {user["address"]}
+                    </p>
+                    <p style="font-size: 16px; margin-bottom: 10px;">
+                        <strong>Condition:</strong> {forecast['condition_text']}<br>
+                        <img src="https:{forecast['condition_icon']}" alt="Weather Icon" style="width: 50px; height: 50px;"/>
+                    </p>
+                    <p style="font-size: 16px; margin-bottom: 10px;">
+                        <strong>Temperature:</strong> {forecast['temp_c']}°C<br>
+                    </p>
+                    <table style="width: 100%; font-size: 16px; border-collapse: collapse; margin-top: 20px;">
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Wind Speed:</strong></td>
+                            <td style="text-align: right;">{forecast['wind_kph']} km/h</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Humidity:</strong></td>
+                            <td style="text-align: right;">{forecast['humidity']}%</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Precipitation:</strong></td>
+                            <td style="text-align: right;">{forecast['precip_mm']} mm</td>
+                        </tr>
+                    </table>
+                    <p style="font-size: 14px; color: #777; margin-top: 30px;">
+                        Stay safe and plan your day accordingly.
+                    </p>
+                </div>
+            </body>
+        </html>
+        """
+        
+        subject = f"DAILY WEATHER FORECAST : {user['label']}"
+
         msg = {
-            "recipients": email,
-            "subject": "DAILY WEATHER FORECAST",
+            "recipients": user["email"],
+            "subject": subject,
             "content": content,
             "bcc": False                    
         }
