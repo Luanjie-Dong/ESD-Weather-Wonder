@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Cloud, CloudDrizzle, CloudLightning, CloudRain, Droplets, Thermometer, Wind } from "lucide-react"
@@ -5,8 +6,8 @@ import Link from "next/link"
 import Navbar from "@/components/navbar"
 import { getLocationWeather } from "@/lib/weather-service"
 import { notFound } from "next/navigation"
-import AuthCheck from "@/components/auth-check"
-
+import AuthCheck
+ from "@/components/auth-check"
 // This is a Server Component
 export default async function LocationDetailPage({ params }: { params: { id: string } }) {
   try {

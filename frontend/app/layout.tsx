@@ -21,12 +21,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Add Tailwind CSS via CDN */}
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
       </head>
-      <body className={`${lato.variable} font-sans bg-white`}>{children}</body>
+      <body className={`${lato.variable} font-sans bg-white`} >{children}</body>
     </html>
   )
 }
