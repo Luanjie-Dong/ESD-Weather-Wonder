@@ -10,7 +10,7 @@ services:
       #/signup
       - name: create-user
         paths:
-          - /api/v1/
+          - /user-api/v1/
         methods:
           - POST
         strip_path: True
@@ -18,7 +18,7 @@ services:
       #/user/<string:user_id>
       - name: get-user
         paths:
-          - /api/v1/
+          - /user-api/v1/
         methods:
           - GET
         strip_path: True
@@ -26,7 +26,7 @@ services:
       #/user/<string:user_id>
       - name: update-user
         paths:
-          - /api/v1/
+          - /user-api/v1/
         methods:
           - PUT
         strip_path: True
@@ -34,7 +34,7 @@ services:
       #/user/<string:user_id>
       - name: delete-user
         paths:
-          - /api/v1/
+          - /user-api/v1/
         methods:
           - DELETE
         strip_path: True
@@ -42,7 +42,7 @@ services:
       #/reset_password/<string:user_id>
       - name: reset-password
         paths:
-          - /api/v1/
+          - /user-api/v1/
         methods:
           - PUT
         strip_path: True
@@ -64,7 +64,7 @@ services:
       #/CreateUserLocation
       - name: create-user-location
         paths:
-          - /api/v1/
+          - /user-location-api/v1/
         methods:
           - POST
         strip_path: True
@@ -73,7 +73,7 @@ services:
       #/DeleteUserLocation
       - name: delete-user-location
         paths:
-          - /api/v1/
+          - /user-location-api/v1/
         methods:
           - DELETE
         strip_path: True
@@ -82,7 +82,7 @@ services:
       #/GetUserLocations/user/{UserId}
       - name: get-user-locations
         paths:
-          - /api/v1/
+          - /user-location-api/v1/
         methods:
           - GET
         strip_path: True
@@ -90,7 +90,7 @@ services:
       #/UpdateUserLocation
       - name: update-user-location
         paths:
-          - /api/v1/
+          - /user-location-api/v1/
         methods:
           - PATCH
         strip_path: True
@@ -111,7 +111,7 @@ services:
       # /get_weather/<location_id>
       - name: get-weather
         paths:
-          - /api/v1/
+          - /location-weather-api/v1/
         methods:
           - GET
         strip_path: True
@@ -119,7 +119,7 @@ services:
       # /get_weather/date/<location_id>/<date>
       - name: get-weather-by-date
         paths:
-          - /api/v1/
+          - /location-weather-api/v1/
         methods:
           - GET
         strip_path: True
@@ -127,7 +127,7 @@ services:
       # /get_weather/datetime/<location_id>/<dt_input>
       - name: get-weather-by-datetime
         paths:
-          - /api/v1/
+          - /location-weather-api/v1/
         methods:
           - GET
         strip_path: True
@@ -149,7 +149,7 @@ services:
       # /add_location
       - name: add-location
         paths:
-          - /api/v1/
+          - /add-user-location-api/v1/
         methods:
           - POST
         strip_path: True

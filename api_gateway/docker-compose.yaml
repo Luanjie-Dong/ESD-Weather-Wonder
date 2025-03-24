@@ -4,8 +4,8 @@ volumes:
 
 networks:
   esd-weatherwonder:
-    driver: bridge
-    name: esd-weatherwonder
+    external: true
+
 
 services:
 
