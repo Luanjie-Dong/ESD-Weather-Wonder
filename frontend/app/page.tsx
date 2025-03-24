@@ -8,13 +8,14 @@ import { CloudLightning } from "lucide-react"
 import LoginForm from "./components/login-form"
 
 export default function LandingPage() {
+  
   return (
     <div className="flex min-h-screen flex-col bg-white">
       <header className="border-b border-gray-200 bg-white">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2">
             <CloudLightning className="h-6 w-6 text-brand" />
-            <span className="text-xl font-bold text-brand">WeatherAlert</span>
+            <span className="text-xl font-bold text-brand">Weather Wonder</span>
           </div>
           <Button asChild variant="outline">
             <Link href="?tab=login">Sign In</Link>
