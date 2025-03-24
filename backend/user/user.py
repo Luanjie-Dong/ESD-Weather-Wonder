@@ -231,9 +231,9 @@ def get_user_by_route(email):
             user = response.data
 
             return jsonify({
-                "code": 201,
+                "code": 201 if user else 404,
                 "user": user[0] if user else None
-            }), 201
+            }), 201 if user else 404
         else:
             return jsonify({
                 "code": 401,
@@ -266,9 +266,9 @@ def get_user_by_route(user_id):
             user = response.data
 
             return jsonify({
-                "code": 201,
+                "code": 201 if user else 404,
                 "user": user[0] if user else None
-            }), 201
+            }), 201 if user else 404
         else:
             return jsonify({
                 "code": 401,
