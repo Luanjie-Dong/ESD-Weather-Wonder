@@ -219,7 +219,7 @@ def change_password(user_id):
             "message": str(e)
         })
 
-@app.route("/user_email/<string:email>")
+@app.route("/user_email/<string:email>",methods=['GET'])
 def get_user_by_route(email):
     """
     Retrieves details for one user by email.

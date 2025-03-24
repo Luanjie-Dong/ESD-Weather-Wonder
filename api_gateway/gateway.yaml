@@ -17,6 +17,8 @@ services:
         strip_path: True
 
       #/user/<string:user_id>
+      #or
+      #/user_email/<string:email>
       - name: get-user
         paths:
           - /user-api/v1/
@@ -51,6 +53,8 @@ services:
           - PUT
           - OPTIONS 
         strip_path: True
+
+
         
     
 

@@ -7,6 +7,18 @@ import AuthCheck from "@/components/auth-check"
 
 export default function DashboardPage() {
   const router = useRouter()
+  let userProfile = { username: 'User' }; 
+  const userProfileString = localStorage.getItem('user_profile');
+
+  if (userProfileString) {
+    try {
+      userProfile = JSON.parse(userProfileString);
+      console.log(userProfile)
+    } catch (error) {
+      console.error('Error parsing user profile:', error);
+    }
+  }
+  
 
   const handleLogout = () => {
     logout()
@@ -20,7 +32,7 @@ export default function DashboardPage() {
       <main className="flex-1 pb-16 pt-6 md:pb-6">
         <div className="container space-y-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold md:text-3xl">Welcome back, Alex</h1>
+            <h1 className="text-2xl font-bold md:text-3xl">Welcome back, {userProfile.username}</h1>
             <Button variant="outline" size="sm" onClick={handleLogout}>
               Log Out
             </Button>

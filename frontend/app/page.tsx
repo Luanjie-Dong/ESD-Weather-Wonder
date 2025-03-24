@@ -15,10 +15,18 @@ import { login } from "./lib/auth"
 export default function LandingPage() {
   const api_name = process.env.NEXT_PUBLIC_API_KEY_NAME
   const api_key = process.env.NEXT_PUBLIC_API_KEY_VALUE
+  const signup_url = "http://localhost:8000/user-api/v1/signup"
+  const login_url = "http://localhost:8000/user-api/v1/user_email/"
   if (!api_name || !api_key) {
     throw new Error("API key or name is missing");
   }
+
+  const headers = {
+    "Content-Type": "application/json", 
+    [api_name]: api_key,               
+  }
   
+  const [invalid,setInvalid] = useState(false)
   const [loading , setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
@@ -57,43 +65,49 @@ export default function LandingPage() {
     console.log(formData)
     try {
 
-      const headers = {
-        "Content-Type": "application/json", 
-        [api_name]: api_key,               
-      }
       console.log(headers)
-      const response = await axios.post(
-        "http://localhost:8000/user-api/v1/signup",
-        formData,
-        { headers }
-      );
+      const response = await axios.post(signup_url,formData,{ headers });
 
       if (response.status == 201){
         console.log("Success:", response.data);
         alert("Account created successfully!");
-        login()
+        const response_user = await axios.get(login_url + formData['email'], {headers})
+        const user_profile = response_user.data?.user 
+
+        login(user_profile)
         window.location.href = "/dashboard";
       }
     } catch (error) {
       console.error("Error:", error);
       alert("Failed to create account. Please try again.");
     }
+    finally {
+      setLoading(false); 
+    }
   };
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); 
+    setInvalid(false);
 
-    console.log(loginData)
-    login()
-    window.location.href = "/dashboard";
-    // try {
-    //   const response = await axios.post("http://localhost:8000/user-api/v1/signup", formData);
-    //   console.log("Success:", response.data);
-    //   alert("Account created successfully!");
-    // } catch (error) {
-    //   console.error("Error:", error);
-    //   alert("Failed to create account. Please try again.");
-    // }
+    try {
+      const response_user = await axios.get(login_url + loginData['email'], { headers });
+
+      if (response_user.status === 404) {
+        setInvalid(true); 
+      } else {
+        const user_profile = response_user.data?.user;
+        if (!user_profile) {
+          throw new Error("User profile not found in response.");
+        }
+
+        login(user_profile);
+        window.location.href = "/dashboard"; 
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setInvalid(true); 
+    }
   };
 
 
@@ -215,6 +229,11 @@ export default function LandingPage() {
                       <Input id="password" name="password" type="password" value={loginData.password} onChange={handleLoginChange}/>
                     </div>
                   </CardContent>
+                    {invalid && (
+                    <div className="text-center py-4">
+                      <p className="text-red-900 text-lg font-semibold">WRONG USER EMAIL! Try again :)</p>
+                    </div>
+                    )}
                   <CardFooter className="flex flex-col space-y-2">
                   <Button className="w-full" type="submit">Login</Button>
                   </CardFooter>
@@ -225,6 +244,7 @@ export default function LandingPage() {
                     <p className="text-white text-lg font-semibold">Logging in..</p>
                   </div>
                 )}
+
               </TabsContent>
 
             </Tabs>

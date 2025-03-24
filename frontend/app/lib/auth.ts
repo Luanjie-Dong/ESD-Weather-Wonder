@@ -1,9 +1,14 @@
 
 interface UserProfile {
-  id?: string;
-  name?: string;
-  email?: string;
-}
+  city: string;
+  country: string;
+  created_at: Date; 
+  email: string;
+  state: string;
+  user_id: string;
+  username: string | null;
+};
+
 
 export function isAuthenticated() {
     if (typeof window !== 'undefined') {

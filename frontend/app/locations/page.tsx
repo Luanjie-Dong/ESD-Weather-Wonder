@@ -11,6 +11,14 @@ import AuthCheck from "@/components/auth-check"
 
 export default function LocationsPage() {
 
+  const user_location = [
+    { name: "San Francisco, CA", temp: "72°F", icon: Cloud, primary: true },
+    { name: "New York, NY", temp: "65°F", icon: Cloud },
+    { name: "Los Angeles, CA", temp: "82°F", icon: Cloud },
+    { name: "Chicago, IL", temp: "58°F", icon: CloudRain },
+    { name: "Miami, FL", temp: "85°F", icon: Cloud },
+  ]
+
   
   return (
     <AuthCheck>
@@ -20,26 +28,20 @@ export default function LocationsPage() {
         <div className="container space-y-6">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold md:text-3xl">Location Management</h1>
-            <Button className="bg-accent">
+            {/* <Button className="bg-accent">
               <Plus className="mr-2 h-4 w-4" /> Add Location
-            </Button>
+            </Button> */}
           </div>
 
           <Tabs defaultValue="saved">
-            <TabsList className="mb-4">
-              <TabsTrigger value="saved">Saved Locations</TabsTrigger>
-              <TabsTrigger value="add">Add Location</TabsTrigger>
+            <TabsList className="mb-4 gap-4">
+              <TabsTrigger value="saved" className="border border-indigo-600">Saved Locations</TabsTrigger>
+              <TabsTrigger value="add" className="border border-red-600">Add Location</TabsTrigger>
             </TabsList>
 
             <TabsContent value="saved" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {[
-                  { name: "San Francisco, CA", temp: "72°F", icon: Cloud, primary: true },
-                  { name: "New York, NY", temp: "65°F", icon: Cloud },
-                  { name: "Los Angeles, CA", temp: "82°F", icon: Cloud },
-                  { name: "Chicago, IL", temp: "58°F", icon: CloudRain },
-                  { name: "Miami, FL", temp: "85°F", icon: Cloud },
-                ].map((location) => (
+                {user_location.map((location) => (
                   <Card key={location.name} className={location.primary ? "border-2 border-brand" : ""}>
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
