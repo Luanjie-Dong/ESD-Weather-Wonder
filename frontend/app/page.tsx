@@ -29,7 +29,7 @@ export default function LandingPage() {
   const [invalid,setInvalid] = useState(false)
   const [loading , setLoading] = useState(false)
   const [formData, setFormData] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
     country: "",

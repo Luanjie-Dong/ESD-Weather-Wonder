@@ -4,14 +4,13 @@ services:
   #######################################
   # USER MICROSERVICE
   #######################################
-  - name: user-api
+  - name: user-api-admin
     url: http://user:5001
     routes:
-
       #/user/<string:user_id>
       #or
       #/user_email/<string:email>
-      - name: get-user
+      - name: get-user-admin
         paths: 
           - /user-api/v1/
         methods:
@@ -20,7 +19,9 @@ services:
         strip_path: True
 
       #/user/<string:user_id>
-      - name: update-user
+      #or
+      #/reset_password/<string:user_id>
+      - name: update-user-admin
         paths:
           - /user-api/v1/
         methods:
@@ -29,7 +30,7 @@ services:
         strip_path: True
 
       #/user/<string:user_id>
-      - name: delete-user
+      - name: delete-user-admin
         paths:
           - /user-api/v1/
         methods:
@@ -37,14 +38,7 @@ services:
           - OPTIONS 
         strip_path: True
 
-      #/reset_password/<string:user_id>
-      - name: reset-password
-        paths:
-          - /user-api/v1/
-        methods:
-          - PUT
-          - OPTIONS 
-        strip_path: True
+     
 
 
   #######################################
@@ -54,7 +48,9 @@ services:
     url: http://user_auth:5011
     routes:
       #/signup
-      - name: create-user
+      # or 
+      #/signinstatus
+      - name: create-user-auth
         paths:
           - /user-auth-api/v1/
         methods:
@@ -62,19 +58,11 @@ services:
           - OPTIONS 
         strip_path: True
 
-      #/signinstatus
-      - name: login-user
-        paths:
-          - /user-auth-api/v1/
-        methods:
-          - POST
-          - OPTIONS 
-        strip_path: True
 
       #/user/<string:user_id>
       #or
       #/user_email/<string:email>
-      - name: get-user
+      - name: get-user-auth
         paths:
           - /user-auth-api/v1/
         methods:
@@ -83,7 +71,9 @@ services:
         strip_path: True
 
       #/user/<string:user_id>
-      - name: update-user
+      #or
+      # /reset_password/<string:user_id>
+      - name: update-user-auth
         paths:
           - /user-auth-api/v1/
         methods:
@@ -91,18 +81,8 @@ services:
           - OPTIONS 
         strip_path: True
 
-      #/reset_password/<string:user_id>
-      - name: reset-password
-        paths:
-          - /user-api/v1/
-        methods:
-          - PUT
-          - OPTIONS 
-        strip_path: True
-
-
-        
-    
+      
+      
 
   #######################################
   # USER LOCATION MICROSERVICE
