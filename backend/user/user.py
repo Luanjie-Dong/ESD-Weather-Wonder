@@ -4,7 +4,7 @@ import os
 import pika
 from supabase import create_client, Client
 from dotenv import load_dotenv
-
+from flask_cors import CORS
 load_dotenv()
 
 RABBITMQ_HOST = os.getenv("AMQP_HOST")
@@ -19,7 +19,7 @@ key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
 app = Flask(__name__)
-
+CORS(app)
   
 @app.route("/all-users")
 def get_users():

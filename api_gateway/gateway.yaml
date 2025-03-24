@@ -13,6 +13,7 @@ services:
           - /user-api/v1/
         methods:
           - POST
+          - OPTIONS 
         strip_path: True
 
       #/user/<string:user_id>
@@ -21,6 +22,7 @@ services:
           - /user-api/v1/
         methods:
           - GET
+          - OPTIONS 
         strip_path: True
 
       #/user/<string:user_id>
@@ -29,6 +31,7 @@ services:
           - /user-api/v1/
         methods:
           - PUT
+          - OPTIONS 
         strip_path: True
 
       #/user/<string:user_id>
@@ -37,6 +40,7 @@ services:
           - /user-api/v1/
         methods:
           - DELETE
+          - OPTIONS 
         strip_path: True
 
       #/reset_password/<string:user_id>
@@ -45,15 +49,10 @@ services:
           - /user-api/v1/
         methods:
           - PUT
+          - OPTIONS 
         strip_path: True
         
-    plugins:
-      - name: key-auth
-        config:
-          key_names:
-            - weatherwonderapi_key
-          key_in_header: true
-          key_in_query: false
+    
 
   #######################################
   # USER LOCATION MICROSERVICE
@@ -67,6 +66,7 @@ services:
           - /user-location-api/v1/
         methods:
           - POST
+          - OPTIONS 
         strip_path: True
 
 
@@ -76,6 +76,7 @@ services:
           - /user-location-api/v1/
         methods:
           - DELETE
+          - OPTIONS 
         strip_path: True
       
 
@@ -85,6 +86,7 @@ services:
           - /user-location-api/v1/
         methods:
           - GET
+          - OPTIONS 
         strip_path: True
         
       #/UpdateUserLocation
@@ -93,15 +95,12 @@ services:
           - /user-location-api/v1/
         methods:
           - PATCH
+          - OPTIONS 
         strip_path: True
 
-    plugins:
-      - name: key-auth
-        config:
-          key_names:
-            - weatherwonderapi_key
-          key_in_header: true
-          key_in_query: false
+  
+
+     
   #######################################
   # LOCATION WEATHER MICROSERVICE
   #######################################
@@ -114,6 +113,7 @@ services:
           - /location-weather-api/v1/
         methods:
           - GET
+          - OPTIONS 
         strip_path: True
 
       # /get_weather/date/<location_id>/<date>
@@ -122,6 +122,7 @@ services:
           - /location-weather-api/v1/
         methods:
           - GET
+          - OPTIONS 
         strip_path: True
 
       # /get_weather/datetime/<location_id>/<dt_input>
@@ -130,15 +131,12 @@ services:
           - /location-weather-api/v1/
         methods:
           - GET
+          - OPTIONS 
         strip_path: True
       
-    plugins:
-      - name: key-auth
-        config:
-          key_names:
-            - weatherwonderapi_key
-          key_in_header: true
-          key_in_query: false    
+
+      
+      
 
   #######################################
   # ADD A LOCATION MICROSERVICE
@@ -152,15 +150,10 @@ services:
           - /add-user-location-api/v1/
         methods:
           - POST
+          - OPTIONS 
         strip_path: True
-      
-    plugins:
-      - name: key-auth
-        config:
-          key_names:
-            - weatherwonderapi_key
-          key_in_header: true
-          key_in_query: false
+   
+     
       
 
 
@@ -177,6 +170,12 @@ consumers:
 # PLUGINS
 #######################################
 plugins:
+  - name: key-auth
+    config:
+      key_names:
+        - weatherwonderapi_key
+      key_in_header: true
+      key_in_query: false   
   - name: rate-limiting
     config:
       minute: 100
@@ -195,5 +194,6 @@ plugins:
       headers:
         - Authorization
         - Content-Type
+        - weatherwonderapi_key
       credentials: false  
       max_age: 3600
