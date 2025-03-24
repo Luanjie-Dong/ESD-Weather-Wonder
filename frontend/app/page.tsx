@@ -15,8 +15,8 @@ import { login } from "./lib/auth"
 export default function LandingPage() {
   const api_name = process.env.NEXT_PUBLIC_API_KEY_NAME
   const api_key = process.env.NEXT_PUBLIC_API_KEY_VALUE
-  const signup_url = "http://localhost:8000/user-api/v1/signup"
-  const login_url = "http://localhost:8000/user-api/v1/user_email/"
+  const signup_url = "http://localhost:8000/user-auth-api/v1/signup"
+  const login_url = "http://localhost:8000/user-auth-api/v1/signin"
   if (!api_name || !api_key) {
     throw new Error("API key or name is missing");
   }
@@ -71,7 +71,8 @@ export default function LandingPage() {
       if (response.status == 201){
         console.log("Success:", response.data);
         alert("Account created successfully!");
-        const response_user = await axios.get(login_url + formData['email'], {headers})
+        const user_detail = {"email":formData['email'],"password":formData["password"]}
+        const response_user = await axios.post(login_url,user_detail, {headers})
         const user_profile = response_user.data?.user 
 
         login(user_profile)
@@ -91,7 +92,7 @@ export default function LandingPage() {
     setInvalid(false);
 
     try {
-      const response_user = await axios.get(login_url + loginData['email'], { headers });
+      const response_user = await axios.post(login_url,loginData, { headers });
 
       if (response_user.status === 404) {
         setInvalid(true); 
