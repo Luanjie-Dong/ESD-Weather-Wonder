@@ -16,7 +16,11 @@ EXCHANGE_NAME = os.getenv("EXCHANGE_NAME")
 
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
+admin_key: str = os.environ.get("SUPABASE_SUPER_KEY")
+
+supabaseAdmin: Client = create_client(url, admin_key)
 supabase: Client = create_client(url, key)
+
 
 app = Flask(__name__)
 CORS(app)
@@ -25,7 +29,7 @@ CORS(app)
 def get_users():
     try:
         response = (
-            supabase.table("user")
+            supabaseAdmin.table("user")
             .select("*")
             .execute()
         )
@@ -49,7 +53,7 @@ def get_user_emails():
     try:
         data = request.get_json()
         user_ids = data.get("user_ids")
-        response = supabase.rpc("get_user_emails", {"user_ids": user_ids}).execute()
+        response = supabaseAdmin.rpc("get_user_emails", {"user_ids": user_ids}).execute()
         print(type(response))
         return jsonify({
             "code": 201,
@@ -68,7 +72,7 @@ def get_user_emails():
 # RPC Call for custom SQL query on User table in Supabase
 def get_emails_by_location():
     try:
-        response = supabase.rpc("get_emails_by_location").execute()
+        response = supabaseAdmin.rpc("get_emails_by_location").execute()
         print(type(response))
         return jsonify({
             "code": 201,
@@ -83,8 +87,125 @@ def get_emails_by_location():
             "message": str(e)
         }), 500
 
-#@app.route("/signup", methods=['POST'])
-#def register_user():
+
+@app.route("/reset_password/<string:user_id>", methods=['PUT'])
+def change_password(user_id):
+    try:
+        data = request.get_json()
+        password = data.get("password")
+
+        supabaseAdmin.auth.admin.update_user_by_id(user_id, {
+            "password": password
+        })
+        return jsonify({
+            "message": "User password successfully changed."
+        })
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        })
+
+@app.route("/user/<string:user_id>", methods=['GET', 'PUT', 'DELETE'])
+def user_operations_route(user_id):
+    if request.method == 'PUT':
+        return update_user_by_route(user_id)
+    elif request.method == 'DELETE':
+        return delete_user_by_route(user_id)
+    elif request.method == 'GET':
+        return get_user_by_route(user_id)
+
+def get_user_by_route(user_id):
+    """
+    Retrieves the user details for the specified user_id from the Supabase database.
+
+    This route queries the 'user' table in the Supabase database to find a user based on the provided 
+    user_id. If the user exists and valid data is returned (i.e., not null or empty), it returns the 
+    user's details. Otherwise, it returns an error message indicating that the user was not found.
+
+    Parameters:
+    user_id (string): The unique identifier (user_id) of the user to be retrieved.
+
+    Returns:
+    JSON response:
+        - On success (found user): Returns a JSON object with the user's details and a status code of 201.
+        - On failure (user not found): Returns a JSON object with user as null and a status code of 404.
+        - On error: Returns a JSON object with the error message and a status code of 500.
+
+    Example:
+    Request: GET /user_id/22ae7899-3529-40b3-b03d-d727443bf68a
+    Response: {"code": 201, "user": {"user_id": "22ae7899-3529-40b3-b03d-d727443bf68a", "username": "TestUser", "city": "Singapore"}}
+    """
+    try:
+        response = supabaseAdmin.table("user").select("*").eq("user_id", user_id).execute()
+        
+        if response:
+            user = response.data
+
+            return jsonify({
+                "code": 201 if user else 404,
+                "user": user[0] if user else None
+            }), 201 if user else 404
+        else:
+            return jsonify({
+                "code": 401,
+                "message": "Not found"
+            }), 401
+    
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
+def update_user_by_route(user_id):
+    try:            
+        data = request.get_json()
+        username = data.get("username")
+        email = data.get("email")
+        password = data.get("password")
+        country = data.get("country")
+        state = data.get("state")
+        city = data.get("city")
+
+        response = supabaseAdmin.table("user").update({"username": username, "email": email, 
+                                                      "country": country, "state": state, "city": city}).eq("user_id", user_id).execute()
+
+        supabaseAdmin.auth.admin.update_user_by_id(user_id,
+            {
+                "email": email,
+                "password": password
+            }
+        )
+
+        return jsonify({
+            "code": 200,
+            "message": "User successfully updated.",
+            "user": response.data[0]
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "code": 500,
+            "message": str(e)
+        }), 500
+
+def delete_user_by_route(user_id):
+    try:
+        response = supabaseAdmin.table("user").delete().eq("user_id", user_id).execute()
+        response = supabaseAdmin.auth.admin.delete_user(user_id)
+
+        return jsonify({
+            "code": 200,
+            "message": "User successfully deleted."
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "code": 500,
+            "message": f"Error: {e}"
+        }), 500
+
+@app.route("/signup", methods=['POST'])
+def register_user():
     """
     Registers a new user in both Supabase Auth and the application database.
 
@@ -105,11 +226,10 @@ def get_emails_by_location():
         state = data.get("state")
         city = data.get("city")
 
-        response = supabase.auth.admin.create_user(
+        response = supabase.auth.sign_up(
             {
                 "email": email,
-                "password": password,
-                "email_confirm": True
+                "password": password
             }
         )
 
@@ -145,7 +265,7 @@ def get_emails_by_location():
 
         ), 500
     
-#def publishUserNotification(user):
+def publishUserNotification(user):
     """Publishes a message through
     RabbitMQ to Notification Queue with routing key 'user.notification'
     """
@@ -202,43 +322,127 @@ def get_emails_by_location():
     connection.close()
 
     return
-    
-@app.route("/reset_password/<string:user_id>", methods=['PUT'])
-def change_password(user_id):
-    try:
-        data = request.get_json()
-        password = data.get("password")
 
-        supabase.auth.admin.update_user_by_id(user_id, {
-            "password": password
-        })
-        return jsonify({
-            "message": "User password successfully changed."
-        })
+@app.route("/signinstatus", methods=["POST"])
+def sign_in_status():
+    try:
+        response = supabase.auth.get_user()
+
+        if response:
+            return jsonify({
+                "code": 200,
+                "user_id": response.user.id
+            }), 200
+        else:
+            return jsonify({
+                "code": 401,
+                "message": "You are not signed in."
+            }), 401
+
     except Exception as e:
         return jsonify({
+            "code": 500,
             "message": str(e)
-        })
+        }), 500
 
-@app.route("/user/<string:user_id>", methods=['GET', 'PUT', 'DELETE'])
-def user_operations_route(user_id):
-    if request.method == 'PUT':
-        return update_user_by_route(user_id)
-    elif request.method == 'DELETE':
-        return delete_user_by_route(user_id)
-    elif request.method == 'GET':
-        return get_user_by_route(user_id)
-
-def get_user_by_route(user_id):
+@app.route("/signout", methods=["POST"])
+def signout():
     """
-    Retrieves the user details for the specified user_id from the Supabase database.
+    Signs out the user by invalidating their current session.
+
+    This function handles the logout process by revoking the user's session in Supabase Auth,
+    which effectively signs the user out from the application. After a successful signout, 
+    the user is logged out and the client can no longer perform authenticated actions without 
+    signing in again.
+
+    Returns:
+    JSON response:
+        - On success: Returns a message confirming the user has been signed out with a status code of 200.
+        - On failure: Returns an error message and a status code of 500.
+    
+    Example:
+    Request: POST /signout
+    Response: {"code": 200, "message": "User successfully signed out."}
+    """
+    try:
+        supabase.auth.sign_out()
+
+        return jsonify({
+            "code": 200,
+            "message": "User successfully signed out."
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "code": 500,
+            "message": f"Error: {str(e)}"
+        }), 500
+
+@app.route("/signin", methods=["POST"])
+def sign_in_user():
+    """
+    Sign-in a user using their email and password.
+    
+    This function uses Supabase Auth to authenticate a user based on their email and password.
+    If authentication is successful, it returns the user's data (user_id, email, etc.) and a session token.
+    If authentication fails (wrong credentials), it returns an error message.
+    
+    Raises:
+        Exception: If login fails due to invalid credentials or service unavailability.
+    """
+    try:
+        data = request.get_json()
+        email = data.get("email")
+        password = data.get("password")
+        
+        response = supabase.auth.sign_in_with_password(
+            {
+                "email": email, 
+                "password": password,
+            }
+        )
+
+        if response.user:
+
+            response = supabase.table("user").select("*").eq("user_id", response.user.id).execute()
+            
+            if response:
+                user = response.data
+
+                return jsonify({
+                    "code": 201 if user else 404,
+                    "message": "User signed in successfully.",
+                    "user": user[0] if user else None
+                }), 201 if user else 404
+            else:
+                return jsonify({
+                    "code": 401,
+                    "message": "Not found"
+                }), 401
+
+        else:
+            return jsonify({
+                "code": 401,
+                "message": "Invalid email or password."
+            }), 401
+    
+    except Exception as e:
+        return jsonify({
+            "code": 500,
+            "message": f"Error: {str(e)}"
+        }), 500
+
+@app.route("/user_email/<string:email>")
+def getuserbyemail(email):
+    """
+    Retrieves the user details for the specified email address from the Supabase database.
 
     This route queries the 'user' table in the Supabase database to find a user based on the provided 
-    user_id. If the user exists and valid data is returned (i.e., not null or empty), it returns the 
+    email. If the user exists and valid data is returned (i.e., not null or empty), it returns the 
     user's details. Otherwise, it returns an error message indicating that the user was not found.
 
     Parameters:
-    user_id (string): The unique identifier (user_id) of the user to be retrieved.
+    email (string): The email address of the user to be retrieved.
 
     Returns:
     JSON response:
@@ -247,77 +451,31 @@ def get_user_by_route(user_id):
         - On error: Returns a JSON object with the error message and a status code of 500.
 
     Example:
-    Request: GET /user_id/22ae7899-3529-40b3-b03d-d727443bf68a
-    Response: {"code": 201, "user": {"user_id": "22ae7899-3529-40b3-b03d-d727443bf68a", "username": "TestUser", "city": "Singapore"}}
+    Request: GET /user_email/test1@example.com
+    Response: {"code": 201, "user": {"email": "test1@example.com", "username": "TestUser", "city": "Singapore"}}
     """
+
     try:
-        response = supabase.table("user").select("*").eq("user_id", user_id).execute()
+            response = supabase.table("user").select("*").eq("email", email).execute()
+            
+            if response:
+                user = response.data
+
+                return jsonify({
+                    "code": 201 if user else 404,
+                    "user": user[0] if user else None
+                }), 201 if user else 404
+            else:
+                return jsonify({
+                    "code": 404,
+                    "message": "User not found."
+                }), 404
         
-        if response:
-            user = response.data
-
+    except Exception as e:
             return jsonify({
-                "code": 201 if user else 404,
-                "user": user[0] if user else None
-            }), 201 if user else 404
-        else:
-            return jsonify({
-                "code": 401,
-                "message": "Not found"
-            }), 401
-    
-    except Exception as e:
-        return jsonify({
-            "message": str(e)
-        }), 500
+                "message": str(e)
+            }), 500
 
-def update_user_by_route(user_id):
-    try:            
-        data = request.get_json()
-        username = data.get("username")
-        email = data.get("email")
-        password = data.get("password")
-        country = data.get("country")
-        state = data.get("state")
-        city = data.get("city")
-
-        response = supabase.table("user").update({"username": username, "email": email, 
-                                                      "country": country, "state": state, "city": city}).eq("user_id", user_id).execute()
-
-        supabase.auth.admin.update_user_by_id(user_id,
-            {
-                "email": email,
-                "password": password
-            }
-        )
-
-        return jsonify({
-            "code": 200,
-            "message": "User successfully updated.",
-            "user": response.data[0]
-        }), 200
-    
-    except Exception as e:
-        return jsonify({
-            "code": 500,
-            "message": str(e)
-        }), 500
-
-def delete_user_by_route(user_id):
-    try:
-        response = supabase.table("user").delete().eq("user_id", user_id).execute()
-        response = supabase.auth.admin.delete_user(user_id)
-
-        return jsonify({
-            "code": 200,
-            "message": "User successfully deleted."
-        }), 200
-    
-    except Exception as e:
-        return jsonify({
-            "code": 500,
-            "message": f"Error: {e}"
-        }), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

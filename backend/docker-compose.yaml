@@ -161,17 +161,4 @@ services:
         networks:
         - esd-weatherwonder
 
-    # user microservice
-    user_auth:
-        build: ./user_auth
-        ports:
-        - '5011:5011'
-        env_file:
-        - ./user_auth/.env
-        depends_on:
-        - rabbitmq        
-        restart: on-failure
-        networks:
-        - esd-weatherwonder
-
     
