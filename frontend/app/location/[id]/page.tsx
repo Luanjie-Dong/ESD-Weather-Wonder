@@ -5,6 +5,7 @@ import Link from "next/link"
 import Navbar from "@/components/navbar"
 import { getLocationWeather } from "@/lib/weather-service"
 import { notFound } from "next/navigation"
+import AuthCheck from "@/components/auth-check"
 
 // This is a Server Component
 export default async function LocationDetailPage({ params }: { params: { id: string } }) {
@@ -13,6 +14,7 @@ export default async function LocationDetailPage({ params }: { params: { id: str
     const weather = await getLocationWeather(params.id)
 
     return (
+      <AuthCheck>
       <div className="flex min-h-screen flex-col">
         <Navbar />
 
@@ -163,6 +165,7 @@ export default async function LocationDetailPage({ params }: { params: { id: str
           </div>
         </main>
       </div>
+      </AuthCheck>
     )
   } catch (error) {
     notFound()

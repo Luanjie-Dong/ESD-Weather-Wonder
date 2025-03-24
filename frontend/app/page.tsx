@@ -6,9 +6,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { CloudLightning } from "lucide-react"
-import LoginForm from "./components/login-form"
 import { useState , useEffect} from "react";
 import axios from "axios";
+import { isAuthenticated } from "./lib/auth"
+import { login } from "./lib/auth"
 
 
 export default function LandingPage() {
@@ -70,7 +71,8 @@ export default function LandingPage() {
       if (response.status == 201){
         console.log("Success:", response.data);
         alert("Account created successfully!");
-        window.location.href = "/locations";
+        login()
+        window.location.href = "/dashboard";
       }
     } catch (error) {
       console.error("Error:", error);
@@ -82,6 +84,8 @@ export default function LandingPage() {
     e.preventDefault(); 
 
     console.log(loginData)
+    login()
+    window.location.href = "/dashboard";
     // try {
     //   const response = await axios.post("http://localhost:8000/user-api/v1/signup", formData);
     //   console.log("Success:", response.data);

@@ -6,12 +6,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Cloud, CloudRain, Edit, MapPin, MoreHorizontal, Plus, Trash2 } from "lucide-react"
 import Navbar from "@/components/navbar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import AuthCheck from "../../components/auth-check"
 
 export default function LocationsPage() {
   return (
+    <AuthCheck>
     <div className="flex min-h-screen flex-col">
       <Navbar />
-
       <main className="flex-1 pb-16 pt-6 md:pb-6">
         <div className="container space-y-6">
           <div className="flex items-center justify-between">
@@ -106,6 +107,7 @@ export default function LocationsPage() {
         </div>
       </main>
     </div>
+    </AuthCheck>
   )
 }
 

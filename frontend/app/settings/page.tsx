@@ -6,9 +6,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import Navbar from "@/components/navbar"
+import AuthCheck from "../../components/auth-check"
 
 export default function SettingsPage() {
   return (
+    <AuthCheck>
     <div className="flex min-h-screen flex-col">
       <Navbar />
 
@@ -226,6 +228,7 @@ export default function SettingsPage() {
         </div>
       </main>
     </div>
+    </AuthCheck>
   )
 }
 
