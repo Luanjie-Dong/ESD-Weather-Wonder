@@ -219,6 +219,32 @@ def change_password(user_id):
             "message": str(e)
         })
 
+@app.route("/user_email/<string:email>")
+def get_user_by_route(email):
+    """
+    Retrieves details for one user by email.
+    """
+    try:
+        response = supabase.table("user").select("*").eq("email", email).execute()
+        
+        if response:
+            user = response.data
+
+            return jsonify({
+                "code": 201,
+                "user": user[0] if user else None
+            }), 201
+        else:
+            return jsonify({
+                "code": 401,
+                "message": "Not found"
+            }), 401
+    
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
 
 @app.route("/user/<string:user_id>", methods=['GET', 'PUT', 'DELETE'])
 def user_operations_route(user_id):
@@ -231,7 +257,7 @@ def user_operations_route(user_id):
 
 def get_user_by_route(user_id):
     """
-    Retrieves current signed in user's details.
+    Retrieves details for one user by user_id.
     """
     try:
         response = supabase.table("user").select("*").eq("user_id", user_id).execute()
