@@ -8,7 +8,9 @@ import { CloudLightning } from "lucide-react"
 import LoginForm from "./components/login-form"
 
 export default function LandingPage() {
+
   
+
   return (
     <div className="flex min-h-screen flex-col bg-white">
       <header className="border-b border-gray-200 bg-white">
