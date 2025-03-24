@@ -83,8 +83,8 @@ def get_emails_by_location():
             "message": str(e)
         }), 500
 
-@app.route("/signup", methods=['POST'])
-def register_user():
+#@app.route("/signup", methods=['POST'])
+#def register_user():
     """
     Registers a new user in both Supabase Auth and the application database.
 
@@ -108,7 +108,8 @@ def register_user():
         response = supabase.auth.admin.create_user(
             {
                 "email": email,
-                "password": password
+                "password": password,
+                "email_confirm": True
             }
         )
 
@@ -144,7 +145,7 @@ def register_user():
 
         ), 500
     
-def publishUserNotification(user):
+#def publishUserNotification(user):
     """Publishes a message through
     RabbitMQ to Notification Queue with routing key 'user.notification'
     """
@@ -219,33 +220,6 @@ def change_password(user_id):
             "message": str(e)
         })
 
-@app.route("/user_email/<string:email>",methods=['GET'])
-def get_user_by_route(email):
-    """
-    Retrieves details for one user by email.
-    """
-    try:
-        response = supabase.table("user").select("*").eq("email", email).execute()
-        
-        if response:
-            user = response.data
-
-            return jsonify({
-                "code": 201 if user else 404,
-                "user": user[0] if user else None
-            }), 201 if user else 404
-        else:
-            return jsonify({
-                "code": 401,
-                "message": "Not found"
-            }), 401
-    
-    except Exception as e:
-        return jsonify({
-            "message": str(e)
-        }), 500
-
-
 @app.route("/user/<string:user_id>", methods=['GET', 'PUT', 'DELETE'])
 def user_operations_route(user_id):
     if request.method == 'PUT':
@@ -257,7 +231,24 @@ def user_operations_route(user_id):
 
 def get_user_by_route(user_id):
     """
-    Retrieves details for one user by user_id.
+    Retrieves the user details for the specified user_id from the Supabase database.
+
+    This route queries the 'user' table in the Supabase database to find a user based on the provided 
+    user_id. If the user exists and valid data is returned (i.e., not null or empty), it returns the 
+    user's details. Otherwise, it returns an error message indicating that the user was not found.
+
+    Parameters:
+    user_id (string): The unique identifier (user_id) of the user to be retrieved.
+
+    Returns:
+    JSON response:
+        - On success (found user): Returns a JSON object with the user's details and a status code of 201.
+        - On failure (user not found): Returns a JSON object with user as null and a status code of 404.
+        - On error: Returns a JSON object with the error message and a status code of 500.
+
+    Example:
+    Request: GET /user_id/22ae7899-3529-40b3-b03d-d727443bf68a
+    Response: {"code": 201, "user": {"user_id": "22ae7899-3529-40b3-b03d-d727443bf68a", "username": "TestUser", "city": "Singapore"}}
     """
     try:
         response = supabase.table("user").select("*").eq("user_id", user_id).execute()
