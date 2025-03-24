@@ -15,8 +15,8 @@ import { login } from "./lib/auth"
 export default function LandingPage() {
   const api_name = process.env.NEXT_PUBLIC_API_KEY_NAME
   const api_key = process.env.NEXT_PUBLIC_API_KEY_VALUE
-  const signup_url = "http://localhost:8000/user-auth-api/v1/signup"
-  const login_url = "http://localhost:8000/user-auth-api/v1/signin"
+  const signup_url = "http://localhost:8000/user-api/v1/signup"
+  const login_url = "http://localhost:8000/user-api/v1/signin"
   if (!api_name || !api_key) {
     throw new Error("API key or name is missing");
   }

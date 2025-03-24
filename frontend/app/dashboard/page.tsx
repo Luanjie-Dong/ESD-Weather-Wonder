@@ -4,20 +4,21 @@ import { logout } from "@/app/lib/auth"
 import { useRouter } from "next/navigation"
 import Navbar from "@/components/navbar"
 import AuthCheck from "@/components/auth-check"
+import { useState , useEffect} from "react";
+
 
 export default function DashboardPage() {
   const router = useRouter()
-  let userProfile = { username: 'User' }; 
-  const userProfileString = localStorage.getItem('user_profile');
-
-  if (userProfileString) {
-    try {
-      userProfile = JSON.parse(userProfileString);
-      console.log(userProfile)
-    } catch (error) {
-      console.error('Error parsing user profile:', error);
+  const [userProfile, setUserProfile] = useState<any>({ username: 'User' });
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userProfileString = localStorage.getItem('user_profile');
+      if (userProfileString) {
+        setUserProfile(JSON.parse(userProfileString));
+      }
     }
-  }
+  }, []);
+  
   
 
   const handleLogout = () => {

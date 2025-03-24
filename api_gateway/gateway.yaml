@@ -38,21 +38,12 @@ services:
           - OPTIONS 
         strip_path: True
 
-     
-
-
-  #######################################
-  # USER AUTHENTICATION MICROSERVICE
-  #######################################
-  - name: user-auth-api
-    url: http://user_auth:5011
-    routes:
-      #/signup
-      # or 
-      #/signinstatus
+      # /signup
+      # or
+      # /signin
       - name: create-user-auth
         paths:
-          - /user-auth-api/v1/
+          - /user-api/v1/
         methods:
           - POST
           - OPTIONS 

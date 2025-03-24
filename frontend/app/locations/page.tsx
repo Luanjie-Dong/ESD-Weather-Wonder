@@ -12,16 +12,34 @@ import { useState , useEffect} from "react";
 import axios from "axios";
 import { useRouter } from 'next/router';
 
+interface UserProfile {
+  city: string;
+  country: string;
+  created_at: Date; 
+  email: string;
+  state: string;
+  user_id: string;
+  username: string | null;
+};
 
 interface UserLocation {
-  UserId: string;
-  LocationId: string;
-  Label: string;
-  Address: string;
+  UserId?: string;
+  LocationId?: string;
+  Label?: string;
+  Address?: string;
+}
+
+interface LocationInfo {
+  UserId?: string;
+  Label?: string;
+  Address?: string;
 }
 
 export default function LocationsPage() {
-  const [userProfile, setUserProfile] = useState<any>({ username: 'User' });
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [locationInfo, setLocationInfo] = useState<LocationInfo | null>(null);
+  const [loadLocation,setLoadLocation] = useState(true)
+
   const api_name = process.env.NEXT_PUBLIC_API_KEY_NAME
   const api_key = process.env.NEXT_PUBLIC_API_KEY_VALUE
   if (!api_name || !api_key) {
@@ -32,29 +50,37 @@ export default function LocationsPage() {
       const userProfileString = localStorage.getItem('user_profile');
       if (userProfileString) {
         setUserProfile(JSON.parse(userProfileString));
-      }
-    }
-  }, []);
+        
+          const formattedAddress = `${userProfile?.country}, ${userProfile?.state}, ${userProfile?.city}`;
+
+          // Set the location info
+          setLocationInfo({UserId: userProfile?.user_id,Address: formattedAddress,Label: "Home",});
+      
+        }
+      }}, []);
 
   const [userLocations,setUserLocations] = useState<UserLocation[]>([])
   const headers = {
     "Content-Type": "application/json", 
     [api_name]: api_key,               
   }
-  const user_id = userProfile['user_id']
+
+  const user_id = userProfile?.['user_id'];
   console.log(user_id)
   const user_locations_endpoint = `http://localhost:8000//user-location-api/v1/GetUserLocations/user/${user_id}`
+  console.log(user_locations_endpoint)
   const get_user_location = async () =>{
+    
     try{
       const response = await axios.get(user_locations_endpoint,{ headers });
       if (response.status == 200){
-        console.log(response.data?.userLocations)
-        const user_data = response.data?.userLocations
+        console.log(response.data)
+        const user_data = response.data?.UserLocations
         if (user_data){
           setUserLocations(user_data)
+          setLoadLocation(false)
         }
 
-        
       }
 
     } catch (error){
@@ -63,8 +89,12 @@ export default function LocationsPage() {
   }
 
   useEffect(() => {
-    get_user_location();
-  }, []);
+    if (user_id){
+      console.log("Getting locations")
+      get_user_location();
+    }
+    
+  }, [user_id]);
 
   
   return (
@@ -89,12 +119,12 @@ export default function LocationsPage() {
             <TabsContent value="saved" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {userLocations.length > 0 && userLocations.map((location) => (
-                  <Card key={location.Label} className={location.Address ? "border-2 border-brand" : ""}>
+                  <Card key={location.Address} className="border-2 border-brand">
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
                         <CardTitle className="flex items-center text-lg">
                           <MapPin className="mr-2 h-4 w-4" />
-                          {location.Label}
+                          {location.Address}
                         </CardTitle>
                         {/* <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -119,10 +149,10 @@ export default function LocationsPage() {
                       </div>
                       {/* {location.primary && <CardDescription>Primary Location</CardDescription>} */}
                     </CardHeader>
-                    {/* <CardContent className="flex items-center justify-between pb-4">
-                      <p className="text-2xl font-bold">{location.temp}</p>
-                      <location.icon className="h-8 w-8 text-brand" />
-                    </CardContent> */}
+                    <CardContent className="flex items-center justify-between pb-4">
+                      <p className="text-2xl font-bold">{location.Label}</p>
+                      {/* <location.icon className="h-8 w-8 text-brand" /> */}
+                    </CardContent>
                     <CardFooter className="pt-0">
                       <Button variant="outline" size="sm" className="w-full">
                         View Forecast
@@ -130,9 +160,16 @@ export default function LocationsPage() {
                     </CardFooter>
                   </Card>
                 ))}
-                {userLocations.length == 0 && (
-                  <div className="text-xl"> No location saved :/</div>
-                )}
+                {loadLocation ? (
+                  <div className="flex flex-col space-y-4">
+                    <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-blue-500 border-opacity-50"></div>
+                    <p className="text-lg text-gray-700">Loading locations...</p>
+                  </div>
+                ) : userLocations.length === 0 ? (
+                  <div className="text-xl text-center text-gray-500">
+                    No location saved :/
+                  </div>
+                ) : (<div></div>)}
               </div>
             </TabsContent>
 

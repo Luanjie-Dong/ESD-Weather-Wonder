@@ -12,6 +12,8 @@ CORS(app)
 # URLs for microservices loaded from environment variables
 geocoding_URL = os.getenv("geocoding_URL")
 location_URL = os.getenv("location_URL")
+# geocoding_URL = "http://127.0.0.1:5004/encode"
+# location_URL = "http://127.0.0.1:5002/locations"
 userlocation_URL = os.getenv("userlocation_URL")
 
 
@@ -26,7 +28,7 @@ def add_location():
     if request.is_json:
         try:
             location_request = request.get_json()
-            print("\nReceived a location request in JSON:", location_request)
+            print("\nReceived a location request in JSON:", location_request,flush=True)
 
             # Process the request
             result = process_add_location(location_request)
@@ -45,7 +47,7 @@ def add_location():
                 + ": line "
                 + str(exc_tb.tb_lineno)
             )
-            print(ex_str)
+            print(ex_str,flush=True)
 
             return (
                 jsonify(
@@ -84,7 +86,7 @@ def process_add_location(location_request):
         }
 
     # Step 1: Call Geocoding Microservice
-    print("\n-----Invoking Geocoding microservice-----")
+    print("\n-----Invoking Geocoding microservice-----",flush=True)
     geocode_result = invoke_http(
         geocoding_URL, method="POST", json={"location": address}
     )
@@ -105,7 +107,7 @@ def process_add_location(location_request):
     neighbourhood = geocode_result.get("neighbourhood", "")
 
     # Step 2: Call Location Microservice
-    print("\n-----Invoking Location microservice-----")
+    print("\n-----Invoking Location microservice-----",flush=True)
     location_payload = {
         "country": country,
         "state": state,
@@ -116,7 +118,7 @@ def process_add_location(location_request):
     }
 
     location_result = invoke_http(location_URL, method="POST", json=location_payload)
-    print("Location result:", location_result)
+    print("Location result:", location_result,flush=True)
 
     if not location_result or "location_id" not in location_result:
         return {
@@ -128,7 +130,7 @@ def process_add_location(location_request):
     location_id = location_result["location_id"]
 
     # Step 3: Call UserLocation Microservice
-    print("\n-----Invoking UserLocation microservice-----")
+    print("\n-----Invoking UserLocation microservice-----",flush=True)
     userlocation_payload = {
         "UserId": user_id,
         "LocationId": location_id,
@@ -138,7 +140,7 @@ def process_add_location(location_request):
 
     try:
         userlocation_result = invoke_http(userlocation_URL, method="POST", json=userlocation_payload)
-        print("UserLocation result:", userlocation_result)
+        print("UserLocation result:", userlocation_result,flush=True)
         
         if not userlocation_result or ("Errors" in userlocation_result and userlocation_result["Errors"]):
             return {
