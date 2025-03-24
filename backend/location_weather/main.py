@@ -117,10 +117,14 @@ def get_latest_forecast(location_id):
         if not result.data:
             return jsonify({"error": "No weather data available for this location"}), 404
 
+        if not result.data:
+            return jsonify({"error": "No weather data found for the specified date"}), 404
+
         forecast = result.data[0]
         return jsonify({
             "location_id": location_id,
             "forecast_day": forecast['forecast_day'],
+            "poll_datetime": forecast['poll_datetime'],
             "hourlyForecast": forecast['hourly_forecast']
         }), 200
 
@@ -155,7 +159,8 @@ def get_forecast_by_date(location_id, date):
         forecast = result.data[0]
         return jsonify({
             "location_id": location_id,
-            "forecast_day": forecast['forecast_day'],
+            "forecast_day": target_date,
+            "poll_datetime": forecast['poll_datetime'],
             "hourlyForecast": forecast['hourly_forecast']
         }), 200
 

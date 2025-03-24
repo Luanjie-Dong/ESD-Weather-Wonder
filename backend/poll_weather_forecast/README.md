@@ -91,13 +91,17 @@ This microservice is responsible for polling weather forecasts for all registere
     "forecast_day": "string (YYYY-MM-DD)",
     "hourly_forecast": [
       {
-        "time": "string",
-        "temp_c": "number",
-        "condition_text": "string",
-        "condition_icon": "string",
-        "wind_kph": "number",
-        "precip_mm": "number",
-        "humidity": "number"
+          "time": "YYYY-MM-DD HH:MM",
+          "temp_c": "number",
+          "condition_text": "string",
+          "condition_icon": "string",
+          "wind_kph": "number",
+          "precip_mm": "number",
+          "humidity": "number",
+          "will_it_rain": "number",
+          "chance_of_rain": "number",
+          "will_it_rain": "number",
+          "chance_of_rain": "number"
       }
     ]
   }
@@ -125,7 +129,7 @@ This microservice is responsible for polling weather forecasts for all registere
   }
   ```
 
-### Trigger Poll
+### Trigger Poll (`curl +X POST localhost:5005/trigger-poll` to manually trigger and poll)
 - **Method**: POST
 - **Path**: /trigger-poll
 - **Response Schema**:
