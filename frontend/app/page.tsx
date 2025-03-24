@@ -218,11 +218,7 @@ export default function LandingPage() {
                 </form>
                 {loading && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-<<<<<<< Updated upstream
                     <p className="text-white text-lg font-semibold">Logging in..</p>
-=======
-                    <p className="text-white text-lg font-semibold">Creating Account...</p>
->>>>>>> Stashed changes
                   </div>
                 )}
               </TabsContent>
