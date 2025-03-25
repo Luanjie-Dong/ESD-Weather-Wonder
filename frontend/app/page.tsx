@@ -178,7 +178,7 @@ export default function LandingPage() {
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Name</Label>
-                      <Input id="name" name="name" placeholder="John Doe" value={formData.name} onChange={handleCreationChange}/>
+                      <Input id="name" name="username" placeholder="John Doe" value={formData.username} onChange={handleCreationChange}/>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
@@ -213,7 +213,7 @@ export default function LandingPage() {
                 )}
               </TabsContent>
 
-              <TabsContent value="login" className={`relative ${loading ? "blur-sm pointer-events-none" : ""} space-y-4 `}>
+              <TabsContent value="login" className={`relative ${loading ? "blur-lg pointer-events-none" : ""} space-y-4 `}>
                 <form onSubmit={handleLogin}>
                 <Card>
                   <CardHeader>
