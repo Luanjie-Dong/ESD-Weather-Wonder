@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Bell, Home, MapPin, Settings } from "lucide-react"
+import { Bell, Home, MapPin, Settings , User} from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export default function Navbar() {
@@ -10,9 +10,9 @@ export default function Navbar() {
 
   const navItems = [
     { href: "/dashboard", label: "Home", icon: Home },
-    { href: "/locations", label: "Locations", icon: MapPin },
-    { href: "/alerts", label: "Alerts", icon: Bell },
-    { href: "/settings", label: "Settings", icon: Settings },
+    // { href: "/locations", label: "Locations", icon: MapPin },
+    // { href: "/alerts", label: "Alerts", icon: Bell },
+    { href: "/profile", label: "Profile", icon: User },
   ]
 
   return (
