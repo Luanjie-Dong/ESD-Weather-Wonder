@@ -266,8 +266,8 @@ export default function DashboardPage() {
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between">
-                    <Button variant="outline">Cancel</Button>
-                    <Button className="bg-highlight" type="submit">Add Location</Button>
+                    <div></div>
+                    <Button className="bg-highlight hover:bg-purple-700" type="submit">Add Location</Button>
                   </CardFooter>
                 </form>
               </Card>

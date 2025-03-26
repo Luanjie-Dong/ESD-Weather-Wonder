@@ -52,8 +52,8 @@ services:
     # location_weather microservice
     location_weather:
         build: ./location_weather
-        # ports:
-        # - '5003:5003'
+        ports:
+        - '5003:5003'
         env_file:
         - ./location_weather/.env
         depends_on:
@@ -149,8 +149,8 @@ services:
     # poll_weather_forecast microservice
     poll_weather_forecast:
         build: ./poll_weather_forecast
-        # ports:
-        # - '5005:5005'
+        ports:
+        - '5005:5005'
         env_file:
         - ./poll_weather_forecast/.env
         depends_on:
