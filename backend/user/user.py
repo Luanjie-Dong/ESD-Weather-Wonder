@@ -165,9 +165,10 @@ def update_user_by_route(user_id):
         country = data.get("country")
         state = data.get("state")
         city = data.get("city")
+        neighbourhood = data.get("neighbourhood")
 
         response = supabaseAdmin.table("user").update({"username": username, "email": email, 
-                                                      "country": country, "state": state, "city": city}).eq("user_id", user_id).execute()
+                                                      "country": country, "state": state, "city": city, "neighbourhood": neighbourhood}).eq("user_id", user_id).execute()
 
         supabaseAdmin.auth.admin.update_user_by_id(user_id,
             {
@@ -225,6 +226,7 @@ def register_user():
         country = data.get("country")
         state = data.get("state")
         city = data.get("city")
+        neighbourhood = data.get("neighbourhood")
 
         response = supabase.auth.sign_up(
             {
@@ -239,7 +241,7 @@ def register_user():
 
         response = (
             supabase.table("user")
-            .insert({"user_id": user_id, "email": email, "username": username, "country": country, "state": state, "city": city})
+            .insert({"user_id": user_id, "email": email, "username": username, "country": country, "state": state, "city": city, "neighbourhood": neighbourhood})
             .execute()
         )
 
@@ -281,7 +283,7 @@ def publishUserNotification(user):
                 <p>We've registered your account with the following details:</p>
                 <ul>
                     <li>Email: {user['email']}</li>
-                    <li>Location: {user['city']}, {user['country']}</li>
+                    <li>Location: {user['neighbourhood']}, {user['city']}, {user['country']}</li>
                     <li>Username: {user['username']}</li>
                 </ul>
                 <p>You'll start receiving daily weather forecasts soon.</p>

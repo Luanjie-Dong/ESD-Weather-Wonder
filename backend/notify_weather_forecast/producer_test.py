@@ -41,20 +41,24 @@ message_2 = {
 }
 
 
-message_new = {
-  "forecast_day": "2025-03-22",
-  "hourly_forecast": [
-    {
-      "time": "14:00",
-      "temp_c": 28.3,
-      "condition_text": "Partly Cloudy",
-      "condition_icon": "//cdn.weatherapi.com/weather/64x64/day/116.png",
-      "wind_kph": 10.5,
-      "precip_mm": 0.0,
-      "humidity": 65
-    }
-  ]
+message_daily = {
+  "location_id": "abc123",
+  "forecast_day": "2025-03-25",
+  "poll_datetime": "2025-03-25 08:00:00",
+  "daily_forecast": {
+    "maxtemp_c": 30.5,
+    "mintemp_c": 18.3,
+    "avgtemp_c": 24.4,
+    "maxwind_kph": 25.6,
+    "totalprecip_mm": 5.2,
+    "avghumidity": 78,
+    "condition_text": "Partly Cloudy",
+    "condition_icon": "https://cdn.weatherapi.com/weather/64x64/day/116.png",
+    "condition_code": 116
+  }
 }
+
+
   
 
 # Connect to RabbitMQ
@@ -71,7 +75,7 @@ channel.exchange_declare(exchange=EXCHANGE_NAME, exchange_type="topic", durable=
 channel.basic_publish(
     exchange=EXCHANGE_NAME,
     routing_key=ROUTING_KEY,
-    body=json.dumps(message_2),
+    body=json.dumps(message_daily),
     properties=pika.BasicProperties(delivery_mode=2)  # make message persistent
 )
 

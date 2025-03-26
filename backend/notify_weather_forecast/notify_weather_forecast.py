@@ -57,7 +57,7 @@ def processLocationWeather(body):
     full_package_users = packageEmailLocation(users, userlocations)
 
     print(f"Publishing Email List: {users}")
-    publishMessage(full_package_users, body['hourlyForecast'])
+    publishMessage(full_package_users, body['daily_forecast'])
 
 def packageEmailLocation(users, userlocations):
     result = []
@@ -110,19 +110,20 @@ def publishMessage(users, weather):
     if not channel:
         print("No channel available for publishing.")
         return
+    
 
     # Publish to Notification
     channel.queue_declare(queue=PUBLISHER_QUEUE_NAME, durable=True, arguments={"x-max-priority": 10})
     channel.queue_bind(exchange=EXCHANGE_NAME, queue=PUBLISHER_QUEUE_NAME, routing_key=PUBLISHER_ROUTING_KEY) 
 
-    forecast = weather[0]
+    forecast = weather
 
     for user in users:
         content = f"""
         <html>
-            <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; background-color: #f9f9f9; padding: 20px;">
+            <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; background-color: #f0f8ff; padding: 20px;">
                 <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-                    <h2 style="color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">
+                    <h2 style="color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; color: #3498db;">
                         Daily Weather Forecast – {user["label"]}
                     </h2>
                     <p style="font-size: 16px; margin-bottom: 10px;">
@@ -130,28 +131,32 @@ def publishMessage(users, weather):
                     </p>
                     <p style="font-size: 16px; margin-bottom: 10px;">
                         <strong>Condition:</strong> {forecast['condition_text']}<br>
-                        <img src="https:{forecast['condition_icon']}" alt="Weather Icon" style="width: 50px; height: 50px;"/>
+                        <img src="{forecast['condition_icon']}" alt="Weather Icon" style="width: 50px; height: 50px; vertical-align: middle;"/>
                     </p>
                     <p style="font-size: 16px; margin-bottom: 10px;">
-                        <strong>Temperature:</strong> {forecast['temp_c']}°C<br>
+                        <strong>Temperature:</strong> {forecast['maxtemp_c']}°C (Max) <span style="color: #f39c12;">&#x1F321;</span><br>
+                        <strong>Feels Like:</strong> {forecast['mintemp_c']}°C (Min) <span style="color: #f39c12;">&#x1F321;</span>
                     </p>
                     <table style="width: 100%; font-size: 16px; border-collapse: collapse; margin-top: 20px;">
                         <tr>
                             <td style="padding: 8px 0;"><strong>Wind Speed:</strong></td>
-                            <td style="text-align: right;">{forecast['wind_kph']} km/h</td>
+                            <td style="text-align: right;">{forecast['maxwind_kph']} km/h <img src="https://img.icons8.com/ios/50/000000/windy-weather.png" alt="Wind Icon" style="width: 20px; vertical-align: middle;"/></td>
                         </tr>
                         <tr>
                             <td style="padding: 8px 0;"><strong>Humidity:</strong></td>
-                            <td style="text-align: right;">{forecast['humidity']}%</td>
+                            <td style="text-align: right;">{forecast['avghumidity']}% <img src="https://img.icons8.com/ios/50/000000/humidity.png" alt="Humidity Icon" style="width: 20px; vertical-align: middle;"/></td>
                         </tr>
                         <tr>
                             <td style="padding: 8px 0;"><strong>Precipitation:</strong></td>
-                            <td style="text-align: right;">{forecast['precip_mm']} mm</td>
+                            <td style="text-align: right;">{forecast['totalprecip_mm']} mm <img src="https://img.icons8.com/ios/50/000000/rain.png" alt="Rain Icon" style="width: 20px; vertical-align: middle;"/></td>
                         </tr>
                     </table>
                     <p style="font-size: 14px; color: #777; margin-top: 30px;">
                         Stay safe and plan your day accordingly.
                     </p>
+                    <footer style="margin-top: 30px; font-size: 14px; color: #3498db;">
+                        <p>WeatherWonder - Your trusted weather partner</p>
+                    </footer>
                 </div>
             </body>
         </html>
