@@ -174,6 +174,61 @@ Inserts a new 24-hour forecast into the database.
 }
 ```
 
+### 5. Get All Weather Forecasts
+Returns the latest weather forecasts for all registered locations.
+
+- **Method**: GET
+- **Path**: `/get_all_weather`
+- **Response**:
+```json
+{
+    "forecasts": [
+        {
+            "location_id": "string",
+            "forecast_day": "YYYY-MM-DD",
+            "poll_datetime": "YYYY-MM-DD HH:MM:SS",
+            "hourlyForecast": [],
+            "dailyForecast": {},
+            "astroForecast": {}
+        }
+    ]
+}
+```
+
+### 6. Publish Forecast Update
+Publishes a forecast update to the message queue for notification processing.
+
+- **Method**: POST
+- **Path**: `/publish_forecast/<location_id>`
+- **Response**:
+```json
+{
+    "message": "Forecast published successfully"
+}
+```
+- **Message Queue Details**:
+  - **Exchange**: esd_weatherwonder
+  - **Binding Key**: location.weather.update
+  - **Message Format**:
+    ```json
+    {
+        "location_id": "string",
+        "forecast_day": "YYYY-MM-DD",
+        "poll_datetime": "YYYY-MM-DD HH:MM:SS",
+        "daily_forecast": {
+            "maxtemp_c": "number",
+            "mintemp_c": "number",
+            "avgtemp_c": "number",
+            "maxwind_kph": "number",
+            "totalprecip_mm": "number",
+            "avghumidity": "number",
+            "condition_text": "string",
+            "condition_icon": "string",
+            "condition_code": "number"
+        }
+    }
+    ```
+
 ## Database Schema
 The service uses a Supabase table with the following structure:
 

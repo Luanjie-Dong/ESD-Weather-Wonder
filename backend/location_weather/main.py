@@ -75,9 +75,6 @@ def update_forecast(location_id):
         location_exists, error_response = check_location_exists(location_id)
         if not location_exists:
             return error_response
-        # location = supabase.table('location').select('*').eq('location_id', location_id).execute()
-        # if not location.data:
-        #     return jsonify({"error": "Location not found"}), 404
 
         data = request.get_json()
         if not data or 'hourly_forecast' not in data:
@@ -105,6 +102,37 @@ def update_forecast(location_id):
     
     except Exception as e:
         return jsonify({"error": f"Error updating forecast: {str(e)}"}), 500
+
+@app.route('/publish_forecast/<location_id>', methods=['POST']) #publish endpoint to test 
+# @requires_auth
+def publish_forecast(location_id):
+    try:
+        location_exists, error_response = check_location_exists(location_id)
+        if not location_exists:
+            return error_response
+
+        # Get the latest forecast for the location
+        result = supabase.table('location_weather')\
+            .select('*')\
+            .eq('location_id', location_id)\
+            .order('poll_datetime', desc=True)\
+            .limit(1)\
+            .execute()
+
+        if not result.data:
+            return jsonify({"error": "No forecast data available for this location"}), 404
+
+        record = result.data[0]
+        
+        # Publish forecast update to RabbitMQ
+        publish_success = publish_forecast_update(location_id, record)
+        if not publish_success:
+            return jsonify({"error": "Failed to publish forecast update to message queue"}), 500
+            
+        return jsonify({"message": "Forecast published successfully"}), 200
+    
+    except Exception as e:
+        return jsonify({"error": f"Error publishing forecast: {str(e)}"}), 500
 
 @app.route('/get_weather/<location_id>', methods=['GET'])
 # @requires_auth # decorator to ensure that there is a valid auth header present
@@ -232,7 +260,137 @@ def get_forecast_by_datetime(location_id, dt_input):
     except Exception as e:
         return jsonify({"error": f"Error retrieving forecast: {str(e)}"}), 500
 
-## Todo: Setup publishing to pika from here
+@app.route('/get_all_weather', methods=['GET'])
+# @requires_auth
+def get_all_latest_forecasts():
+    try:
+        # Get all locations first
+        response = requests.get(f"{LOCATION_SERVICE_URL}/locations")
+        if not response.ok:
+            return jsonify({"error": "Failed to connect to location service"}), 503
+        
+        locations = response.json()
+        if not locations:
+            return jsonify({"error": "No locations found"}), 404
+
+        all_forecasts = []
+        for location in locations:
+            location_id = location['location_id']
+            result = supabase.table('location_weather')\
+                .select('*')\
+                .eq('location_id', location_id)\
+                .order('poll_datetime', desc=True)\
+                .limit(1)\
+                .execute()
+
+            if result.data:
+                forecast = result.data[0]
+                all_forecasts.append({
+                    "location_id": location_id,
+                    "forecast_day": forecast['forecast_day'],
+                    "poll_datetime": forecast['poll_datetime'],
+                    "hourlyForecast": forecast['hourly_forecast'],
+                    "dailyForecast": forecast['daily_forecast'],
+                    "astroForecast": forecast['astro_forecast']
+                })
+
+        return jsonify({"forecasts": all_forecasts}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"Error retrieving forecasts: {str(e)}"}), 500
+
+# RabbitMQ Configuration
+RABBITMQ_HOST = os.environ.get("RABBITMQ_HOST", "rabbitmq")
+RABBITMQ_PORT = int(os.environ.get("RABBITMQ_PORT", 5672))
+RABBITMQ_USER = os.environ.get("RABBITMQ_USER", "myuser")
+RABBITMQ_PASS = os.environ.get("RABBITMQ_PASS", "secret")
+
+def publish_forecast_update(location_id, forecast_data):
+    import pika
+    import json
+    connection = None
+    try:
+        print(f"Attempting to connect to RabbitMQ at {RABBITMQ_HOST}:{RABBITMQ_PORT}")
+        
+        credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
+        parameters = pika.ConnectionParameters(
+            host=RABBITMQ_HOST,
+            port=RABBITMQ_PORT,
+            credentials=credentials,
+            heartbeat=600,
+            connection_attempts=5,  # Increased retries
+            retry_delay=2  # Decreased delay between retries
+        )
+        
+        connection = pika.BlockingConnection(parameters)
+        channel = connection.channel()
+        print("Successfully connected to RabbitMQ")
+
+        EXCHANGE_NAME = os.environ.get("EXCHANGE_NAME", "esd_weatherwonder")
+        print(f"Using exchange: {EXCHANGE_NAME}")
+        
+        # Declare exchange
+        channel.exchange_declare(
+            exchange=EXCHANGE_NAME,
+            exchange_type='topic',
+            durable=True
+        )
+
+        # Ensure queue exists
+        queue_name = "Trigger_Forecast_Process"
+        print(f"Declaring queue: {queue_name}")
+        channel.queue_declare(
+            queue=queue_name,
+            durable=True,
+            arguments={"x-max-priority": 10}
+        )
+        
+        routing_key = 'location.weather.update'
+        print(f"Binding queue with routing key: {routing_key}")
+        channel.queue_bind(
+            exchange=EXCHANGE_NAME,
+            queue=queue_name,
+            routing_key="#.update"  # Binding pattern
+        )
+
+        message = {
+            "location_id": location_id,
+            "forecast_day": forecast_data['forecast_day'],
+            "poll_datetime": forecast_data['poll_datetime'],
+            "daily_forecast": forecast_data['daily_forecast']
+        }
+        
+        print(f"Publishing message for location_id: {location_id}")
+        channel.basic_publish(
+            exchange=EXCHANGE_NAME,
+            routing_key=routing_key,
+            body=json.dumps(message),
+            properties=pika.BasicProperties(
+                delivery_mode=2,
+                content_type='application/json'
+            )
+        )
+        print("Message published successfully")
+        return True
+
+    except pika.exceptions.AMQPConnectionError as e:
+        print(f"AMQP Connection Error: {str(e)}")
+        print(f"Failed to connect to RabbitMQ at {RABBITMQ_HOST}:{RABBITMQ_PORT}")
+        return False
+    except pika.exceptions.AMQPChannelError as e:
+        print(f"AMQP Channel Error: {str(e)}")
+        print("Failed to create/bind channel")
+        return False
+    except Exception as e:
+        print(f"Unexpected error in publish_forecast_update: {str(e)}")
+        return False
+    finally:
+        if connection and not connection.is_closed:
+            try:
+                connection.close()
+                print("RabbitMQ connection closed")
+            except Exception as e:
+                print(f"Error closing connection: {str(e)}")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5003, debug=True)

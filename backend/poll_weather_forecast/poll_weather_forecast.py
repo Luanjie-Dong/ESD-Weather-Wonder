@@ -7,6 +7,7 @@ import requests
 import schedule
 import time
 import logging
+import pika
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -64,11 +65,11 @@ def poll_weather_forecasts():
                 
                 # Debug location data
                 logger.info(f"""
-Location details for ID {location_id}:
-- Country: '{country}'
-- State: '{state}'
-- City: '{city}'
-- Neighbourhood: '{neighbourhood}'
+                    Location details for ID {location_id}:
+                    - Country: '{country}'
+                    - State: '{state}'
+                    - City: '{city}'
+                    - Neighbourhood: '{neighbourhood}'
                 """)
                 
                 # Validate required fields
@@ -94,9 +95,9 @@ Location details for ID {location_id}:
                 
             except Exception as e:
                 logger.error(f"""
-Error processing location {location_id}:
-- Error: {str(e)}
-- Location data: {json.dumps(location, indent=2)}
+                    Error processing location {location_id}:
+                    - Error: {str(e)}
+                    - Location data: {json.dumps(location, indent=2)}
                 """)
                 results.append({
                     "location_id": location.get('location_id'),
@@ -106,6 +107,22 @@ Error processing location {location_id}:
                 })
         
         logger.info(f"Completed polling process. Processed {len(results)} locations.")
+        
+        # After successful batch polling, publish forecasts for all locations. Keep trigger for publishing here only
+        for result in results:
+            if result["status"] == "success": # only publish successful polling
+                try:
+                    logger.info(f"Attempting to publish forecast for location ID: {result['location_id']}")
+                    publish_response = requests.post(
+                        f"{LOCATION_WEATHER_URL}/publish_forecast/{result['location_id']}",
+                        headers={"Content-Type": "application/json"},
+                        timeout=10
+                    )
+                    publish_response.raise_for_status()
+                    logger.info(f"Successfully published forecast for location ID: {result['location_id']}")
+                except requests.RequestException as e:
+                    logger.error(f"Error publishing forecast for location ID {result['location_id']}: {str(e)}")
+        
         return {
             "timestamp": datetime.now().isoformat(),
             "locations_processed": len(results),
@@ -267,7 +284,6 @@ def update_location_weather(location_id, forecast):
             "daily_forecast": forecastDay["day"],
             "astro_forecast": forecastDay["astro"]
         }
-        # logger.info(f"Sending payload to location_weather service: {json.dumps(payload, indent=2)}")
         logger.info("Sending payload to location_weather service")
         
         try:
@@ -284,16 +300,19 @@ def update_location_weather(location_id, forecast):
             
             response.raise_for_status()
             logger.info(f"Successfully updated forecast for location ID: {location_id}")
+            
+            # Update was successful
+            
             return True
             
         except requests.RequestException as e:
             logger.error(f"""
-Error updating location_weather for ID {location_id}:
-- Status Code: {getattr(e.response, 'status_code', 'N/A')}
-- Error Message: {str(e)}
-- Response Content: {getattr(e.response, 'text', 'N/A')}
-- Request URL: {e.request.url}
-- Request Body: {getattr(e.request, 'body', 'N/A')}
+                Error updating location_weather for ID {location_id}:
+                - Status Code: {getattr(e.response, 'status_code', 'N/A')}
+                - Error Message: {str(e)}
+                - Response Content: {getattr(e.response, 'text', 'N/A')}
+                - Request URL: {e.request.url}
+                - Request Body: {getattr(e.request, 'body', 'N/A')}
             """)
             return False
             
@@ -313,6 +332,56 @@ def run_scheduler():
     while True:
         schedule.run_pending()
         time.sleep(60)  # Check every minute
+
+@app.route('/poll-location/<int:location_id>', methods=['POST'])
+def poll_single_location(location_id):
+    """Poll weather forecast for a single location"""
+    try:
+        # Get location details
+        response = requests.get(f"{LOCATION_URL}/locations", timeout=10)
+        response.raise_for_status()
+        locations = response.json()
+        
+        # Find the specific location
+        location = next((loc for loc in locations if loc.get('location_id') == location_id), None)
+        if not location:
+            return jsonify({"error": f"Location with ID {location_id} not found"}), 404
+            
+        # Extract location details
+        country = location.get('country', '').strip()
+        state = location.get('state', '').strip()
+        city = location.get('city', '').strip()
+        neighbourhood = location.get('neighbourhood', '').strip()
+        
+        # Validate required fields
+        required_fields = {'country': country, 'state': state, 'city': city, 'neighbourhood': neighbourhood}
+        missing_fields = [field for field, value in required_fields.items() if not value]
+        if missing_fields:
+            return jsonify({"error": f"Location ID {location_id}: Missing required fields - {', '.join(missing_fields)}"}), 400
+        
+        # Get forecast
+        forecast = get_forecast(country, state, city, neighbourhood)
+        if not forecast: # if no forecast is found from the get_forecast endpoint
+            return jsonify({"error": f"No forecast data available for location ID: {location_id}"}), 404
+        
+        # Update location weather
+        update_result = update_location_weather(location_id, forecast)
+        
+        result = {
+            "timestamp": datetime.now().isoformat(),
+            "location_id": location_id,
+            "status": "success" if update_result else "failed",
+            "location": f"{city}, {state}, {country}"
+        }
+        
+        return jsonify(result), 200 if update_result else 500
+        
+    except requests.RequestException as e:
+        logger.error(f"Error fetching location {location_id}: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        logger.error(f"Error processing location {location_id}: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     # Start the scheduler in a separate thread

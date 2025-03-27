@@ -99,11 +99,27 @@ This microservice is responsible for polling weather forecasts for all registere
           "precip_mm": "number",
           "humidity": "number",
           "will_it_rain": "number",
-          "chance_of_rain": "number",
-          "will_it_rain": "number",
           "chance_of_rain": "number"
       }
-    ]
+    ],
+    "daily_forecast": {
+      "maxtemp_c": "number",
+      "mintemp_c": "number",
+      "avgtemp_c": "number",
+      "maxwind_kph": "number",
+      "totalprecip_mm": "number",
+      "avghumidity": "number",
+      "condition_text": "string",
+      "condition_icon": "string",
+      "condition_code": "number"
+    },
+    "astro_forecast": {
+      "sunrise": "string",
+      "sunset": "string",
+      "moonrise": "string",
+      "moonset": "string",
+      "moon_phase": "string"
+    }
   }
   ```
 
@@ -147,6 +163,24 @@ This microservice is responsible for polling weather forecasts for all registere
     ]
   }
   ```
+
+### Poll Single Location (`curl -X POST localhost:5005/poll-location/1` to manually trigger and poll)
+- **Method**: POST
+- **Path**: `/poll-location/{location_id}`
+- **Response Schema**:
+  ```json
+  {
+    "timestamp": "string (ISO format)",
+    "location_id": "string",
+    "status": "string (success/failed)",
+    "location": "string"
+  }
+  ```
+- **Error Responses**:
+  - 404: Location not found
+  - 400: Missing required location fields
+  - 404: No forecast data available
+  - 500: Error updating forecast
 
 ## Scheduling
 
