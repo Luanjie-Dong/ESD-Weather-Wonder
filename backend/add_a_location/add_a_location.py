@@ -12,9 +12,9 @@ CORS(app)
 # URLs for microservices loaded from environment variables
 geocoding_URL = os.getenv("geocoding_URL")
 location_URL = os.getenv("location_URL")
-# geocoding_URL = "http://127.0.0.1:5004/encode"
-# location_URL = "http://127.0.0.1:5002/locations"
 userlocation_URL = os.getenv("userlocation_URL")
+poll_weather_URL = os.getenv("poll_weather_URL")
+
 
 
 @app.route("/add_location", methods=["POST"])
@@ -24,6 +24,7 @@ def add_location():
     1. Calls Geocoding microservice to get geocode (latitude, longitude).
     2. Calls Location microservice to save the location details.
     3. Calls UserLocation microservice to associate the location with a user.
+    4. Calls Poll Weather Location microservice to get weather 
     """
     if request.is_json:
         try:
@@ -74,6 +75,7 @@ def process_add_location(location_request):
     - Call Geocoding microservice.
     - Call Location microservice.
     - Call UserLocation microservice.
+    - POST location_id to poll_weather_URL.
     """
     address = location_request.get("address")
     user_id = location_request.get("user_id")
@@ -86,7 +88,7 @@ def process_add_location(location_request):
         }
 
     # Step 1: Call Geocoding Microservice
-    print("\n-----Invoking Geocoding microservice-----",flush=True)
+    print("\n-----Invoking Geocoding microservice-----", flush=True)
     geocode_result = invoke_http(
         geocoding_URL, method="POST", json={"location": address}
     )
@@ -107,7 +109,7 @@ def process_add_location(location_request):
     neighbourhood = geocode_result.get("neighbourhood", "")
 
     # Step 2: Call Location Microservice
-    print("\n-----Invoking Location microservice-----",flush=True)
+    print("\n-----Invoking Location microservice-----", flush=True)
     location_payload = {
         "country": country,
         "state": state,
@@ -118,7 +120,7 @@ def process_add_location(location_request):
     }
 
     location_result = invoke_http(location_URL, method="POST", json=location_payload)
-    print("Location result:", location_result,flush=True)
+    print("Location result:", location_result, flush=True)
 
     if not location_result or "location_id" not in location_result:
         return {
@@ -130,7 +132,7 @@ def process_add_location(location_request):
     location_id = location_result["location_id"]
 
     # Step 3: Call UserLocation Microservice
-    print("\n-----Invoking UserLocation microservice-----",flush=True)
+    print("\n-----Invoking UserLocation microservice-----", flush=True)
     userlocation_payload = {
         "UserId": user_id,
         "LocationId": location_id,
@@ -140,20 +142,48 @@ def process_add_location(location_request):
 
     try:
         userlocation_result = invoke_http(userlocation_URL, method="POST", json=userlocation_payload)
-        print("UserLocation result:", userlocation_result,flush=True)
-        
+        print("UserLocation result:", userlocation_result, flush=True)
+
         if not userlocation_result or ("Errors" in userlocation_result and userlocation_result["Errors"]):
             return {
                 "code": 400,
                 "message": f"Failed to associate location with user.",
                 "data": userlocation_result,
             }
-        
+
     except Exception as e:
         return {
             "code": 500,
             "message": f"Failed to call UserLocation Microservice: {str(e)}",
         }
+
+    # Step 4: Call Poll Weather Microservice
+    print("\n-----Invoking Poll Weather microservice-----", flush=True)
+    poll_weather_payload = {"location_id": location_id}
+
+    try:
+        poll_weather_result = invoke_http(
+            f"{poll_weather_URL}/{location_id}",
+            method="POST", 
+            json=poll_weather_payload
+        )
+        print("Poll Weather result:", poll_weather_result, flush=True)
+
+        if not poll_weather_result or ("error" in poll_weather_result and poll_weather_result["error"]):
+            return {
+                "code": 400,
+                "message": f"Failed to initiate weather polling: {poll_weather_result.get('error', 'Unknown error')}",
+                "data": poll_weather_result,
+            }
+
+    except Exception as e:
+        return {
+            "code": 500,
+            "message": f"Failed to call Poll Weather Microservice: {str(e)}",
+            "data": poll_weather_payload
+        }
+
+
 
     # Return success response
     return {
@@ -163,6 +193,7 @@ def process_add_location(location_request):
             "geocoding_data": geocode_result,
             "location_data": location_result,
             "user_location_status": userlocation_result,
+            "poll_weather_status": poll_weather_result,
         },
     }
 

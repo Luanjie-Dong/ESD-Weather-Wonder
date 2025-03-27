@@ -113,6 +113,7 @@ services:
       depends_on:
         - location
         - geocoding
+        - poll_weather_forecast
       networks:
         - esd-weatherwonder
 
