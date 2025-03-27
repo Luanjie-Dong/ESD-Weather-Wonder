@@ -14,7 +14,9 @@
 #    - Inserts a new 24h forecast into the database.  
 #    - Request body: ForecastDay object  
 #    - Response: {"message": "Weather data updated successfully."}  
-#  
+#    - Needs to also check for actual update to the forecast and then push notifications to users
+#      publish to rabbitmq if there is a diff in the forecast
+
 # ForecastDay object structure:  
 #   public ForecastDay(LocalDate date, int date_epoch, Day day, Astro astro, Hour[] hour)
 #   Note: Even though the entire object is currently being passed through, we only keep Hour[]
@@ -84,10 +86,18 @@ def update_forecast(location_id):
         if not 'forecast_day' in data:
             return jsonify({"error": "Missing forecast_day in forecast data"}), 400
 
+        if not 'daily_forecast' in data:
+            return jsonify({"error": "Missing daily forecast data"}), 400
+
+        if not 'astro_forecast' in data:
+            return jsonify({"error": "Missing astro forecast data"}), 400
+
         record = {
             'location_id': location_id,
             'forecast_day': data['forecast_day'],
-            'hourly_forecast': data['hourly_forecast']
+            'hourly_forecast': data['hourly_forecast'],
+            'daily_forecast': data['daily_forecast'],
+            'astro_forecast': data['astro_forecast']
         }
         
         result = supabase.table('location_weather').insert(record).execute()
@@ -125,7 +135,9 @@ def get_latest_forecast(location_id):
             "location_id": location_id,
             "forecast_day": forecast['forecast_day'],
             "poll_datetime": forecast['poll_datetime'],
-            "hourlyForecast": forecast['hourly_forecast']
+            "hourlyForecast": forecast['hourly_forecast'],
+            "dailyForecast": forecast['daily_forecast'],
+            "astroForecast": forecast['astro_forecast']
         }), 200
 
     except Exception as e:
@@ -161,7 +173,9 @@ def get_forecast_by_date(location_id, date):
             "location_id": location_id,
             "forecast_day": target_date,
             "poll_datetime": forecast['poll_datetime'],
-            "hourlyForecast": forecast['hourly_forecast']
+            "hourlyForecast": forecast['hourly_forecast'],
+            "dailyForecast": forecast['daily_forecast'],
+            "astroForecast": forecast['astro_forecast']
         }), 200
 
     except ValueError:
@@ -208,7 +222,9 @@ def get_forecast_by_datetime(location_id, dt_input):
         return jsonify({
             "location_id": location_id,
             "forecast_day": forecast['forecast_day'],
-            "weather": hour_data
+            "weather": hour_data,
+            "dailyForecast": forecast['daily_forecast'],
+            "astroForecast": forecast['astro_forecast']
         }), 200
 
     except ValueError:

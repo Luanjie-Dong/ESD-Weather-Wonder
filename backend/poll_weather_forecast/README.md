@@ -129,7 +129,7 @@ This microservice is responsible for polling weather forecasts for all registere
   }
   ```
 
-### Trigger Poll (`curl +X POST localhost:5005/trigger-poll` to manually trigger and poll)
+### Trigger Poll (`curl -X POST localhost:5005/trigger-poll` to manually trigger and poll)
 - **Method**: POST
 - **Path**: /trigger-poll
 - **Response Schema**:

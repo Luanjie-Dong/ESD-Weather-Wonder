@@ -240,7 +240,8 @@ def get_forecast(country, state, city, neighbourhood, max_retries=3):
             # Log successful forecast data
             forecast_data = data.get("data", {}).get("getForecast", {})
             if forecast_data:
-                logger.info(f"Received forecast data: {json.dumps(forecast_data, indent=2)}")
+                # logger.info(f"Received forecast data: {json.dumps(forecast_data, indent=2)}")
+                logger.info("Sucessfully received forecast data")
             return forecast_data
         except requests.RequestException as e:
             retries += 1
@@ -262,9 +263,12 @@ def update_location_weather(location_id, forecast):
         # Match location_weather's schema naming
         payload = {
             "forecast_day": forecastDay["date"],
-            "hourly_forecast": forecastDay["hour"]
+            "hourly_forecast": forecastDay["hour"],
+            "daily_forecast": forecastDay["day"],
+            "astro_forecast": forecastDay["astro"]
         }
-        logger.info(f"Sending payload to location_weather service: {json.dumps(payload, indent=2)}")
+        # logger.info(f"Sending payload to location_weather service: {json.dumps(payload, indent=2)}")
+        logger.info("Sending payload to location_weather service")
         
         try:
             # Send the update request
