@@ -59,17 +59,11 @@ def poll_weather_forecasts():
             try:
                 location_id = location.get('location_id')
                 country = location.get('country', '').strip()
-                
-                # Make at least country mandatory otherwise we will waste api calls trying to forecast narnia
-                if not country:
-                    logger.warning(f"Location ID {location_id}: Missing required country field")
-                    continue
-                    
                 state = location.get('state', '').strip()
                 city = location.get('city', '').strip()
                 neighbourhood = location.get('neighbourhood', '').strip()
                 
-                # for debugging
+                # Debug location data
                 logger.info(f"""
                     Location details for ID {location_id}:
                     - Country: '{country}'
@@ -78,17 +72,17 @@ def poll_weather_forecasts():
                     - Neighbourhood: '{neighbourhood}'
                 """)
                 
-                # validate country n city
-                # if not (country and city):
-                #     logger.warning(f"Location ID {location_id}: Missing required fields - Country: '{country}', City: '{city}'")
-                #     continue
+                # Validate required fields
+                if not (country and city):
+                    logger.warning(f"Location ID {location_id}: Missing required fields - Country: '{country}', City: '{city}'")
+                    continue
                 
                 forecast = get_forecast(country, state, city, neighbourhood)
                 if not forecast:
                     logger.warning(f"No forecast data available for location ID: {location_id}")
                     continue
                 
-                # Log successful forecast retrieval 
+                # Log successful forecast retrieval
                 logger.info(f"Successfully retrieved forecast for {city}, {state}, {country} (ID: {location_id})")
                 
                 update_result = update_location_weather(location_id, forecast)
@@ -171,23 +165,14 @@ def check_service_health(service_url):
         return False
 
 # In the get_forecast function, add a retry mechanism
-def get_forecast(country, state='', city='', neighbourhood='', max_retries=3):
+def get_forecast(country, state, city, neighbourhood, max_retries=3):
     """Get forecast from the weather service using GraphQL with retries"""
     retries = 0
     while retries < max_retries:
         try:
-            # Build variables dictionary with only available fields
-            variables = {"country": country}
-            if state:
-                variables["state"] = state
-            if city:
-                variables["city"] = city
-            if neighbourhood:
-                variables["neighbourhood"] = neighbourhood
-
             # GraphQL query for forecast
             query = """
-            query GetForecast($country: String!, $state: String, $city: String, $neighbourhood: String) {
+            query GetForecast($country: String!, $state: String!, $city: String!, $neighbourhood: String!) {
                 getForecast(country: $country, state: $state, city: $city, neighbourhood: $neighbourhood) {
                     location {
                         name
@@ -249,6 +234,14 @@ def get_forecast(country, state='', city='', neighbourhood='', max_retries=3):
             }
             """
             
+            variables = {
+                "country": country,
+                "state": state,
+                "city": city,
+                "neighbourhood": neighbourhood
+            }
+            
+            print(variables,flush=True)
             response = requests.post(
                 f"{WEATHER_URL}/graphql",
                 json={"query": query, "variables": variables},
