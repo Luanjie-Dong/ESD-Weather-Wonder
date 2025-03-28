@@ -23,7 +23,7 @@ public class WeatherResolver {
         @Argument String city, 
         @Argument String neighbourhood
     ) {
-        if (country == null || country.isEmpty() || state == null || state.isEmpty() || city == null || city.isEmpty() || neighbourhood == null || neighbourhood.isEmpty()) {
+        if (country == null || country.isEmpty() || state == null || city == null || neighbourhood == null) {
             throw new RuntimeException("All location parameters are required.");
         }
         try {
@@ -40,7 +40,7 @@ public class WeatherResolver {
         @Argument String city, 
         @Argument String neighbourhood
     ) {
-        if (country == null || country.isEmpty() || state == null || state.isEmpty() || city == null || city.isEmpty() || neighbourhood == null || neighbourhood.isEmpty()) {
+        if (country == null || country.isEmpty() || state == null || city == null || neighbourhood == null) {
             throw new RuntimeException("All location parameters are required.");
         }
         try {
@@ -56,7 +56,7 @@ public class WeatherResolver {
         @Argument String state, 
         @Argument String city
     ) {
-        if (country == null || country.isEmpty() || state == null || state.isEmpty() || city == null || city.isEmpty()) {
+        if (country == null || country.isEmpty() || state == null || city == null) {
             throw new RuntimeException("Country, state, and city are required.");
         }
         try {

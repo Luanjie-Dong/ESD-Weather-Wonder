@@ -1,3 +1,4 @@
 .env
 encoding_env
 kubernetes
+backend\**\*.class
