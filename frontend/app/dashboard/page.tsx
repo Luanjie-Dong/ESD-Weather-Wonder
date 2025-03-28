@@ -24,10 +24,10 @@ interface UserProfile {
 };
 
 interface UserLocation {
-  UserId?: string;
-  LocationId?: string;
-  Label?: string;
-  Address?: string;
+  UserId: string;
+  LocationId: string;
+  Label: string;
+  Address: string;
 }
 
 interface LocationInfo {
@@ -51,7 +51,10 @@ export default function DashboardPage() {
   }
   const headers = {"Content-Type": "application/json", [api_name]: api_key}
   const user_id = userProfile?.['user_id'];
-  const user_locations_endpoint = `http://localhost:8000//user-location-api/v1/GetUserLocations/user/${user_id}`
+  const user_locations_endpoint = `http://localhost:8000/user-location-api/v1/GetUserLocations/user/${user_id}`
+  const delete_location_endpoint = `http://localhost:8000/user-location-api/v1/DeleteUserLocation`
+  const all_weather_endpoint = `http://localhost:8000/location-weather-api/v1/get_weather/`
+
 
 
   const get_user_location = async () => {
@@ -121,6 +124,28 @@ export default function DashboardPage() {
       [name]: value,
     }));
   };
+
+  const deleteLocation = async (locationId: string) => {
+    try {
+      const location_info = userLocations.filter((x) => x.LocationId === locationId);
+      console.log(location_info)
+      const response = await axios.delete(delete_location_endpoint, {
+        data: location_info[0], 
+        headers: headers,    
+      });
+  
+      if (response.status === 200) {
+        console.log("Response Data:", response.data);
+        console.log("Refreshing locations")
+        get_user_location();
+      } else {
+        console.warn(`Unexpected response status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error(`Error deleting location: ${locationId}`, error);
+    }
+  };
+
 
   useEffect(() => {
       const userProfileString = localStorage.getItem('user_profile');
@@ -192,38 +217,23 @@ export default function DashboardPage() {
             <TabsContent value="saved" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {userLocations.length > 0 && userLocations.map((location) => (
-                  <Card key={location.Address} className="border-2 border-brand">
+                  <Card key={location.LocationId} className="border-2 border-brand">
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="flex items-center text-lg">
+                        <CardTitle className="flex items-center text-lg capitalize">
                           <MapPin className="mr-2 h-4 w-4" />
                           {location.Address}
                         </CardTitle>
-                        {/* <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                              <Edit className="mr-2 h-4 w-4" /> Edit
-                            </DropdownMenuItem>
-                            {!location.primary && (
-                              <DropdownMenuItem>
-                                <MapPin className="mr-2 h-4 w-4" /> Set as Primary
-                              </DropdownMenuItem>
-                            )}
-                            <DropdownMenuItem className="text-destructive">
-                              <Trash2 className="mr-2 h-4 w-4" /> Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu> */}
+                        <button
+                        onClick={() => deleteLocation(location.LocationId)} 
+                        className="top-2 text-red-500 hover:text-red-700"
+                        >
+                        <Trash2 className="h-5 w-5" /> 
+                      </button>
                       </div>
-                      {/* {location.primary && <CardDescription>Primary Location</CardDescription>} */}
                     </CardHeader>
                     <CardContent className="flex items-center justify-between pb-4">
-                      <p className="text-2xl font-bold">{location.Label}</p>
+                      <p className="text-2xl font-bold capitalize">{location.Label}</p>
                       {/* <location.icon className="h-8 w-8 text-brand" /> */}
                     </CardContent>
                     <CardFooter className="pt-0">
@@ -236,7 +246,7 @@ export default function DashboardPage() {
                 {loading ? (
                   <div className="flex flex-col space-y-4">
                     <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-blue-500 border-opacity-50"></div>
-                    <p className="text-lg text-gray-700">Loading locations...</p>
+                    {/* <p className="text-lg text-gray-700">Loading locations...</p> */}
                   </div>
                 ) : userLocations.length === 0 ? (
                   <div className="text-xl text-gray-600 dark:text-gray-300 py-8">

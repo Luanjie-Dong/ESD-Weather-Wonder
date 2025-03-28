@@ -170,6 +170,41 @@ def get_latest_forecast(location_id):
 
     except Exception as e:
         return jsonify({"error": f"Error retrieving forecast: {str(e)}"}), 500
+    
+@app.route('/get_user_weather/<location_ids>', methods=['GET'])
+def get_user_forecast(location_ids):
+    try:
+        location_id_list = location_ids.split(',')
+        for location_id in location_id_list:
+            location_exists, error_response = check_location_exists(location_id)
+            if not location_exists:
+                return error_response
+
+        result = supabase.table('location_weather')\
+            .select('*')\
+            .in_('location_id', location_id_list)\
+            .order('poll_datetime', desc=True)\
+            .limit(1)\
+            .execute()
+
+        if not result.data:
+            return jsonify({"error": "No weather data available for the specified locations"}), 404
+
+        forecasts = []
+        for forecast in result.data:
+            forecasts.append({
+                "location_id": forecast['location_id'],
+                "forecast_day": forecast['forecast_day'],
+                "poll_datetime": forecast['poll_datetime'],
+                "hourlyForecast": forecast['hourly_forecast'],
+                "dailyForecast": forecast['daily_forecast'],
+                "astroForecast": forecast['astro_forecast']
+            })
+
+        return jsonify(forecasts), 200
+
+    except Exception as e:
+        return jsonify({"error": f"Error retrieving forecast: {str(e)}"}), 500
 
 @app.route('/get_weather/date/<location_id>/<date>', methods=['GET'])
 # @requires_auth # decorator to ensure that there is a valid auth header present
