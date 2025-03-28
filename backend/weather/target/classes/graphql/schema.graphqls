@@ -1,8 +1,8 @@
 # Type for main Query
 type Query {
-    getForecast(country: String!, state: String!, city: String!, neighbourhood: String!): ForecastDAO
-    getCurrent(country: String!, state: String!, city: String!, neighbourhood: String!): CurrentDAO
-    getAlerts(country: String!, state: String!, city: String!): AlertDAO
+    getForecast(country: String, state: String, city: String, neighbourhood: String): ForecastDAO
+    getCurrent(country: String, state: String, city: String, neighbourhood: String): CurrentDAO
+    getAlerts(country: String, state: String, city: String): AlertDAO
 }
 
 # Type for Location
