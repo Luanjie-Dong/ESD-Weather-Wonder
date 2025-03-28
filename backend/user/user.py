@@ -277,19 +277,36 @@ def publishUserNotification(user):
     subject = "Welcome to WeatherWonder!"
     content = f"""
         <html>
-            <body>
-                <h2>Welcome, {user['username']}!</h2>
-                <p>Thank you for signing up with WeatherWonder.</p>
-                <p>We've registered your account with the following details:</p>
-                <ul>
-                    <li>Email: {user['email']}</li>
-                    <li>Location: {user['neighbourhood']}, {user['city']}, {user['country']}</li>
-                    <li>Username: {user['username']}</li>
-                </ul>
-                <p>You'll start receiving daily weather forecasts soon.</p>
-                <p>If you have any questions, feel free to reach out to our support team.</p>
-                <br>
-                <p>Cheers,<br>The WeatherWonder Team</p>
+            <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; background-color: #f0f8ff; padding: 20px;">
+                <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                    <h2 style="color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; color: #3498db;">
+                        Welcome, {user['username']}!
+                    </h2>
+                    <p style="font-size: 16px; margin-bottom: 10px;">
+                        <strong>Thank you for signing up with WeatherWonder!</strong>
+                    </p>
+                    <p style="font-size: 16px; margin-bottom: 10px;">
+                        We've successfully registered your account with the following details:
+                    </p>
+                    <ul style="font-size: 16px; margin-bottom: 20px; list-style: none; padding: 0;">
+                        <li><strong>Email:</strong> {user['email']}</li>
+                        <li><strong>Location:</strong> {user['neighbourhood']}, {user['city']}, {user['country']}</li>
+                        <li><strong>Username:</strong> {user['username']}</li>
+                    </ul>
+                    <p style="font-size: 16px; margin-bottom: 10px;">
+                        You'll start receiving daily weather forecasts soon.
+                    </p>
+                    <p style="font-size: 16px; margin-bottom: 10px;">
+                        If you have any questions, feel free to reach out to our support team.
+                    </p>
+                    <br>
+                    <p style="font-size: 14px; color: #777;">
+                        Cheers,<br>The WeatherWonder Team
+                    </p>
+                    <footer style="margin-top: 30px; font-size: 14px; color: #3498db;">
+                        <p>WeatherWonder - Your trusted weather partner</p>
+                    </footer>
+                </div>
             </body>
         </html>
     """
@@ -306,10 +323,6 @@ def publishUserNotification(user):
         pika.ConnectionParameters(host=RABBITMQ_HOST, port=RABBITMQ_PORT, credentials=credentials)
     )
     channel = connection.channel()
-
-    channel.exchange_declare(exchange=EXCHANGE_NAME, exchange_type="topic", durable=True)
-
-    channel.queue_declare(queue=QUEUE, durable=True, arguments={"x-max-priority": 10})
     channel.queue_bind(exchange=EXCHANGE_NAME, queue=QUEUE, routing_key=ROUTING_KEY) 
 
     channel.basic_publish(
