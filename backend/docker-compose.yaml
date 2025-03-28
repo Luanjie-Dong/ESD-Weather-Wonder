@@ -106,7 +106,7 @@ services:
         context: ./add_a_location
         dockerfile: Dockerfile
       ports:
-        # - '5010:5010'
+        - '5010:5010'
       env_file:
         - ./add_a_location/.env
       restart: on-failure
