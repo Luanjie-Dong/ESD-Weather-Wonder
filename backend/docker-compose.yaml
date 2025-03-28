@@ -67,8 +67,8 @@ services:
         build: 
             context: ./geocoding
             dockerfile: Dockerfile.encoder
-        # ports:
-        #   - '5004:5004'
+        ports:
+          - '5004:5004'
         env_file:
         - ./geocoding/.env
         restart: on-failure

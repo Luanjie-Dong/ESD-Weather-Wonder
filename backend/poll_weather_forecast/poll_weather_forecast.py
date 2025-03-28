@@ -353,11 +353,11 @@ def poll_single_location(location_id):
         city = location.get('city', '').strip()
         neighbourhood = location.get('neighbourhood', '').strip()
         
-        # Validate required fields
-        required_fields = {'country': country, 'state': state, 'city': city, 'neighbourhood': neighbourhood}
-        missing_fields = [field for field, value in required_fields.items() if not value]
-        if missing_fields:
-            return jsonify({"error": f"Location ID {location_id}: Missing required fields - {', '.join(missing_fields)}"}), 400
+        # # Validate required fields
+        # required_fields = {'country': country, 'state': state, 'city': city, 'neighbourhood': neighbourhood}
+        # missing_fields = [field for field, value in required_fields.items() if not value]
+        # if missing_fields:
+        #     return jsonify({"error": f"Location ID {location_id}: Missing required fields - {', '.join(missing_fields)}"}), 400
         
         # Get forecast
         forecast = get_forecast(country, state, city, neighbourhood)
