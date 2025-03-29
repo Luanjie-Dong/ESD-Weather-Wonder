@@ -37,22 +37,25 @@ export default function SettingsPage() {
 
   const headers = {"Content-Type": "application/json", [api_name]: api_key}
 
-  useEffect(() => {
+  const get_profile = async() => {
     const userProfileString = localStorage.getItem('user_profile');
     if (userProfileString) {
       setUserProfile(JSON.parse(userProfileString));
       }
+  }
+
+  useEffect(() => {
+    get_profile()
     }, []);
 
   const user_id = userProfile?.['user_id'];
   const update_user_endpoint = `http://localhost:8000/user-api/v1/user/${user_id}`
 
-
+  
   const updateProfile = async() => {
     setLoading(true)
 
     try{
-      console.log(userProfile)
       const response = await axios.put(update_user_endpoint,userProfile, { headers });
 
       if (response.status == 200){
@@ -71,7 +74,15 @@ export default function SettingsPage() {
         }
         login(userProfile)
       }
-    } 
+    } catch (error) {
+          console.error("Error:", error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Failed to update profile. Please try again.',
+          });
+          window.location.href = "/profile";
+    }
     finally{
       setLoading(false)
     }
@@ -89,7 +100,6 @@ export default function SettingsPage() {
         ...prevData,
         [name]: value, 
       };
-  
       return updatedProfile;
     });
   };
@@ -117,6 +127,7 @@ export default function SettingsPage() {
                 <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
+                  name='username'
                   defaultValue={userProfile?.username || "Not set"}
                   disabled={!userProfile}
                   onChange={handleProfileUpdate}
@@ -127,6 +138,7 @@ export default function SettingsPage() {
                 <Input
                   id="email"
                   type="email"
+                  name='email'
                   defaultValue={userProfile?.email || "Not set"}
                   disabled={!userProfile}
                   onChange={handleProfileUpdate}
@@ -136,6 +148,7 @@ export default function SettingsPage() {
                 <Label htmlFor="location">Location</Label>
                 <Input
                   id="location"
+                  name='country'
                   defaultValue={`${userProfile?.city || ""}, ${userProfile?.country || ""}`}
                   disabled={!userProfile}
                   onChange={handleProfileUpdate}
