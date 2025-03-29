@@ -11,6 +11,7 @@ import axios from "axios";
 import { isAuthenticated } from "../lib/auth"
 import { login } from "../lib/auth"
 import AuthCheck from "@/components/auth-check"
+import Swal from 'sweetalert2';
 
 export default function LoginPage() {
     const api_name = process.env.NEXT_PUBLIC_API_KEY_NAME
@@ -64,23 +65,45 @@ export default function LoginPage() {
       setLoading(true);
       console.log(formData)
       try {
-  
-        console.log(headers)
-        const response = await axios.post(signup_url,formData,{ headers });
-  
-        if (response.status == 201){
+        const response = await axios.post(signup_url, formData, { headers });
+      
+        if (response.status == 201) {
           console.log("Success:", response.data);
-          alert("Account created successfully!");
-          const user_detail = {"email":formData['email'],"password":formData["password"]}
-          const response_user = await axios.post(login_url,user_detail, {headers})
-          const user_profile = response_user.data?.user 
-  
-          login(user_profile)
-          window.location.href = "/dashboard";
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        alert("Failed to create account. Please try again.");
+      
+          Swal.fire({
+            icon: 'success',
+            title: 'Account Created Successfully!',
+            text: 'You will now be redirected to the dashboard.',
+            confirmButtonText: 'OK',
+          }).then(async () => {
+            try {
+              // Log in the user automatically
+              const user_detail = {
+                email: formData['email'],
+                password: formData['password'],
+              };
+              const response_user = await axios.post(login_url, user_detail, { headers });
+              const user_profile = response_user.data?.user;
+      
+              login(user_profile); 
+              window.location.href = "/dashboard"; 
+              } catch (loginError) {
+                console.error("Login Error:", loginError);
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'Failed to log in after account creation. Please try again.',
+                });
+              }
+            });
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Failed to create account. Please try again.',
+          });
       }
       finally {
         setLoading(false); 

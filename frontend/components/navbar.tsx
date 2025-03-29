@@ -16,7 +16,7 @@ export default function Navbar() {
   ]
 
   return (
-    <nav className="fixed bottom-0 left-0 z-50 w-full border-t border-border bg-background md:relative md:border-b md:border-t-0">
+    <nav className="fixed bottom-0 left-0 z-50 w-full border-t border-border bg-white md:relative md:border-b md:border-t-0">
       <div className="container flex h-16 items-center justify-between">
         <Link href="/dashboard" className="hidden items-center gap-2 md:flex">
           <span className="text-xl font-bold text-brand">Weather Wonder</span>

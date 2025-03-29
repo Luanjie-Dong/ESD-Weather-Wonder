@@ -12,6 +12,8 @@ import { useState , useEffect} from "react";
 import axios from "axios";
 import { Input } from "@/components/ui/input"
 import { login } from "../lib/auth"
+import Swal from 'sweetalert2';
+
 
 interface UserProfile {
   city: string;
@@ -54,7 +56,15 @@ export default function SettingsPage() {
 
       if (response.status == 200){
         console.log(response.data)
-        alert("Profile updated!")
+        Swal.fire({
+          icon: 'success', 
+          title: 'Success!', 
+          text: 'Profile updated!', 
+          confirmButtonText: 'OK', 
+          customClass: {
+            confirmButton: 'btn btn-primary' 
+          }
+        });
         if (!userProfile) {
           throw new Error("User profile not found in response.");
         }
@@ -114,7 +124,7 @@ export default function SettingsPage() {
             </CardContent>
             <CardFooter className="flex justify-end">
               
-              <Button onClick={updateProfile}>Save Changes</Button>
+              <Button onClick={updateProfile} className="hover:bg-gray-300">Save Changes</Button>
             </CardFooter>
           </Card>
           {loading && (

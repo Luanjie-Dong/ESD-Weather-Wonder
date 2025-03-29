@@ -65,13 +65,13 @@ const WeatherDashboard: React.FC<WeatherDashboardProps> = ({
     };
   return (
     <div className="w-full">
-    <Button variant="outline" size="sm" className="w-full" onClick={openPopup}>
+    <Button variant="outline" size="sm" className="w-full hover:bg-gray-300" onClick={openPopup}>
         View Detailed Forecast
     </Button>
 
     {/* Popup Modal */}
     {isPopupOpen && (
-      <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="fixed inset-0 flex items-center justify-center z-50 mx-4">
         {/* Background Overlay */}
         <div
           className="fixed inset-0 bg-black bg-opacity-50"

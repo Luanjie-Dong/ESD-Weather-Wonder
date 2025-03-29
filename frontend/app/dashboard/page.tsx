@@ -13,6 +13,7 @@ import { Cloud, CloudRain, Edit, MapPin, MoreHorizontal, Plus, Trash2, Thermomet
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import axios from "axios";
 import WeatherDashboard from "@/components/detail-weather"
+import Swal from 'sweetalert2';
 
 interface AstroForecast {
   moon_phase: string;
@@ -128,7 +129,7 @@ export default function DashboardPage() {
 
           const max_temp = forecast_data[i]?.dailyForecast?.maxtemp_c;
           const min_temp = forecast_data[i]?.dailyForecast?.mintemp_c;
-          const wind = forecast_data[i]?.dailyForecast?.minwind_kph;
+          const wind = forecast_data[i]?.dailyForecast?.maxwind_kph;
           const rain = forecast_data[i]?.hourlyForecast?.[0]?.chance_of_rain;
 
           const weather_data = {
@@ -202,18 +203,37 @@ export default function DashboardPage() {
       const payload = {"address":locationInfo?.['Address'],"label":locationInfo?.['Label'],'user_id':user_id}
       const response = await axios.post(add_location_endpoint,payload,{ headers });
 
-      if (response.status == 201){
-        alert("Location added successfully!");
-        window.location.href = "/dashboard";
+      if (response.status == 201) {
+        Swal.fire({
+          icon: 'success', 
+          title: 'Location Added Successfully!',
+          text: 'The location has been added successfully.',
+          confirmButtonText: 'Go to Dashboard',
+          customClass: {
+            confirmButton: 'btn btn-primary' 
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "/dashboard"; 
+          }
+        });
       }
 
       if (response.status == 500){
-        alert("Failed to add location. Please try again.");
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Failed to add location. Please try again.',
+        });
       }
     }
     catch (error) {
       console.error("Error:", error);
-      alert("Failed to add location (api call). Please try again.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Failed to add location (API call). Please try again.',
+      });
     }
     finally {
       setLocationLoading(false); 
