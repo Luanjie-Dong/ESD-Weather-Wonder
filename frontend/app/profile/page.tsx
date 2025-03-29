@@ -18,9 +18,10 @@ import Swal from 'sweetalert2';
 interface UserProfile {
   city: string;
   country: string;
+  state: string;
   created_at: Date; 
   email: string;
-  state: string;
+  neighbourhood: string;
   user_id: string;
   username: string | null;
 };
@@ -81,7 +82,6 @@ export default function SettingsPage() {
             title: 'Oops...',
             text: 'Failed to update profile. Please try again.',
           });
-          window.location.href = "/profile";
     }
     finally{
       setLoading(false)
@@ -125,12 +125,7 @@ export default function SettingsPage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  name='username'
-                  defaultValue={userProfile?.username || "Not set"}
-                  disabled={!userProfile}
-                  onChange={handleProfileUpdate}
+                <Input id="username" name='username' defaultValue={userProfile?.username || "Not set"} disabled={!userProfile} onChange={handleProfileUpdate}
                 />
               </div>
               <div className="space-y-2">
@@ -144,16 +139,49 @@ export default function SettingsPage() {
                   onChange={handleProfileUpdate}
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
-                <Input
-                  id="location"
-                  name='country'
-                  defaultValue={`${userProfile?.city || ""}, ${userProfile?.country || ""}`}
-                  disabled={!userProfile}
-                  onChange={handleProfileUpdate}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="location">Country</Label>
+                  <Input
+                    id="location"
+                    name='country'
+                    defaultValue={`${userProfile?.country || ""}`}
+                    disabled={!userProfile}
+                    onChange={handleProfileUpdate}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="location">State</Label>
+                  <Input
+                    id="location"
+                    name='state'
+                    defaultValue={`${userProfile?.state || ""}`}
+                    disabled={!userProfile}
+                    onChange={handleProfileUpdate}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="location">City</Label>
+                  <Input
+                    id="location"
+                    name='city'
+                    defaultValue={`${userProfile?.city || ""}`}
+                    disabled={!userProfile}
+                    onChange={handleProfileUpdate}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="location">Neighbourhood</Label>
+                  <Input
+                    id="location"
+                    name='neighbourhood'
+                    defaultValue={`${userProfile?.neighbourhood || ""}`}
+                    disabled={!userProfile}
+                    onChange={handleProfileUpdate}
+                  />
+                </div>
               </div>
+              
             </CardContent>
             <CardFooter className="flex justify-end">
               

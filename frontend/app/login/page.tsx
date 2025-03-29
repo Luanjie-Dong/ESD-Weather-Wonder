@@ -35,7 +35,8 @@ export default function LoginPage() {
       password: "",
       country: "",
       state: "",
-      city: ""
+      city: "",
+      neighbourhood:"",
     });
   
     const [loginData, setLoginData] = useState({
@@ -211,18 +212,25 @@ export default function LoginPage() {
                         <Label htmlFor="password">Password</Label>
                         <Input id="password" name="password" type="password" value={formData.password} onChange={handleCreationChange}/>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="location">Country</Label>
-                        <Input id="country" name="country" placeholder="Country" value={formData.country} onChange={handleCreationChange}/>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="location">Country</Label>
+                          <Input id="country" name="country" placeholder="Country" value={formData.country} onChange={handleCreationChange}/>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="location">State</Label>
+                          <Input id="state" name="state" placeholder="State" value={formData.state} onChange={handleCreationChange}/>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="location">City</Label>
+                          <Input id="city" name="city" placeholder="City" value={formData.city} onChange={handleCreationChange}/>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="location">Neighbourhood</Label>
+                          <Input id="city" name="neighbourhood" placeholder="Neighbourhood" value={formData.neighbourhood} onChange={handleCreationChange}/>
+                        </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="location">State</Label>
-                        <Input id="state" name="state" placeholder="State" value={formData.state} onChange={handleCreationChange}/>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="location">City</Label>
-                        <Input id="city" name="city" placeholder="City" value={formData.city} onChange={handleCreationChange}/>
-                      </div>
+                      
                     </CardContent>
                     <CardFooter>
                       <Button className="w-full hover:bg-gray-300" type="submit">Create Account</Button>
