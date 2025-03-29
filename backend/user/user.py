@@ -157,25 +157,44 @@ def get_user_by_route(user_id):
         }), 500
 
 def update_user_by_route(user_id):
-    try:            
+    try:
+        res = supabaseAdmin.table("user").select("*").eq("user_id", user_id).execute()
+        user = res.data[0]
+
         data = request.get_json()
-        username = data.get("username")
-        email = data.get("email")
-        password = data.get("password")
-        country = data.get("country")
-        state = data.get("state")
-        city = data.get("city")
-        neighbourhood = data.get("neighbourhood")
+        username = data.get("username", user['username'])
+        email = data.get("email", user['email'])
+        password = data.get("password") # no way to retrieve password individually from Auth side
+        country = data.get("country", user['country'])
+        state = data.get("state", user['state'])
+        city = data.get("city", user['city'])
+        neighbourhood = data.get("neighbourhood", user['neighbourhood'])
 
         response = supabaseAdmin.table("user").update({"username": username, "email": email, 
                                                       "country": country, "state": state, "city": city, "neighbourhood": neighbourhood}).eq("user_id", user_id).execute()
 
-        supabaseAdmin.auth.admin.update_user_by_id(user_id,
-            {
-                "email": email,
-                "password": password
-            }
-        )
+        # Ensures that no ill entries are entered
+        if email and password:
+            supabaseAdmin.auth.admin.update_user_by_id(user_id,
+                {
+                    "email": email,
+                    "password": password
+                }
+            )
+
+        if email:
+             supabaseAdmin.auth.admin.update_user_by_id(user_id,
+                {
+                    "email": email
+                }
+            )
+
+        if password:
+             supabaseAdmin.auth.admin.update_user_by_id(user_id,
+                {
+                    "password": password
+                }
+            )               
 
         return jsonify({
             "code": 200,
