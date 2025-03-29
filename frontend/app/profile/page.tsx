@@ -52,6 +52,7 @@ export default function SettingsPage() {
     setLoading(true)
 
     try{
+      console.log(userProfile)
       const response = await axios.put(update_user_endpoint,userProfile, { headers });
 
       if (response.status == 200){
@@ -76,6 +77,22 @@ export default function SettingsPage() {
     }
   }
 
+  const handleProfileUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+  
+    setUserProfile((prevData) => {
+      if (!prevData) {
+        throw new Error("UserProfile state is null");
+      }
+  
+      const updatedProfile: UserProfile = {
+        ...prevData,
+        [name]: value, 
+      };
+  
+      return updatedProfile;
+    });
+  };
 
 
 
@@ -102,6 +119,7 @@ export default function SettingsPage() {
                   id="username"
                   defaultValue={userProfile?.username || "Not set"}
                   disabled={!userProfile}
+                  onChange={handleProfileUpdate}
                 />
               </div>
               <div className="space-y-2">
@@ -111,6 +129,7 @@ export default function SettingsPage() {
                   type="email"
                   defaultValue={userProfile?.email || "Not set"}
                   disabled={!userProfile}
+                  onChange={handleProfileUpdate}
                 />
               </div>
               <div className="space-y-2">
@@ -119,6 +138,7 @@ export default function SettingsPage() {
                   id="location"
                   defaultValue={`${userProfile?.city || ""}, ${userProfile?.country || ""}`}
                   disabled={!userProfile}
+                  onChange={handleProfileUpdate}
                 />
               </div>
             </CardContent>
