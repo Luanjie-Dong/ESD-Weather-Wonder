@@ -184,7 +184,6 @@ def get_user_forecast(location_ids):
             .select('*')\
             .in_('location_id', location_id_list)\
             .order('poll_datetime', desc=True)\
-            .limit(1)\
             .execute()
 
         if not result.data:

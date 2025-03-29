@@ -9,19 +9,35 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Cloud, CloudRain, Edit, MapPin, MoreHorizontal, Plus, Trash2 } from "lucide-react"
+import { Cloud, CloudRain, Edit, MapPin, MoreHorizontal, Plus, Trash2, Thermometer, ArrowUp, ArrowDown, Wind, Umbrella , Calendar} from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import axios from "axios";
+import WeatherDashboard from "@/components/detail-weather"
 
-interface UserProfile {
-  city: string;
-  country: string;
-  created_at: Date; 
-  email: string;
-  state: string;
-  user_id: string;
-  username: string | null;
-};
+interface AstroForecast {
+  moon_phase: string;
+  moonrise: string;
+  moonset: string;
+  sunrise: string;
+  sunset: string;
+}
+
+interface DailyForecast {
+  avghumidity: number;
+  avgtemp_c: number;
+  condition_code: number;
+  condition_icon: string | null;
+  condition_text: string | null;
+}
+
+interface HourlyForecastItem {
+time: string;
+temp_c: number;
+wind_kph: number;
+cloud: number;
+chance_of_rain: number;
+}
+
 
 interface UserLocation {
   UserId: string;
@@ -36,6 +52,21 @@ interface LocationInfo {
   Address?: string;
 }
 
+interface locationWeather {
+  LocationId: string;
+  Label: string;
+  Address: string;
+  day: string;
+  temp: number;       
+  max_temp: number;   
+  min_temp: number;   
+  wind: number;       
+  rain: number;
+  astro: AstroForecast;
+  daily: DailyForecast;
+  hourly:HourlyForecastItem[];       
+}
+
 export default function DashboardPage() {
   const router = useRouter()
   const [userProfile, setUserProfile] = useState<any>({ username: 'User' });
@@ -43,6 +74,9 @@ export default function DashboardPage() {
   const [userLocations,setUserLocations] = useState<UserLocation[]>([])
   const [loading,setLoading] = useState(true)
   const [locationLoading,setLocationLoading] = useState(false)
+  const [deleteLoading,setDeleteLoading] = useState(false)
+  const [locationWeather,setLocationWeather] = useState<locationWeather[]>([])
+
   const api_name = process.env.NEXT_PUBLIC_API_KEY_NAME
   const api_key = process.env.NEXT_PUBLIC_API_KEY_VALUE
   const add_location_endpoint = "http://localhost:8000/add-user-location-api/v1/add_location"
@@ -53,9 +87,78 @@ export default function DashboardPage() {
   const user_id = userProfile?.['user_id'];
   const user_locations_endpoint = `http://localhost:8000/user-location-api/v1/GetUserLocations/user/${user_id}`
   const delete_location_endpoint = `http://localhost:8000/user-location-api/v1/DeleteUserLocation`
-  const all_weather_endpoint = `http://localhost:8000/location-weather-api/v1/get_weather/`
+  const all_weather_endpoint = `http://localhost:8000/location-weather-api/v1/get_user_weather/`
 
+  
+  const get_location_weather = async (user_data : UserLocation[]) => {
+    if (user_data.length == 0){
+      setLocationWeather([])
+      setLoading(false)
+      return
+    }
 
+    const locationIds = user_data.map((x) => x.LocationId);
+    const validLocationIds = locationIds.filter((id) => id);
+    const locationIdsString = validLocationIds.join(',');
+    const url = `${all_weather_endpoint}${locationIdsString}`;
+    try {
+      const response_forecast = await axios.get(url, { headers });
+      const forecast_data = response_forecast.data;
+      console.log(forecast_data)
+      const formatted_weather_data:locationWeather[] = []; // Initialize as an array
+
+      for (let i = 0; i < forecast_data.length; i++) {
+          const day = forecast_data[i]?.forecast_day;
+          const temp = forecast_data[i]?.dailyForecast?.avgtemp_c;
+          const locationid = forecast_data[i]?.location_id;
+
+          if (!day || !temp || !locationid) {
+            console.warn(`Invalid forecast data for entry:`, forecast_data[i]);
+            continue; 
+          }
+
+          const locationInfo = user_data.find((x) => x.LocationId == locationid);
+          if (!locationInfo) {
+            console.warn(`No matching location found for LocationId: ${locationid}`);
+            continue; 
+          }
+
+          const label = locationInfo.Label;
+          const address = locationInfo.Address;
+
+          const max_temp = forecast_data[i]?.dailyForecast?.maxtemp_c;
+          const min_temp = forecast_data[i]?.dailyForecast?.mintemp_c;
+          const wind = forecast_data[i]?.dailyForecast?.minwind_kph;
+          const rain = forecast_data[i]?.hourlyForecast?.[0]?.chance_of_rain;
+
+          const weather_data = {
+            LocationId: locationid,
+            Label: label,
+            Address: address,
+            day: day,
+            temp: temp,
+            max_temp: max_temp,
+            min_temp: min_temp,
+            wind: wind,
+            rain: rain,
+            astro: forecast_data[i]?.astroForecast,
+            daily: forecast_data[i]?.dailyForecast,
+            hourly: forecast_data[i]?.hourlyForecast,
+          };
+          const isDuplicate = formatted_weather_data.some(item => item.LocationId === weather_data.LocationId);
+          if (!isDuplicate) {
+            formatted_weather_data.push(weather_data);
+          }
+        }
+
+    setLocationWeather(formatted_weather_data);
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
+    }finally {
+      setLoading(false);
+      setDeleteLoading(false);
+    }
+  }
 
   const get_user_location = async () => {
     setLoading(true); 
@@ -64,29 +167,31 @@ export default function DashboardPage() {
       const response = await axios.get(user_locations_endpoint, { headers });
       if (response.status == 200) {
         console.log("Response Data:", response.data);
-          if (response.data && response.data.Result && response.data.Result.Success) {
-          const user_data = response.data.UserLocations;
-  
-          if (Array.isArray(user_data)) {
-            setUserLocations(user_data);
-          } else {
-            console.warn("UserLocations is not an array. Setting empty array.");
-            setUserLocations([]);
-          }
+        if (response.data && response.data.Result && response.data.Result.Success) {
+        const user_data = response.data.UserLocations;
+        if (Array.isArray(user_data)) {
+          setUserLocations(user_data);
+          get_location_weather(user_data)
+        } else {
+          console.warn("UserLocations is not an array. Setting empty array.");
+          setUserLocations([]);
+          get_location_weather([])
+        }
         } else {
           console.warn("Result.Success is false or missing. Setting empty array.");
           setUserLocations([]);
+          get_location_weather([])
         }
       } else {
         console.warn(`Unexpected response status: ${response.status}`);
         setUserLocations([]);
+        get_location_weather([])
       }
     } catch (error) {
       console.error("Error fetching user locations:", error);
       setUserLocations([]); 
-    } finally {
-      setLoading(false); 
-    }
+      get_location_weather([])
+    } 
   };
 
   const addLocation = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -95,8 +200,6 @@ export default function DashboardPage() {
     try {
 
       const payload = {"address":locationInfo?.['Address'],"label":locationInfo?.['Label'],'user_id':user_id}
-      console.log(payload)
-      console.log(add_location_endpoint)
       const response = await axios.post(add_location_endpoint,payload,{ headers });
 
       if (response.status == 201){
@@ -110,10 +213,10 @@ export default function DashboardPage() {
     }
     catch (error) {
       console.error("Error:", error);
-      alert("Failed to add location. Please try again.");
+      alert("Failed to add location (api call). Please try again.");
     }
     finally {
-      setLoading(false); 
+      setLocationLoading(false); 
     }
   }
 
@@ -126,17 +229,15 @@ export default function DashboardPage() {
   };
 
   const deleteLocation = async (locationId: string) => {
+    setDeleteLoading(true)
     try {
-      const location_info = userLocations.filter((x) => x.LocationId === locationId);
-      console.log(location_info)
+      const location_info = userLocations.filter((x) => x.LocationId == locationId);
       const response = await axios.delete(delete_location_endpoint, {
         data: location_info[0], 
         headers: headers,    
       });
   
-      if (response.status === 200) {
-        console.log("Response Data:", response.data);
-        console.log("Refreshing locations")
+      if (response.status == 200) {
         get_user_location();
       } else {
         console.warn(`Unexpected response status: ${response.status}`);
@@ -151,12 +252,6 @@ export default function DashboardPage() {
       const userProfileString = localStorage.getItem('user_profile');
       if (userProfileString) {
         setUserProfile(JSON.parse(userProfileString));
-        
-          // const formattedAddress = `${userProfile?.country}, ${userProfile?.state}, ${userProfile?.city}`;
-
-          // // Set the location info
-          // setLocationInfo({UserId: userProfile?.user_id,Address: formattedAddress,Label: "Home",});
-      
         }
       }, []);
 
@@ -169,6 +264,8 @@ export default function DashboardPage() {
     }
     
   }, [user_id]);
+
+  
   
   
 
@@ -179,13 +276,13 @@ export default function DashboardPage() {
   
   return (
     <AuthCheck>
-      <div className="flex min-h-screen flex-col">
+      <div className={`relative ${locationLoading ? "blur-lg pointer-events-none" : ""} flex min-h-screen flex-col`}>
       <Navbar />
       <main className="flex-1 pb-16 pt-6 md:pb-6">
         {/* Header Section */}
         <div className="container space-y-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-800 md:text-4xl">
+            <h1 className="text-3xl font-bold text-gray-800 md:text-4xl capitalize">
               Welcome {userProfile.username}!
             </h1>
             <Button
@@ -200,12 +297,18 @@ export default function DashboardPage() {
           {/* Locations Section */}
           <div className="container space-y-6 pl-0">
           <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-gray-800 md:text-3xl">
-            Your Locations
-          </h2>
-            {/* <Button className="bg-accent">
-              <Plus className="mr-2 h-4 w-4" /> Add Location
-            </Button> */}
+          {loading ? (
+                <div className="flex items-center justify-center space-x-4 col-span-full">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-blue-500 border-opacity-50"></div>
+                  <p className="text-lg font-medium text-gray-700 dark:text-gray-300">Loading locations...</p>
+                </div>
+              ) : (
+                <h2 className="text-2xl font-semibold text-gray-800 md:text-3xl">
+                  {locationWeather.length} Location(s)
+                </h2>
+              )
+          }
+        
           </div>
 
           <Tabs defaultValue="saved">
@@ -216,8 +319,8 @@ export default function DashboardPage() {
 
             <TabsContent value="saved" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {userLocations.length > 0 && userLocations.map((location) => (
-                  <Card key={location.LocationId} className="border-2 border-brand">
+                {locationWeather.length > 0 && locationWeather.map((location) => (
+                  <Card key={location.LocationId} className={`border-2 border-brand`}>
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
                         <CardTitle className="flex items-center text-lg capitalize">
@@ -234,26 +337,59 @@ export default function DashboardPage() {
                     </CardHeader>
                     <CardContent className="flex items-center justify-between pb-4">
                       <p className="text-2xl font-bold capitalize">{location.Label}</p>
-                      {/* <location.icon className="h-8 w-8 text-brand" /> */}
+                    </CardContent>
+                    <CardContent className="flex flex-col space-y-2 pb-4">
+                      <div className="flex items-center space-x-2">
+                        <Calendar className="h-5 w-5 text-gray-500" /> 
+                        <p className="text-lg font-medium">{location.day}</p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Thermometer className="h-5 w-5 text-gray-500" /> {/* Example icon for temperature */}
+                        <p className="text-lg font-medium">Temperature: {location.temp}°C</p>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <ArrowUp className="h-5 w-5 text-red-500" /> {/* Example icon for max temperature */}
+                        <p className="text-base text-red-500">Max: {location.max_temp}°C</p>
+                        <ArrowDown className="h-5 w-5 text-blue-500" /> {/* Example icon for min temperature */}
+                        <p className="text-base text-blue-500">Min: {location.min_temp}°C</p>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Wind className="h-5 w-5 text-gray-500" /> {/* Example icon for wind */}
+                        <p className="text-base">Wind: {location.wind} kph</p>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Umbrella className="h-5 w-5 text-gray-500" /> {/* Example icon for rain */}
+                        <p className="text-base">Rain: {location.rain}%</p>
+                      </div>
                     </CardContent>
                     <CardFooter className="pt-0">
-                      <Button variant="outline" size="sm" className="w-full">
-                        View Forecast
-                      </Button>
+                    <WeatherDashboard
+                      astroForecast={location.astro}
+                      dailyForecast={location.daily}
+                      hourlyForecast={location.hourly}
+                      locationName={location.Address}
+                    />
                     </CardFooter>
                   </Card>
                 ))}
-                {loading ? (
-                  <div className="flex flex-col space-y-4">
-                    <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-blue-500 border-opacity-50"></div>
-                    {/* <p className="text-lg text-gray-700">Loading locations...</p> */}
+                {!loading && userLocations.length == 0 ? (
+                  <div className="flex flex-col items-center justify-center text-center py-12 space-y-6 col-span-full">
+                    <div className="text-gray-400 dark:text-gray-500">
+                      <MapPin size={64} strokeWidth={1.5} />
+                    </div>
+                    <p className="text-2xl font-semibold text-gray-600 dark:text-gray-300">
+                      No location saved yet 😔
+                    </p>
                   </div>
-                ) : userLocations.length === 0 ? (
-                  <div className="text-xl text-gray-600 dark:text-gray-300 py-8">
-                    <p className="mb-4">No location saved 😔</p>
-                    <p> Go to Add Location Tab!</p>
+                ) : deleteLoading?(
+                <div>
+                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <p className="text-white text-lg font-semibold">Deleting location...</p>
                   </div>
-                ) : (<div></div>)}
+                </div>):(<div></div>)}
               </div>
             </TabsContent>
 
@@ -292,6 +428,7 @@ export default function DashboardPage() {
           
         </div>
       </main>
+
     </div>
   </AuthCheck>
   )
