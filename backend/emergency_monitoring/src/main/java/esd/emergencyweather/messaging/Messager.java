@@ -18,7 +18,7 @@ import java.util.HashMap;
 
 @Configuration
 public class Messager {
-    static final String topicExchangeName = "esd-weatherwonder-exchange";
+    static final String topicExchangeName = "esd-weatherwonder";
     static final String queueName = "Notification";
 
     @Value("${spring.rabbitmq.host}")
@@ -50,7 +50,7 @@ public class Messager {
 
     @Bean
     TopicExchange exchange() {
-        return new TopicExchange(topicExchangeName);
+        return new TopicExchange(topicExchangeName, true, false);
     }
 
     @Bean
@@ -58,20 +58,27 @@ public class Messager {
         return BindingBuilder.bind(queue).to(exchange).with("#.notification");
     }
 
-    // @Bean
-    // SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
-    //     MessageListenerAdapter listenerAdapter) {
-    //     SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-    //     container.setConnectionFactory(connectionFactory);
-    //     container.setQueueNames(queueName);
-    //     container.setMessageListener(listenerAdapter);
-    //     return container;
-    // }
+    @Bean
+    Binding replyBinding(Queue queue, TopicExchange exchange) {
+        return BindingBuilder.bind(queue).to(exchange).with("#.notification.reply");
+    }
 
-    // @Bean
-    // MessageListenerAdapter listenerAdapter(Receiver receiver) {
-    //     return new MessageListenerAdapter(receiver, "receiveMessage");
-    // }
+    @Bean
+    SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
+        MessageListenerAdapter listenerAdapter) {
+        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+        container.setConnectionFactory(connectionFactory);
+        container.setQueueNames(queueName);
+        container.setMessageListener(listenerAdapter);
+        return container;
+    }
+
+    @Bean
+    MessageListenerAdapter listenerAdapter(Receiver receiver) {
+        MessageListenerAdapter adapter = new MessageListenerAdapter(receiver, "receiveMessage");
+        adapter.setMessageConverter(null); // This ensures we receive the raw Message object
+        return adapter;
+    }
 
     public static void main(String[] args) throws InterruptedException {
         SpringApplication.run(Messager.class, args).close();

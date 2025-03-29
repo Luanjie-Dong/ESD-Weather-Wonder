@@ -117,6 +117,7 @@ def publishMessage(users, weather):
     channel.queue_bind(exchange=EXCHANGE_NAME, queue=PUBLISHER_QUEUE_NAME, routing_key=PUBLISHER_ROUTING_KEY) 
 
     forecast = weather
+    weather_icon = get_weather_icon(forecast)
 
     for user in users:
         content = f"""
@@ -131,7 +132,7 @@ def publishMessage(users, weather):
                     </p>
                     <p style="font-size: 16px; margin-bottom: 10px;">
                         <strong>Condition:</strong> {forecast['condition_text']}<br>
-                        <img src="{forecast['condition_icon']}" alt="Weather Icon" style="width: 50px; height: 50px; vertical-align: middle;"/>
+                        <img src="{weather_icon}" alt="Weather Icon" style="width: 50px; height: 50px; vertical-align: middle;"/>
                     </p>
                     <p style="font-size: 16px; margin-bottom: 10px;">
                         <strong>Temperature:</strong> {forecast['maxtemp_c']}°C (Max) <span style="color: #f39c12;">&#x1F321;</span><br>
@@ -178,6 +179,33 @@ def publishMessage(users, weather):
             body=json.dumps(msg),
             properties=amqp_lib.pika.BasicProperties(delivery_mode=2)
         )
+
+def get_weather_icon(forecast):
+    # Map condition codes to Icons8 URLs
+    icon_url = "https://img.icons8.com/ios/50/000000/"
+
+    # Define default icons for specific conditions
+    # DOES NOT WORK CURRENTLY CAUSE condition_text doesn't send anything
+    condition_icons = {
+        "Clear": "sun.png",                  # Clear weather (Sun)
+        "Clouds": "cloud.png",               # Cloudy weather
+        "Rain": "rain.png",                  # Rainy weather
+        "Thunderstorm": "thunderstorm.png",  # Thunderstorm
+        "Snow": "snow.png",                  # Snowy weather
+        "Drizzle": "drizzle.png",            # Light rain or drizzle
+        "Mist": "mist.png",                  # Misty weather (replacing fog)
+        "Partly Cloudy": "cloud.png",        # Partly cloudy weather
+    }
+
+    # Check if condition_text is available
+    condition_text = forecast['condition_text']
+    if condition_text and condition_text in condition_icons:
+        icon_url += condition_icons[condition_text]
+    else:
+        # Default icon if condition text is not available or matches no known condition
+        icon_url += "cloud.png"  # Default to cloudy icon
+
+    return icon_url
 
 
 def setup_consumer():
