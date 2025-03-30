@@ -173,6 +173,22 @@ services:
           - POST
           - OPTIONS 
         strip_path: True
+
+  #/poll-location/<int:location_id>
+  #######################################
+  # LOCATION WEATHER MICROSERVICE
+  #######################################
+  - name: refresh-location-weather-api
+    url: http://poll_weather_forecast:5005
+    routes:
+      # /add_location
+      - name: weather-location
+        paths:
+          - /weather-location-api/v1/
+        methods:
+          - POST
+          - OPTIONS 
+        strip_path: True
    
      
       
@@ -212,6 +228,7 @@ plugins:
         - PUT
         - DELETE
         - OPTIONS
+        - PATCH
       headers:
         - Authorization
         - Content-Type

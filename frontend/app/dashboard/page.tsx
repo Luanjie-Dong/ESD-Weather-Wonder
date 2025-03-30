@@ -14,6 +14,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import axios from "axios";
 import WeatherDashboard from "@/components/detail-weather"
 import Swal from 'sweetalert2';
+import LocationCard from "@/components/location-card"
 
 interface AstroForecast {
   moon_phase: string;
@@ -68,6 +69,11 @@ interface locationWeather {
   hourly:HourlyForecastItem[];       
 }
 
+interface HourlyForecast {
+  time: string; 
+  chance_of_rain?: number; 
+}
+
 export default function DashboardPage() {
   const router = useRouter()
   const [userProfile, setUserProfile] = useState<any>({ username: 'User' });
@@ -89,6 +95,8 @@ export default function DashboardPage() {
   const user_locations_endpoint = `http://localhost:8000/user-location-api/v1/GetUserLocations/user/${user_id}`
   const delete_location_endpoint = `http://localhost:8000/user-location-api/v1/DeleteUserLocation`
   const all_weather_endpoint = `http://localhost:8000/location-weather-api/v1/get_user_weather/`
+  const update_location_endpoint = `http://localhost:8000/user-location-api/v1/UpdateUserLocation`
+  const update_location_weather = `http://localhost:8000/weather-location-api/v1/poll-location/`
 
   
   const get_location_weather = async (user_data : UserLocation[]) => {
@@ -106,10 +114,9 @@ export default function DashboardPage() {
       const response_forecast = await axios.get(url, { headers });
       const forecast_data = response_forecast.data;
       console.log(forecast_data)
-      const formatted_weather_data:locationWeather[] = []; // Initialize as an array
-
+      const formatted_weather_data:locationWeather[] = []; 
       for (let i = 0; i < forecast_data.length; i++) {
-          const day = forecast_data[i]?.forecast_day;
+          const day = forecast_data[i].hourlyForecast?.filter((hour: HourlyForecast) => new Date(hour.time) > new Date()).slice(0, 1)[0]?.time.replace('T'," ");
           const temp = forecast_data[i]?.dailyForecast?.avgtemp_c;
           const locationid = forecast_data[i]?.location_id;
 
@@ -130,7 +137,7 @@ export default function DashboardPage() {
           const max_temp = forecast_data[i]?.dailyForecast?.maxtemp_c;
           const min_temp = forecast_data[i]?.dailyForecast?.mintemp_c;
           const wind = forecast_data[i]?.dailyForecast?.maxwind_kph;
-          const rain = forecast_data[i]?.hourlyForecast?.[0]?.chance_of_rain;
+          const rain = forecast_data[i]?.hourlyForecast?.filter((hour: HourlyForecast) => new Date(hour.time) > new Date()).slice(0, 1)[0]?.chance_of_rain;
 
           const weather_data = {
             LocationId: locationid,
@@ -267,6 +274,51 @@ export default function DashboardPage() {
     }
   };
 
+  const handleUpdate = async (id: string, updatedData: { Label: string; Address: string }) => {
+    try {
+      const payload = {
+        UserId: user_id,
+        LocationId: id,
+        Label: updatedData.Label,
+        Address: updatedData.Address,
+      };
+  
+      const response = await axios.patch(update_location_endpoint, payload, {
+        headers: headers,
+      });
+  
+      if (response.status === 200 || response.status === 204) {
+        get_user_location(); 
+      } else {
+        console.warn(`Unexpected response status: ${response.status}`);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(`Error updating location: ${id}`, error.response?.data || error.message);
+      } else {
+        console.error(`Error updating location: ${id}`, error);
+      }
+    }
+  };
+
+  const updateWeather = async (locationId: string) => {
+    try {
+      const response = await axios.post(
+        update_location_weather + locationId,
+        { location_id: locationId }, 
+        { headers: headers }         
+      );;
+  
+      if (response.status == 200) {
+        get_user_location();
+      } else {
+        console.warn(`Unexpected response status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error(`Error updating location: ${locationId}`, error);
+    }
+  };
+
 
   useEffect(() => {
       const userProfileString = localStorage.getItem('user_profile');
@@ -340,60 +392,13 @@ export default function DashboardPage() {
             <TabsContent value="saved" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {locationWeather.length > 0 && locationWeather.map((location) => (
-                  <Card key={location.LocationId} className={`border-2 border-brand`}>
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="flex items-center text-lg capitalize">
-                          <MapPin className="mr-2 h-4 w-4" />
-                          {location.Address}
-                        </CardTitle>
-                        <button
-                        onClick={() => deleteLocation(location.LocationId)} 
-                        className="top-2 text-red-500 hover:text-red-700"
-                        >
-                        <Trash2 className="h-5 w-5" /> 
-                      </button>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="flex items-center justify-between pb-4">
-                      <p className="text-2xl font-bold capitalize">{location.Label}</p>
-                    </CardContent>
-                    <CardContent className="flex flex-col space-y-2 pb-4">
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="h-5 w-5 text-gray-500" /> 
-                        <p className="text-lg font-medium">{location.day}</p>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Thermometer className="h-5 w-5 text-gray-500" /> {/* Example icon for temperature */}
-                        <p className="text-lg font-medium">Temperature: {location.temp}°C</p>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <ArrowUp className="h-5 w-5 text-red-500" /> {/* Example icon for max temperature */}
-                        <p className="text-base text-red-500">Max: {location.max_temp}°C</p>
-                        <ArrowDown className="h-5 w-5 text-blue-500" /> {/* Example icon for min temperature */}
-                        <p className="text-base text-blue-500">Min: {location.min_temp}°C</p>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <Wind className="h-5 w-5 text-gray-500" /> {/* Example icon for wind */}
-                        <p className="text-base">Wind: {location.wind} kph</p>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <Umbrella className="h-5 w-5 text-gray-500" /> {/* Example icon for rain */}
-                        <p className="text-base">Rain: {location.rain}%</p>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="pt-0">
-                    <WeatherDashboard
-                      astroForecast={location.astro}
-                      dailyForecast={location.daily}
-                      hourlyForecast={location.hourly}
-                      locationName={location.Address}
-                    />
-                    </CardFooter>
-                  </Card>
+                  <LocationCard
+                  key={location.LocationId}
+                  location={location}
+                  onDelete={deleteLocation}
+                  onUpdate={handleUpdate}
+                  onRefresh={updateWeather}
+                  />
                 ))}
                 {!loading && userLocations.length == 0 ? (
                   <div className="flex flex-col items-center justify-center text-center py-12 space-y-6 col-span-full">
