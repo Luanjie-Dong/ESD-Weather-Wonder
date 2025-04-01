@@ -52,6 +52,9 @@ EMAIL_USERNAME=your_email_username
 EMAIL_PASSWORD=your_email_password
 RABBITMQ_HOST=rabbitmq
 ```
+* To run this locally, make sure to use a private Gmail account not tagged to any institution/organization
+* Use an _app password_ to authorize actions on your Gmail account. You can find a guide to generating your app password here:
+https://help.prowly.com/how-to-create-use-gmail-app-passwords
 ---
 Weather Wrapper Service (backend/weather/src/main/resources/.env):
 ```
