@@ -3,6 +3,8 @@
 Weather Wonder is a microservices-based application that provides weather forecasts, emergency monitoring, and notifications. It includes a backend with multiple microservices, an API gateway, and a frontend built with Next.js.
 
 ## Project Structure
+```
+ESD-Weather-Wonder
 ├── backend/ # Backend microservices 
 ├── api_gateway/ # API Gateway configuration 
 ├── frontend/ # Frontend application 
@@ -14,6 +16,7 @@ Weather Wonder is a microservices-based application that provides weather foreca
 ├── package.json # Project dependencies 
 ├── package-lock.json # Dependency lock file 
 └── README.md # Project documentation
+```
 
 ## Prerequisites
 
