@@ -113,7 +113,6 @@ export default function DashboardPage() {
     try {
       const response_forecast = await axios.get(url, { headers });
       const forecast_data = response_forecast.data;
-      console.log(forecast_data)
       const formatted_weather_data:locationWeather[] = []; 
       for (let i = 0; i < forecast_data.length; i++) {
           const day = forecast_data[i].hourlyForecast?.filter((hour: HourlyForecast) => new Date(hour.time) > new Date()).slice(0, 1)[0]?.time.replace('T'," ");
@@ -174,7 +173,7 @@ export default function DashboardPage() {
     try {
       const response = await axios.get(user_locations_endpoint, { headers });
       if (response.status == 200) {
-        console.log("Response Data:", response.data);
+        // console.log("Response Data:", response.data);
         if (response.data && response.data.Result && response.data.Result.Success) {
         const user_data = response.data.UserLocations;
         if (Array.isArray(user_data)) {

@@ -60,7 +60,7 @@ export default function SettingsPage() {
       const response = await axios.put(update_user_endpoint,userProfile, { headers });
 
       if (response.status == 200){
-        console.log(response.data)
+        // console.log(response.data)
         Swal.fire({
           icon: 'success', 
           title: 'Success!', 

@@ -69,7 +69,7 @@ export default function LoginPage() {
         const response = await axios.post(signup_url, formData, { headers });
       
         if (response.status == 201) {
-          console.log("Success:", response.data);
+          // console.log("Success:", response.data);
       
           Swal.fire({
             icon: 'success',
