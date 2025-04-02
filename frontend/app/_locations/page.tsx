@@ -42,13 +42,13 @@ export default function LocationsPage() {
   const [locationLoading,setLocationLoading] = useState(false)
   const api_name = process.env.NEXT_PUBLIC_API_KEY_NAME
   const api_key = process.env.NEXT_PUBLIC_API_KEY_VALUE
-  const add_location_endpoint = "http://localhost:8000/add-user-location-api/v1/add_location"
+  const add_location_endpoint = process.env.NEXT_PUBLIC_API_GATEWAY_URL + "/add-user-location-api/v1/add_location"
   if (!api_name || !api_key) {
     throw new Error("API key or name is missing");
   }
   const headers = {"Content-Type": "application/json", [api_name]: api_key}
   const user_id = userProfile?.['user_id'];
-  const user_locations_endpoint = `http://localhost:8000//user-location-api/v1/GetUserLocations/user/${user_id}`
+  const user_locations_endpoint = process.env.NEXT_PUBLIC_API_GATEWAY_URL + `/user-location-api/v1/GetUserLocations/user/${user_id}`
 
   const get_user_location = async () => {
     setLoading(true); 
