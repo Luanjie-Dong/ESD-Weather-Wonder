@@ -1,68 +1,44 @@
-volumes:
-  pgdata:
-    name: esd-pgdata
-
 networks:
   esd-weatherwonder:
-    external: true
+    driver: bridge
+    name: esd-weatherwonder
 
 
 services:
-
   #######################################
-  # Postgres: The database used by Kong
+  # Kong: The API Gateway
   #######################################
-  kong-database:
-    image: postgres:17.4
-    # platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
+  kong:
+    image: kong/kong-gateway:3.8
     restart: always
     networks:
       - esd-weatherwonder
     env_file:
       - ./.env
+    environment:
+      KONG_DATABASE: "off" # Disable database usage
+      KONG_DECLARATIVE_CONFIG: "/usr/local/kong/declarative/gateway.yaml" # Path to the declarative config file
+    depends_on:
+      - kong-migration
     ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "kong"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - "8003:8000" # Proxy traffic
+      - "8001:8001" # Admin API
+      - "8002:8002" # Kong Manager
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ./gateway.yaml:/usr/local/kong/declarative/gateway.yaml # Mount the declarative config file
 
   #######################################
-  # Kong database migration
+  # Kong Migration (Optional for DB-less)
   #######################################
   kong-migration:
-    image: kong/kong-gateway:3.9
-    # platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
+    image: kong/kong-gateway:3.8
     command: >
-      sh -c "kong migrations bootstrap && kong config db_import /usr/local/kong/declarative/gateway.yaml"
+      sh -c "kong config parse /usr/local/kong/declarative/gateway.yaml && kong migrations bootstrap"
     restart: on-failure
     networks:
       - esd-weatherwonder
     env_file:
       - ./.env
-    depends_on:
-      kong-database:
-        condition: service_healthy
     volumes:
       - ./gateway.yaml:/usr/local/kong/declarative/gateway.yaml
-
-  #######################################
-  # Kong: The API Gateway
-  #######################################
-  kong:
-    image: kong/kong-gateway:3.9
-    # platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
-    restart: always
-    networks:
-      - esd-weatherwonder
-    env_file:
-      - ./.env
-    depends_on:
-      - kong-migration
-    ports: # https://docs.konghq.com/gateway/latest/production/networking/default-ports/
-      - "8003:8000" # Takes incoming HTTP traffic from Consumers, and forwards it to upstream Services.
-      - "8001:8001" # Admin API. Listens for calls from the command line over HTTP.
-      - "8002:8002" # Kong Manager (GUI). Listens for HTTP traffic.
+   

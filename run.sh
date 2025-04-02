@@ -13,3 +13,4 @@ echo "Starting frontend..."
 cd ..
 cd frontend
 npm run dev
+

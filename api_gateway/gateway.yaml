@@ -10,74 +10,41 @@ services:
       #/user/<string:user_id>
       #or
       #/user_email/<string:email>
-      - name: get-user-admin
+      - name: get-user-apis
         paths: 
           - /user-api/v1/
         methods:
           - GET
-          - OPTIONS 
-        strip_path: True
-        preserve_host: True
-
-      #/user/<string:user_id>
-      #or
-      #/reset_password/<string:user_id>
-      - name: update-user-admin
-        paths:
-          - /user-api/v1/
-        methods:
-          - PUT
-          - OPTIONS 
-        strip_path: True
-        preserve_host: True
-
-      #/user/<string:user_id>
-      - name: delete-user-admin
-        paths:
-          - /user-api/v1/
-        methods:
-          - DELETE
-          - OPTIONS 
-        strip_path: True
-        preserve_host: True
-
-      # /signup
-      # or
-      # /signin
-      - name: create-user-auth
-        paths:
-          - /user-api/v1/
-        methods:
           - POST
-          - OPTIONS 
+          - PUT
+          - DELETE
+          - OPTIONS
+          - PATCH 
         strip_path: True
-        preserve_host: True
+        path_handling: "v1"
+       
+        
 
 
       #/user/<string:user_id>
       #or
       #/user_email/<string:email>
-      - name: get-user-auth
+      # or
+      #/user/<string:user_id>
+      #or
+      # /reset_password/<string:user_id>
+      - name: get-user-auth-apis
         paths:
           - /user-auth-api/v1/
         methods:
           - GET
-          - OPTIONS 
-        strip_path: True
-        preserve_host: True
-
-      #/user/<string:user_id>
-      #or
-      # /reset_password/<string:user_id>
-      - name: update-user-auth
-        paths:
-          - /user-auth-api/v1/
-        methods:
           - PUT
           - OPTIONS 
         strip_path: True
-        preserve_host: True
+        path_handling: "v1"
+        # preserve_host: True
 
+      
       
       
 
@@ -88,42 +55,18 @@ services:
     url: https://personal-05fimycq.outsystemscloud.com/UserLocation/rest/v1/
     routes:
       #/CreateUserLocation
-      - name: create-user-location
+      #/DeleteUserLocation
+      #/GetUserLocations/user/{UserId}
+      #/UpdateUserLocation
+      - name: user-location-apis
         paths:
           - /user-location-api/v1/
         methods:
           - POST
-          - OPTIONS 
-        strip_path: True
-
-
-      #/DeleteUserLocation
-      - name: delete-user-location
-        paths:
-          - /user-location-api/v1/
-        methods:
-          - DELETE
-          - OPTIONS 
-        strip_path: True
-      
-
-      #/GetUserLocations/user/{UserId}
-      - name: get-user-locations
-        paths:
-          - /user-location-api/v1/
-        methods:
           - GET
           - OPTIONS 
         strip_path: True
-        
-      #/UpdateUserLocation
-      - name: update-user-location
-        paths:
-          - /user-location-api/v1/
-        methods:
-          - PATCH
-          - OPTIONS 
-        strip_path: True
+        path_handling: "v1"
 
   
 
@@ -135,34 +78,19 @@ services:
     url: http://location_weather:5003/
     routes:
       # /get_weather/<location_id>
-      - name: get-weather
-        paths:
-          - /location-weather-api/v1/
-        methods:
-          - GET
-          - OPTIONS 
-        strip_path: True
-        preserve_host: True
-
       # /get_weather/date/<location_id>/<date>
-      - name: get-weather-by-date
-        paths:
-          - /location-weather-api/v1/
-        methods:
-          - GET
-          - OPTIONS 
-        strip_path: True
-        preserve_host: True
-
       # /get_weather/datetime/<location_id>/<dt_input>
-      - name: get-weather-by-datetime
+
+
+      - name: get-weather-api
         paths:
           - /location-weather-api/v1/
         methods:
           - GET
           - OPTIONS 
         strip_path: True
-        preserve_host: True
+        path_handling: "v1"
+        # preserve_host: True
       
 
       
@@ -182,7 +110,8 @@ services:
           - POST
           - OPTIONS 
         strip_path: True
-        preserve_host: True
+        path_handling: "v1"
+        # preserve_host: True
 
   #/poll-location/<int:location_id>
   #######################################
@@ -199,7 +128,8 @@ services:
           - POST
           - OPTIONS 
         strip_path: True
-        preserve_host: True
+        path_handling: "v1"
+        # preserve_host: True
    
      
       
@@ -234,7 +164,7 @@ plugins:
   - name: cors
     config:
       origins:
-        - "*"  
+        - "*"
       methods:
         - GET
         - POST
@@ -248,3 +178,6 @@ plugins:
         - weatherwonderapi_key
       credentials: false  
       max_age: 3600
+
+
+      

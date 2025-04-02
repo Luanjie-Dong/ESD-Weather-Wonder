@@ -62,7 +62,7 @@ interface AstroForecast {
     };
   
     return (
-      <Card key={location.LocationId} className="border-2 border-brand">
+      <Card key={location.LocationId} className="border-2 border-brand flex flex-col justify-between">
         <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           

@@ -336,9 +336,6 @@ export default function DashboardPage() {
     
   }, [user_id]);
 
-  
-  
-  
 
   const handleLogout = () => {
     logout()
