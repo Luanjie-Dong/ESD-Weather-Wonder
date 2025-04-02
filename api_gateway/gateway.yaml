@@ -5,7 +5,7 @@ services:
   # USER MICROSERVICE
   #######################################
   - name: user-api-admin
-    url: http://user:5001
+    url: http://user:5001/
     routes:
       #/user/<string:user_id>
       #or
@@ -17,6 +17,7 @@ services:
           - GET
           - OPTIONS 
         strip_path: True
+        preserve_host: True
 
       #/user/<string:user_id>
       #or
@@ -28,6 +29,7 @@ services:
           - PUT
           - OPTIONS 
         strip_path: True
+        preserve_host: True
 
       #/user/<string:user_id>
       - name: delete-user-admin
@@ -37,6 +39,7 @@ services:
           - DELETE
           - OPTIONS 
         strip_path: True
+        preserve_host: True
 
       # /signup
       # or
@@ -48,6 +51,7 @@ services:
           - POST
           - OPTIONS 
         strip_path: True
+        preserve_host: True
 
 
       #/user/<string:user_id>
@@ -60,6 +64,7 @@ services:
           - GET
           - OPTIONS 
         strip_path: True
+        preserve_host: True
 
       #/user/<string:user_id>
       #or
@@ -71,6 +76,7 @@ services:
           - PUT
           - OPTIONS 
         strip_path: True
+        preserve_host: True
 
       
       
@@ -79,7 +85,7 @@ services:
   # USER LOCATION MICROSERVICE
   #######################################
   - name: user-location-api
-    url: https://personal-05fimycq.outsystemscloud.com/UserLocation/rest/v1
+    url: https://personal-05fimycq.outsystemscloud.com/UserLocation/rest/v1/
     routes:
       #/CreateUserLocation
       - name: create-user-location
@@ -89,6 +95,7 @@ services:
           - POST
           - OPTIONS 
         strip_path: True
+        preserve_host: True
 
 
       #/DeleteUserLocation
@@ -99,6 +106,7 @@ services:
           - DELETE
           - OPTIONS 
         strip_path: True
+        preserve_host: True
       
 
       #/GetUserLocations/user/{UserId}
@@ -109,6 +117,7 @@ services:
           - GET
           - OPTIONS 
         strip_path: True
+        preserve_host: True
         
       #/UpdateUserLocation
       - name: update-user-location
@@ -118,6 +127,7 @@ services:
           - PATCH
           - OPTIONS 
         strip_path: True
+        preserve_host: True
 
   
 
@@ -126,7 +136,7 @@ services:
   # LOCATION WEATHER MICROSERVICE
   #######################################
   - name: location-weather-api
-    url: http://location_weather:5003
+    url: http://location_weather:5003/
     routes:
       # /get_weather/<location_id>
       - name: get-weather
@@ -136,6 +146,7 @@ services:
           - GET
           - OPTIONS 
         strip_path: True
+        preserve_host: True
 
       # /get_weather/date/<location_id>/<date>
       - name: get-weather-by-date
@@ -145,6 +156,7 @@ services:
           - GET
           - OPTIONS 
         strip_path: True
+        preserve_host: True
 
       # /get_weather/datetime/<location_id>/<dt_input>
       - name: get-weather-by-datetime
@@ -154,6 +166,7 @@ services:
           - GET
           - OPTIONS 
         strip_path: True
+        preserve_host: True
       
 
       
@@ -163,7 +176,7 @@ services:
   # ADD A LOCATION MICROSERVICE
   #######################################
   - name: add-user-location-api
-    url: http://add_a_location:5010
+    url: http://add_a_location:5010/
     routes:
       # /add_location
       - name: add-location
@@ -173,13 +186,14 @@ services:
           - POST
           - OPTIONS 
         strip_path: True
+        preserve_host: True
 
   #/poll-location/<int:location_id>
   #######################################
   # LOCATION WEATHER MICROSERVICE
   #######################################
   - name: refresh-location-weather-api
-    url: http://poll_weather_forecast:5005
+    url: http://poll_weather_forecast:5005/
     routes:
       # /add_location
       - name: weather-location
@@ -189,6 +203,7 @@ services:
           - POST
           - OPTIONS 
         strip_path: True
+        preserve_host: True
    
      
       
@@ -213,11 +228,13 @@ plugins:
         - weatherwonderapi_key
       key_in_header: true
       key_in_query: false   
+
   - name: rate-limiting
     config:
       minute: 100
       policy: "local"
       limit_by: "ip"
+
   - name: cors
     config:
       origins:

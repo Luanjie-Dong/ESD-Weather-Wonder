@@ -14,7 +14,7 @@ services:
   #######################################
   kong-database:
     image: postgres:17.4
-    platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
+    # platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
     restart: always
     networks:
       - esd-weatherwonder
@@ -34,8 +34,8 @@ services:
   # Kong database migration
   #######################################
   kong-migration:
-    image: kong/kong-gateway:3.8
-    platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
+    image: kong/kong-gateway:3.9
+    # platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
     command: >
       sh -c "kong migrations bootstrap && kong config db_import /usr/local/kong/declarative/gateway.yaml"
     restart: on-failure
@@ -53,8 +53,8 @@ services:
   # Kong: The API Gateway
   #######################################
   kong:
-    image: kong/kong-gateway:3.8
-    platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
+    image: kong/kong-gateway:3.9
+    # platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
     restart: always
     networks:
       - esd-weatherwonder
@@ -63,6 +63,6 @@ services:
     depends_on:
       - kong-migration
     ports: # https://docs.konghq.com/gateway/latest/production/networking/default-ports/
-      - "8000:8000" # Takes incoming HTTP traffic from Consumers, and forwards it to upstream Services.
+      - "8003:8000" # Takes incoming HTTP traffic from Consumers, and forwards it to upstream Services.
       - "8001:8001" # Admin API. Listens for calls from the command line over HTTP.
       - "8002:8002" # Kong Manager (GUI). Listens for HTTP traffic.
