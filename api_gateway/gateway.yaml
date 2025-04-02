@@ -95,7 +95,6 @@ services:
           - POST
           - OPTIONS 
         strip_path: True
-        preserve_host: True
 
 
       #/DeleteUserLocation
@@ -106,7 +105,6 @@ services:
           - DELETE
           - OPTIONS 
         strip_path: True
-        preserve_host: True
       
 
       #/GetUserLocations/user/{UserId}
@@ -117,7 +115,6 @@ services:
           - GET
           - OPTIONS 
         strip_path: True
-        preserve_host: True
         
       #/UpdateUserLocation
       - name: update-user-location
@@ -127,7 +124,6 @@ services:
           - PATCH
           - OPTIONS 
         strip_path: True
-        preserve_host: True
 
   
 
