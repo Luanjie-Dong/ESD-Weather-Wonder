@@ -9,36 +9,36 @@ services:
   # Kong: The API Gateway
   #######################################
   kong:
-    image: kong/kong-gateway:3.8
+    image: kong/kong-gateway:3.9
     restart: always
     networks:
       - esd-weatherwonder
     env_file:
       - ./.env
     environment:
-      KONG_DATABASE: "off" # Disable database usage
-      KONG_DECLARATIVE_CONFIG: "/usr/local/kong/declarative/gateway.yaml" # Path to the declarative config file
-    depends_on:
-      - kong-migration
+      KONG_DATABASE: "off" 
+      KONG_DECLARATIVE_CONFIG: "/usr/local/kong/declarative/gateway.yaml" 
+    # depends_on:
+    #   - kong-migration
     ports:
       - "8003:8000" # Proxy traffic
       - "8001:8001" # Admin API
       - "8002:8002" # Kong Manager
     volumes:
-      - ./gateway.yaml:/usr/local/kong/declarative/gateway.yaml # Mount the declarative config file
+      - ./gateway.yaml:/usr/local/kong/declarative/gateway.yaml 
 
-  #######################################
-  # Kong Migration (Optional for DB-less)
-  #######################################
-  kong-migration:
-    image: kong/kong-gateway:3.8
-    command: >
-      sh -c "kong config parse /usr/local/kong/declarative/gateway.yaml && kong migrations bootstrap"
-    restart: on-failure
-    networks:
-      - esd-weatherwonder
-    env_file:
-      - ./.env
-    volumes:
-      - ./gateway.yaml:/usr/local/kong/declarative/gateway.yaml
+  # #######################################
+  # # Kong Migration (Optional for DB-less)
+  # #######################################
+  # kong-migration:
+  #   image: kong/kong-gateway:3.8
+  #   command: >
+  #     sh -c "kong config parse /usr/local/kong/declarative/gateway.yaml && kong migrations bootstrap"
+  #   restart: on-failure
+  #   networks:
+  #     - esd-weatherwonder
+  #   env_file:
+  #     - ./.env
+  #   volumes:
+  #     - ./gateway.yaml:/usr/local/kong/declarative/gateway.yaml
    
