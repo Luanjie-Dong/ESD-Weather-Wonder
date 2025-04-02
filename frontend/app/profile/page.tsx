@@ -50,7 +50,7 @@ export default function SettingsPage() {
     }, []);
 
   const user_id = userProfile?.['user_id'];
-  const update_user_endpoint = process.env.NEXT_PUBLIC_API_GATEWAY_URL + `/user-api/v1/user/${user_id}`
+  const update_user_endpoint = `http://localhost:8000/user-api/v1/user/${user_id}`
 
   
   const updateProfile = async() => {
