@@ -439,7 +439,7 @@ export default function DashboardPage() {
                 </form>
               </Card>
               {locationLoading && (
-                  <div className="absolute inset-0 bg-black bg-opacity-50 z-[9999]">
+                  <div className="absolute inset-0 bg-black bg-opacity-50 z-50">
                     <p className="text-white text-lg font-semibold">Adding location...</p>
                   </div>
                 )}
