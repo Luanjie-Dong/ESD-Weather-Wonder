@@ -147,7 +147,7 @@ export default function DashboardPage() {
             max_temp: max_temp || "-",
             min_temp: min_temp || "-",
             wind: wind || "-",
-            rain: rain || "-",
+            rain: rain ,
             astro: forecast_data[i]?.astroForecast,
             daily: forecast_data[i]?.dailyForecast,
             hourly: forecast_data[i]?.hourlyForecast,
@@ -439,7 +439,7 @@ export default function DashboardPage() {
                 </form>
               </Card>
               {locationLoading && (
-                  <div className="absolute inset-0 bg-black bg-opacity-50 z-50">
+                  <div className="absolute inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
                     <p className="text-white text-lg font-semibold">Adding location...</p>
                   </div>
                 )}
