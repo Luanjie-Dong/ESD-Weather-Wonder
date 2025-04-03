@@ -65,6 +65,8 @@ services:
           - POST
           - GET
           - OPTIONS 
+          - PATCH
+          - DELETE
         strip_path: True
         path_handling: "v1"
 

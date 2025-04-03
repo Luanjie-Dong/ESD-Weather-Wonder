@@ -86,7 +86,7 @@ export default function DashboardPage() {
 
   const api_name = process.env.NEXT_PUBLIC_API_KEY_NAME
   const api_key = process.env.NEXT_PUBLIC_API_KEY_VALUE
-  const add_location_endpoint = "${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/add-user-location-api/v1/add_location"
+  const add_location_endpoint = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/add-user-location-api/v1/add_location`
   if (!api_name || !api_key) {
     throw new Error("API key or name is missing");
   }
@@ -115,14 +115,14 @@ export default function DashboardPage() {
       const forecast_data = response_forecast.data;
       const formatted_weather_data:locationWeather[] = []; 
       for (let i = 0; i < forecast_data.length; i++) {
-          const day = forecast_data[i].hourlyForecast?.filter((hour: HourlyForecast) => new Date(hour.time) > new Date()).slice(0, 1)[0]?.time.replace('T'," ");
+          const day = forecast_data[i].hourlyForecast?.filter((hour: HourlyForecast) => new Date(hour.time) >= new Date()).slice(0, 1)[0]?.time.replace('T'," ");
           const temp = forecast_data[i]?.dailyForecast?.avgtemp_c;
           const locationid = forecast_data[i]?.location_id;
 
-          if (!day || !temp || !locationid) {
-            console.warn(`Invalid forecast data for entry:`, forecast_data[i]);
-            continue; 
-          }
+          // if (!day || !temp || !locationid) {
+          //   console.warn(`Invalid forecast data for entry:`, forecast_data[i]);
+          //   continue; 
+          // }
 
           const locationInfo = user_data.find((x) => x.LocationId == locationid);
           if (!locationInfo) {
@@ -136,18 +136,18 @@ export default function DashboardPage() {
           const max_temp = forecast_data[i]?.dailyForecast?.maxtemp_c;
           const min_temp = forecast_data[i]?.dailyForecast?.mintemp_c;
           const wind = forecast_data[i]?.dailyForecast?.maxwind_kph;
-          const rain = forecast_data[i]?.hourlyForecast?.filter((hour: HourlyForecast) => new Date(hour.time) > new Date()).slice(0, 1)[0]?.chance_of_rain;
+          const rain = forecast_data[i]?.hourlyForecast?.filter((hour: HourlyForecast) => new Date(hour.time) >= new Date()).slice(0, 1)[0]?.chance_of_rain;
 
           const weather_data = {
             LocationId: locationid,
-            Label: label,
+            Label: label || "-",
             Address: address,
-            day: day,
-            temp: temp,
-            max_temp: max_temp,
-            min_temp: min_temp,
-            wind: wind,
-            rain: rain,
+            day: day || new Date().toISOString().split('T')[0],
+            temp: temp || "-",
+            max_temp: max_temp || "-",
+            min_temp: min_temp || "-",
+            wind: wind || "-",
+            rain: rain || "-",
             astro: forecast_data[i]?.astroForecast,
             daily: forecast_data[i]?.dailyForecast,
             hourly: forecast_data[i]?.hourlyForecast,
@@ -407,8 +407,8 @@ export default function DashboardPage() {
                   </div>
                 ) : deleteLoading?(
                 <div>
-                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <p className="text-white text-lg font-semibold">Deleting location...</p>
+                  <div className="absolute inset-0 flex justify-center bg-black bg-opacity-50 z-50">
+                    <p className="text-white text-lg font-semibold pt-48">Deleting location...</p>
                   </div>
                 </div>):(<div></div>)}
               </div>
@@ -439,7 +439,7 @@ export default function DashboardPage() {
                 </form>
               </Card>
               {locationLoading && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                  <div className="absolute inset-0 bg-black bg-opacity-50 z-[9999]">
                     <p className="text-white text-lg font-semibold">Adding location...</p>
                   </div>
                 )}
