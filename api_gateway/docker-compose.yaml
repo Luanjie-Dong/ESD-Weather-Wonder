@@ -27,18 +27,5 @@ services:
     volumes:
       - ./gateway.yaml:/usr/local/kong/declarative/gateway.yaml 
 
-  # #######################################
-  # # Kong Migration (Optional for DB-less)
-  # #######################################
-  # kong-migration:
-  #   image: kong/kong-gateway:3.8
-  #   command: >
-  #     sh -c "kong config parse /usr/local/kong/declarative/gateway.yaml && kong migrations bootstrap"
-  #   restart: on-failure
-  #   networks:
-  #     - esd-weatherwonder
-  #   env_file:
-  #     - ./.env
-  #   volumes:
-  #     - ./gateway.yaml:/usr/local/kong/declarative/gateway.yaml
+  
    
