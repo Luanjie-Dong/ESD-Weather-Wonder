@@ -6,7 +6,7 @@ docker compose down -v
 
 echo "Stopping API gateway services..."
 cd ../api_gateway
-docker compose down -v
+docker compose down 
 
 echo "Stopping frontend development server..."
 pkill -f "npm run dev"

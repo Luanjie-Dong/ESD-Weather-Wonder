@@ -3,6 +3,12 @@ networks:
     driver: bridge
     name: esd-weatherwonder
 
+volumes:
+  prometheusdata:
+    name: esd_prometheusdata 
+  grafanadata:
+    name: esd_grafanadata 
+
 
 services:
   #######################################
@@ -18,8 +24,6 @@ services:
     environment:
       KONG_DATABASE: "off" 
       KONG_DECLARATIVE_CONFIG: "/usr/local/kong/declarative/gateway.yaml" 
-    # depends_on:
-    #   - kong-migration
     ports:
       - "8003:8000" # Proxy traffic
       - "8001:8001" # Admin API
@@ -27,18 +31,34 @@ services:
     volumes:
       - ./gateway.yaml:/usr/local/kong/declarative/gateway.yaml 
 
-  # #######################################
-  # # Kong Migration (Optional for DB-less)
-  # #######################################
-  # kong-migration:
-  #   image: kong/kong-gateway:3.8
-  #   command: >
-  #     sh -c "kong config parse /usr/local/kong/declarative/gateway.yaml && kong migrations bootstrap"
-  #   restart: on-failure
-  #   networks:
-  #     - esd-weatherwonder
-  #   env_file:
-  #     - ./.env
-  #   volumes:
-  #     - ./gateway.yaml:/usr/local/kong/declarative/gateway.yaml
+  #######################################
+  # Prometheus
+  #######################################
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    restart: always
+    networks:
+      - esd-weatherwonder
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheusdata:/prometheus 
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml 
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+
+  #######################################
+  # Grafana Open Source
+  #######################################
+  grafana:
+    image: grafana/grafana-oss:11.3.4
+    restart: always
+    networks:
+      - esd-weatherwonder
+    ports:
+      - "13000:3000"
+    volumes:
+      - grafanadata:/var/lib/grafana
    
+  
