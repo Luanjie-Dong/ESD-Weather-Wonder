@@ -26,8 +26,8 @@ services:
     # user microservice
     user:
         build: ./user
-        ports:
-        - '5001:5001'
+        # ports:
+        # - '5001:5001'
         env_file:
         - ./user/.env
         depends_on:
@@ -35,6 +35,9 @@ services:
         restart: on-failure
         networks:
         - esd-weatherwonder
+        deploy:
+          replicas: 2
+
 
     # location microservice
     location:
@@ -52,8 +55,8 @@ services:
     # location_weather microservice
     location_weather:
         build: ./location_weather
-        ports:
-        - '5003:5003'
+        # ports:
+        # - '5003:5003'
         env_file:
         - ./location_weather/.env
         depends_on:
@@ -61,14 +64,16 @@ services:
         restart: on-failure
         networks:
         - esd-weatherwonder
+        deploy:
+          replicas: 2
 
     # geocoding microservice
     geocoding:
         build: 
             context: ./geocoding
             dockerfile: Dockerfile.encoder
-        ports:
-          - '5004:5004'
+        # ports:
+        #   - '5004:5004'
         env_file:
         - ./geocoding/.env
         restart: on-failure
@@ -89,8 +94,8 @@ services:
     # emergency_monitoring microservice
     emergency_monitoring:
         build: ./emergency_monitoring
-        # ports:
-        # - '8082:8082'
+        ports:
+        - '8082:8082'
         env_file:
         - ./emergency_monitoring/src/main/resources/.env
         depends_on:
@@ -105,8 +110,8 @@ services:
       build: 
         context: ./add_a_location
         dockerfile: Dockerfile
-      ports:
-        - '5010:5010'
+      # ports:
+      #   - '5010:5010'
       env_file:
         - ./add_a_location/.env
       restart: on-failure
@@ -116,6 +121,8 @@ services:
         - poll_weather_forecast
       networks:
         - esd-weatherwonder
+      deploy:
+        replicas: 2
 
     # notification microservice
     notification:
