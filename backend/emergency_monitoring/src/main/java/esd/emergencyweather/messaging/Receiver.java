@@ -12,6 +12,10 @@ public class Receiver {
 
     public void receiveMessage(Message message) {
         String correlationId = message.getMessageProperties().getCorrelationId();
+        if (correlationId == null) {
+            System.err.println("Received message with null correlation ID");
+            return;
+        }
         String statusStr = new String(message.getBody());
         int statusCode;
         

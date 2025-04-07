@@ -8,7 +8,7 @@ RABBITMQ_PORT = int(os.getenv("AMQP_PORT", 5672))
 USERNAME = os.getenv("AMQP_USER", "myuser")
 PASSWORD = os.getenv("AMQP_PASS", "secret")
 
-EXCHANGE_NAME = "esd_weatherwonder"
+EXCHANGE_NAME = "esd-weatherwonder"
 ROUTING_KEY = "location.weather.update"  # matches "#.update"
 
 message = {

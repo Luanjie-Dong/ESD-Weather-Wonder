@@ -207,7 +207,7 @@ Publishes a forecast update to the message queue for notification processing.
 }
 ```
 - **Message Queue Details**:
-  - **Exchange**: esd_weatherwonder
+  - **Exchange**: esd-weatherwonder
   - **Binding Key**: location.weather.update
   - **Message Format**:
     ```json

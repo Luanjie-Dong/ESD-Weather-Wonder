@@ -20,6 +20,7 @@ import java.util.HashMap;
 public class Messager {
     static final String topicExchangeName = "esd-weatherwonder";
     static final String queueName = "Notification";
+    static final String replyQueueName = "Notification_Reply";
 
     @Value("${spring.rabbitmq.host}")
     private String rabbitmqHost;
@@ -49,6 +50,11 @@ public class Messager {
     }
 
     @Bean
+    Queue replyQueue() {
+        return new Queue(replyQueueName, true);
+    }
+
+    @Bean
     TopicExchange exchange() {
         return new TopicExchange(topicExchangeName, true, false);
     }
@@ -59,8 +65,8 @@ public class Messager {
     }
 
     @Bean
-    Binding replyBinding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with("#.notification.reply");
+    Binding replyBinding(Queue replyQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(replyQueue).to(exchange).with("#.notification.reply");
     }
 
     @Bean
@@ -68,7 +74,7 @@ public class Messager {
         MessageListenerAdapter listenerAdapter) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(queueName);
+        container.setQueueNames(replyQueueName);
         container.setMessageListener(listenerAdapter);
         return container;
     }

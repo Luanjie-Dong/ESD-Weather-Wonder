@@ -11,7 +11,7 @@ COPY target/wrapper-0.0.1-SNAPSHOT.jar wrapper-0.0.1-SNAPSHOT.jar
 COPY src/main/resources/.env .env
 
 # Expose the application port
-EXPOSE 8082
+EXPOSE 8081
 
 # Run the application
 CMD ["java", "-jar", "wrapper-0.0.1-SNAPSHOT.jar"]

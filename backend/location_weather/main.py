@@ -360,7 +360,7 @@ def publish_forecast_update(location_id, forecast_data):
         channel = connection.channel()
         print("Successfully connected to RabbitMQ")
 
-        EXCHANGE_NAME = os.environ.get("EXCHANGE_NAME", "esd_weatherwonder")
+        EXCHANGE_NAME = os.environ.get("EXCHANGE_NAME", "esd-weatherwonder")
         print(f"Using exchange: {EXCHANGE_NAME}")
         
         # Declare exchange

@@ -31,7 +31,7 @@ public class Runner implements CommandLineRunner {
         messageProperties.setPriority(10);
         String correlationId = UUID.randomUUID().toString();
         messageProperties.setCorrelationId(correlationId);
-        messageProperties.setReplyTo("#.notification.reply");
+        messageProperties.setReplyTo(Messager.replyQueueName);
         
         Message rabbitMessage = new Message(message.getBytes(), messageProperties);
         
