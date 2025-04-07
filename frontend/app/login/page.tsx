@@ -13,11 +13,30 @@ import { login } from "../lib/auth"
 import AuthCheck from "@/components/auth-check"
 import Swal from 'sweetalert2';
 
+interface FormData {
+  email: string;
+  password: string;
+  [key: string]: any; 
+}
+
+interface LoginData {
+  email: string;
+  password: string;
+}
+
+interface Headers {
+  Authorization?: string;
+  [key: string]: any; 
+}
+
 export default function LoginPage() {
+    const DASHBOARD_URL = "/dashboard";
     const api_name = process.env.NEXT_PUBLIC_API_KEY_NAME
     const api_key = process.env.NEXT_PUBLIC_API_KEY_VALUE
     const signup_url = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/user-api/v1/signup`
     const login_url = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/user-api/v1/signin`
+    const add_location_endpoint = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/add-user-location-api/v1/add_location`
+
     if (!api_name || !api_key) {
       throw new Error("API key or name is missing");
     }
@@ -62,15 +81,14 @@ export default function LoginPage() {
   
   
     const handleCreation = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault(); 
+      e.preventDefault();
       setLoading(true);
-      console.log(formData)
+    
       try {
-        const response = await axios.post(signup_url, formData, { headers });
-      
-        if (response.status == 201) {
-          // console.log("Success:", response.data);
-      
+        console.log(formData);
+        const response = await axios.post(signup_url, formData as FormData, { headers: headers as Headers });
+    
+        if (response.status === 201) {
           Swal.fire({
             icon: 'success',
             title: 'Account Created Successfully!',
@@ -78,60 +96,107 @@ export default function LoginPage() {
             confirmButtonText: 'OK',
           }).then(async () => {
             try {
-              // Log in the user automatically
-              const user_detail = {
+              const userDetail = {
                 email: formData['email'],
                 password: formData['password'],
               };
-              const response_user = await axios.post(login_url, user_detail, { headers });
-              const user_profile = response_user.data?.user;
-      
-              login(user_profile); 
-              window.location.href = "/dashboard"; 
-              } catch (loginError) {
-                console.error("Login Error:", loginError);
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Oops...',
-                  text: 'Failed to log in after account creation. Please try again.',
-                });
-              }
-            });
-          }
-        } catch (error) {
-          console.error("Error:", error);
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Failed to create account. Please try again.',
+              const responseUser = await axios.post(login_url, userDetail, { headers: headers as Headers });
+              const userProfile = responseUser.data?.user;
+    
+              await addLocation(userProfile); // Add location
+              await handleUserLogin(userProfile); // Log in and redirect
+            } catch (loginError) {
+              handleError(loginError, 'Failed to log in after account creation. Please try again.');
+            }
           });
+        }
+      } catch (error) {
+        handleError(error, 'Failed to create account. Please try again.');
+      } finally {
+        setLoading(false);
       }
-      finally {
-        setLoading(false); 
-      }
+    };
+
+    const constructAddress = (userProfile: any): string => {
+      const addressParts = [
+        userProfile?.['Country'],
+        userProfile?.['State'],
+        userProfile?.['City'],
+        userProfile?.['Neighbourhood'],
+      ].filter(Boolean); 
+    
+      const address = addressParts.join(", "); 
+
+      return address;
     };
   
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault(); 
+      e.preventDefault();
       setInvalid(false);
-  
+    
       try {
-        const response_user = await axios.post(login_url,loginData, { headers });
-  
-        if (response_user.status === 404) {
-          setInvalid(true); 
+        const responseUser = await axios.post(login_url, loginData as LoginData, { headers: headers as Headers });
+    
+        if (responseUser.status === 404) {
+          setInvalid(true);
         } else {
-          const user_profile = response_user.data?.user;
-          if (!user_profile) {
+          const userProfile = responseUser.data?.user;
+          if (!userProfile) {
             throw new Error("User profile not found in response.");
           }
-  
-          login(user_profile);
-          window.location.href = "/dashboard"; 
+    
+          await handleUserLogin(userProfile);
         }
       } catch (error) {
-        console.error("Error:", error);
-        setInvalid(true); 
+        handleError(error, 'Failed to log in. Please try again.');
+      }
+    };
+
+    const handleUserLogin = async (userProfile: any) => {
+      try {
+        login(userProfile);
+        window.location.href = DASHBOARD_URL;
+      } catch (error) {
+        console.error("Error during login:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Failed to log in. Please try again.',
+        });
+      }
+    };
+
+    const addLocation = async (userProfile: any) => {
+      try {
+        const address = constructAddress(userProfile);
+        const payload = { address, label: "Home", user_id: userProfile.user_id };
+    
+        const response = await axios.post(add_location_endpoint, payload, { headers: headers as Headers });
+    
+        if (response.status === 500) {
+          throw new Error("Failed to add location due to server error.");
+        }
+      } catch (error) {
+        handleError(error, 'Failed to add location. Please try again after you log in.');
+      }
+    };
+
+    const handleError = (error: any, defaultMessage: string) => {
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.message || defaultMessage;
+        console.error("Error:", errorMessage);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: errorMessage,
+        });
+      } else {
+        console.error("Unknown Error:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: defaultMessage,
+        });
       }
     };
   
