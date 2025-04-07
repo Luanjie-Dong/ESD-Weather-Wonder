@@ -63,12 +63,25 @@ WEATHERAPI_KEY=your_weather_api_key
 ---
 Emergency Monitoring Service (backend/emergency_monitoring/src/main/resources/.env):
 ```
-WEATHER_WRAPPER_URL=http://weather:8081
-USER_MS_URL=http://user:5001
-RABBITMQ_HOST=rabbitmq
+WEATHER_WRAPPER_URL="http://weather:8081"
+NOTIFICATION_MS_URL="http://notification:8083"
+USER_MS_URL="http://user:5001"
+RABBITMQ_HOST="rabbitmq"
 ```
 ---
 User Service (backend/user/.env):
+```
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_key
+SUPABASE_SUPER_KEY=your_supabase_service_role_key
+AMQP_HOST=rabbitmq
+AMQP_PORT=5672
+AMQP_USER=myuser
+AMQP_PASS=secret
+EXCHANGE_NAME=esd-weatherwonder
+```
+---
+Location Service (backend/location/.env):
 ```
 SUPABASE_URL=your_supabase_url
 SUPABASE_KEY=your_supabase_key
@@ -78,13 +91,73 @@ Location Weather Service (backend/location_weather/.env):
 ```
 SUPABASE_URL=your_supabase_url
 SUPABASE_KEY=your_supabase_key
+LOCATION_SERVICE_URL=http://location:5002
+WEATHER_API_KEY=your_weather_api_key
+AMQP_HOST=rabbitmq
+AMQP_PORT=5672
+AMQP_USER=myuser
+AMQP_PASS=secret
+EXCHANGE_NAME=esd-weatherwonder
+EXCHANGE_TYPE=topic
+```
+---
+Add A Location Service (backend/add_a_location/.env):
+```
+geocoding_URL = "http://geocoding:5004/encode"
+location_URL = "http://location:5002/locations"
+poll_weather_URL = "http://poll_weather_forecast:5005/poll-location"
+userlocation_URL = "your_outsystems_personal_environment/UserLocation/rest/v1/CreateUserLocation"
+```
+---
+Geocoding Service (backend/geocoding/.env):
+```
+GEOCODING_API_KEY=your_opencagemap_api_key
+```
+---
+Notify Weather Forecast Service (backend/notify_weather_forecast/.env):
+```
+AMQP_HOST=rabbitmq
+AMQP_PORT=5672
+AMQP_USER=myuser
+AMQP_PASS=secret
+EXCHANGE_NAME=esd-weatherwonder
+USER_URL=http://user:5001
+USERLOCATION_URL=your_outsystems_personal_environment
+```
+---
+Poll Weather Forecast Service (backend/poll_weather_forecast/.env):
+```
+LOCATION_URL=http://location:5002
+WEATHER_URL=http://weather:8081
+LOCATION_WEATHER_URL=http://location_weather:5003
+```
+---
+RabbitMQ Service (backend/rabbitmq/.env):
+```
+AMQP_HOST = localhost
+AMQP_PORT = 5672
+EXCHANGE_NAME = esd-weatherwonder
+EXCHANGE_TYPE = topic
+AMQP_USER = myuser
+AMQP_PASS = secret
 ```
 
 #### API Gateway
 API Gateway (api_gateway/.env):
 ```
-KONG_DATABASE=off
-KONG_DECLARATIVE_CONFIG=/usr/local/kong/declarative/gateway.yaml
+POSTGRES_DB=kong
+POSTGRES_USER=kong
+POSTGRES_PASSWORD=weatherwonderpassword
+KONG_DATABASE=postgres
+KONG_PG_HOST=kong-database
+KONG_PG_USER=kong
+KONG_PG_PASSWORD=weatherwonderpassword
+KONG_PROXY_ACCESS_LOG=/dev/stdout
+KONG_ADMIN_ACCESS_LOG=/dev/stdout
+KONG_PROXY_ERROR_LOG=/dev/stderr
+KONG_ADMIN_ERROR_LOG=/dev/stderr
+KONG_ADMIN_LISTEN=0.0.0.0:8001
+KONG_ADMIN_GUI_URL=http://localhost:8002
 ```
 
 #### Frontend
