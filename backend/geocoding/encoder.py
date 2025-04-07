@@ -22,7 +22,7 @@ def encode_location_by_name(location_name):
             location_data = response.json()
         except ValueError:
             print(f"Invalid JSON response for {location_name}")
-            return None
+            return None , 404
         
 
         if "results" in location_data and len(location_data["results"]) > 0:
@@ -35,14 +35,12 @@ def encode_location_by_name(location_name):
                 "neighbourhood": result["components"].get("suburb", ""),
                 "state": result["components"].get("state", ""),
                 "formatted_location": result['formatted']
-            }
+            } , 200
         else:
-            print(f"No results found for {location_name}")
-            return None
-        
+            return {"status": 404, "message": f"No results found for location: {location_name}"} , 404
 
     except requests.exceptions.RequestException as e:
-            print(f"Error encoding location data for {location_name}: {e}")
+        return {"status": 500, "message": f"Network error while encoding location: {str(e)}"} , 500
 
     
 
@@ -65,8 +63,7 @@ def decode_location(lat,lon):
         try:
             location_data = response.json()
         except ValueError:
-            print(f"Invalid JSON response for {lat} , {lon}")
-            return None
+            return {"status": 404, "message": f"No results found for {lat} , {lon}"} , 404
         
 
         if "results" in location_data and len(location_data["results"]) > 0:
@@ -74,13 +71,12 @@ def decode_location(lat,lon):
             return {
                 "location": result.get("formatted","")
             }
+
         else:
-            print(f"No results found for {lat} , {lon}")
-            return None
-        
+            return {"status": 404, "message": f"No results found for {lat} , {lon}"} , 404
 
     except requests.exceptions.RequestException as e:
-            print(f"Error encoding location data for {lat} , {lon}: {e}")
+        return {"status": 500, "message": f"Error encoding location data for {lat} , {lon}: {e}"} , 500
 
 
 if __name__=="__main__":

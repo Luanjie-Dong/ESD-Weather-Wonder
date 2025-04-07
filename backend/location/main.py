@@ -45,7 +45,7 @@ def add_location():
                 "message": "Location already exists", 
                 "location": existing_locations[0],
                 "location_id": existing_locations[0].get('location_id')
-            }), 200
+            }), 500
 
     # Generate unique location_id and insert new location into Supabase
     created_at = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")  # UTC timestamp
@@ -81,7 +81,7 @@ def add_location():
         else:
             return jsonify({"error": "Location created but unable to retrieve ID"}), 500
     else:
-        return jsonify({"error": response.json()}), response.status_code
+        return jsonify({"error": response.json()}), response.status_code , 500
 
 
 @app.route('/locations', methods=['GET'])
