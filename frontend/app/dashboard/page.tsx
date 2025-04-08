@@ -100,7 +100,7 @@ export default function DashboardPage() {
 
   
   const get_location_weather = async (user_data : UserLocation[]) => {
-    console.log(user_data)
+
     if (user_data.length == 0){
       setLocationWeather([])
       setLoading(false)
@@ -112,6 +112,7 @@ export default function DashboardPage() {
     const locationIdsString = validLocationIds.join(',');
     const url = `${all_weather_endpoint}${locationIdsString}`;
     try {
+      console.log('Fetching weather now!')
       const response_forecast = await axios.get(url, { headers });
       const forecast_data = response_forecast.data;
       const formatted_weather_data:locationWeather[] = []; 
@@ -120,11 +121,6 @@ export default function DashboardPage() {
           const day = forecast_data[i].hourlyForecast?.filter((hour: HourlyForecast) => new Date(hour.time) >= new Date()).slice(0, 1)[0]?.time.replace('T'," ");
           const temp = forecast_data[i]?.dailyForecast?.avgtemp_c;
           const locationid = forecast_data[i]?.location_id;
-
-          // if (!day || !temp || !locationid) {
-          //   console.warn(`Invalid forecast data for entry:`, forecast_data[i]);
-          //   continue; 
-          // }
 
           const locationInfo = user_data.find((x) => x.LocationId == locationid);
           if (!locationInfo) {
@@ -159,11 +155,11 @@ export default function DashboardPage() {
             formatted_weather_data.push(weather_data);
           }
         }
-
     setLocationWeather(formatted_weather_data);
     } catch (error) {
       console.error("Error fetching weather data:", error);
     }finally {
+      console.log('Extracted Weather',locationWeather)
       setLoading(false);
       setDeleteLoading(false);
     }
@@ -195,9 +191,8 @@ export default function DashboardPage() {
         get_location_weather([]);
         return;
       }
-  
       const clean_user_data = filterUserData(user_data);
-  
+      console.log('Getting weather')
       setUserLocations(clean_user_data);
       get_location_weather(clean_user_data);
   

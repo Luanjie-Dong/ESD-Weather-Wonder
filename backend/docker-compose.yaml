@@ -94,8 +94,8 @@ services:
     # emergency_monitoring microservice
     emergency_monitoring:
         build: ./emergency_monitoring
-        # ports:
-        # - '8082:8082'
+        ports:
+        - '8082:8082'
         env_file:
         - ./emergency_monitoring/src/main/resources/.env
         depends_on:
@@ -157,8 +157,8 @@ services:
     # poll_weather_forecast microservice
     poll_weather_forecast:
         build: ./poll_weather_forecast
-        # ports:
-        # - '5005:5005'
+        ports:
+        - '5005:5005'
         env_file:
         - ./poll_weather_forecast/.env
         depends_on:
