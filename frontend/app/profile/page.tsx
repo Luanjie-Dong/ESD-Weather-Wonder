@@ -30,11 +30,9 @@ export default function SettingsPage() {
   
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading,setLoading] = useState(false)
-  const api_name = process.env.NEXT_PUBLIC_API_KEY_NAME
-  const api_key = process.env.NEXT_PUBLIC_API_KEY_VALUE
-  if (!api_name || !api_key) {
-    throw new Error("API key or name is missing");
-  }
+  const api_name = process.env.NEXT_PUBLIC_API_KEY_NAME || ""
+  const api_key = process.env.NEXT_PUBLIC_API_KEY_VALUE || ""
+
 
   const headers = {"Content-Type": "application/json", [api_name]: api_key}
 

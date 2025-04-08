@@ -31,15 +31,15 @@ interface Headers {
 
 export default function LoginPage() {
     const DASHBOARD_URL = "/dashboard";
-    const api_name = process.env.NEXT_PUBLIC_API_KEY_NAME
-    const api_key = process.env.NEXT_PUBLIC_API_KEY_VALUE
+    const api_name = process.env.NEXT_PUBLIC_API_KEY_NAME || ""
+    const api_key = process.env.NEXT_PUBLIC_API_KEY_VALUE || ""
     const signup_url = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/user-api/v1/signup`
     const login_url = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/user-api/v1/signin`
     const add_location_endpoint = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/add-user-location-api/v1/add_location`
 
-    if (!api_name || !api_key) {
-      throw new Error("API key or name is missing");
-    }
+    // if (!api_name || !api_key) {
+    //   throw new Error("API key or name is missing");
+    // }
   
     const headers = {
       "Content-Type": "application/json", 

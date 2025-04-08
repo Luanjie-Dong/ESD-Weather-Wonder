@@ -84,12 +84,12 @@ export default function DashboardPage() {
   const [deleteLoading,setDeleteLoading] = useState(false)
   const [locationWeather,setLocationWeather] = useState<locationWeather[]>([])
 
-  const api_name = process.env.NEXT_PUBLIC_API_KEY_NAME
-  const api_key = process.env.NEXT_PUBLIC_API_KEY_VALUE
+  const api_name = process.env.NEXT_PUBLIC_API_KEY_NAME || ""
+  const api_key = process.env.NEXT_PUBLIC_API_KEY_VALUE || ""
   const add_location_endpoint = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/add-user-location-api/v1/add_location`
-  if (!api_name || !api_key) {
-    throw new Error("API key or name is missing");
-  }
+  // if (!api_name || !api_key) {
+  //   throw new Error("API key or name is missing");
+  // }
   const headers = {"Content-Type": "application/json", [api_name]: api_key}
   const user_id = userProfile?.['user_id'];
   const user_locations_endpoint = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/user-location-api/v1/GetUserLocations/user/${user_id}`
