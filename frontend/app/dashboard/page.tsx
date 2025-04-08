@@ -100,6 +100,7 @@ export default function DashboardPage() {
 
   
   const get_location_weather = async (user_data : UserLocation[]) => {
+    console.log(user_data)
     if (user_data.length == 0){
       setLocationWeather([])
       setLoading(false)
@@ -114,6 +115,7 @@ export default function DashboardPage() {
       const response_forecast = await axios.get(url, { headers });
       const forecast_data = response_forecast.data;
       const formatted_weather_data:locationWeather[] = []; 
+
       for (let i = 0; i < forecast_data.length; i++) {
           const day = forecast_data[i].hourlyForecast?.filter((hour: HourlyForecast) => new Date(hour.time) >= new Date()).slice(0, 1)[0]?.time.replace('T'," ");
           const temp = forecast_data[i]?.dailyForecast?.avgtemp_c;
@@ -172,33 +174,40 @@ export default function DashboardPage() {
   
     try {
       const response = await axios.get(user_locations_endpoint, { headers });
-      if (response.status == 200) {
-        // console.log("Response Data:", response.data);
-        if (response.data && response.data.Result && response.data.Result.Success) {
-        const user_data = response.data.UserLocations;
-        if (Array.isArray(user_data)) {
-          setUserLocations(user_data);
-          get_location_weather(user_data)
-        } else {
-          console.warn("UserLocations is not an array. Setting empty array.");
-          setUserLocations([]);
-          get_location_weather([])
-        }
-        } else {
-          console.warn("Result.Success is false or missing. Setting empty array.");
-          setUserLocations([]);
-          get_location_weather([])
-        }
-      } else {
+        if (response.status !== 200) {
         console.warn(`Unexpected response status: ${response.status}`);
         setUserLocations([]);
-        get_location_weather([])
+        get_location_weather([]);
+        return;
       }
+      const { data } = response;
+      if (!data || !data.Result || !data.Result.Success) {
+        console.warn("Result.Success is false or missing. Setting empty array.");
+        setUserLocations([]);
+        get_location_weather([]);
+        return;
+      }
+  
+      const user_data = data.UserLocations;
+      if (!Array.isArray(user_data)) {
+        console.warn("UserLocations is not an array. Setting empty array.");
+        setUserLocations([]);
+        get_location_weather([]);
+        return;
+      }
+  
+      const clean_user_data = filterUserData(user_data);
+  
+      setUserLocations(clean_user_data);
+      get_location_weather(clean_user_data);
+  
     } catch (error) {
       console.error("Error fetching user locations:", error);
-      setUserLocations([]); 
-      get_location_weather([])
-    } 
+      setUserLocations([]);
+      get_location_weather([]);
+    } finally {
+      setLoading(false); 
+    }
   };
 
   const addLocation = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -316,6 +325,18 @@ export default function DashboardPage() {
     } catch (error) {
       console.error(`Error updating location: ${locationId}`, error);
     }
+  };
+
+  const filterUserData = (user_data: UserLocation[]): UserLocation[] => {
+    const seenLocationIds = new Set<string>(); 
+    const filteredData = user_data.filter(item => {
+      if (seenLocationIds.has(item.LocationId)) {
+        return false; 
+      }
+      seenLocationIds.add(item.LocationId); 
+      return true; 
+    });
+    return filteredData; 
   };
 
 

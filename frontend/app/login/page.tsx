@@ -103,8 +103,8 @@ export default function LoginPage() {
               const responseUser = await axios.post(login_url, userDetail, { headers: headers as Headers });
               const userProfile = responseUser.data?.user;
     
-              await addLocation(userProfile); // Add location
-              await handleUserLogin(userProfile); // Log in and redirect
+              await addLocation(userProfile); 
+              await handleUserLogin(userProfile); 
             } catch (loginError) {
               handleError(loginError, 'Failed to log in after account creation. Please try again.');
             }
@@ -169,15 +169,15 @@ export default function LoginPage() {
     const addLocation = async (userProfile: any) => {
       try {
         const address = constructAddress(userProfile);
-        const payload = { address, label: "Home", user_id: userProfile.user_id };
-    
+        const payload = {"address":address,"label":"Home",'user_id':userProfile.user_id}
+
         const response = await axios.post(add_location_endpoint, payload, { headers: headers as Headers });
     
         if (response.status === 500) {
           throw new Error("Failed to add location due to server error.");
         }
       } catch (error) {
-        handleError(error, 'Failed to add location. Please try again after you log in.');
+        console.log(error, 'Failed to add location. Please try again after you log in.');
       }
     };
 
