@@ -9,8 +9,8 @@ cd ..
 cd api_gateway
 docker compose up -d
 
-echo "Starting frontend..."
-cd ..
-cd frontend
-npm run dev
+# echo "Starting frontend..."
+# cd ..
+# cd frontend
+# npm run dev
 
