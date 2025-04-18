@@ -11,7 +11,7 @@ docker compose up -d
 
 echo "Starting Production Connection..."
 cd ..
-ngrok http 8003
+ngrok http 8003 --inspect=false
 
 
 

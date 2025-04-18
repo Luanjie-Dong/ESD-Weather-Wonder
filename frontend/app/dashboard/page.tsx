@@ -90,7 +90,7 @@ export default function DashboardPage() {
   if (!api_name || !api_key) {
     throw new Error("API key or name is missing");
   }
-  const headers = {"Content-Type": "application/json", [api_name]: api_key}
+  const headers = {"Content-Type": "application/json", [api_name]: api_key, 'ngrok-skip-browser-warning': 'true'}
   const user_id = userProfile?.['user_id'];
   const user_locations_endpoint = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/user-location-api/v1/GetUserLocations/user/${user_id}`
   const delete_location_endpoint = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/user-location-api/v1/DeleteUserLocation`
@@ -100,7 +100,8 @@ export default function DashboardPage() {
 
   
   const get_location_weather = async (user_data : UserLocation[]) => {
-
+    console.log('Getting Weather')
+    console.log(user_data)
     if (user_data.length == 0){
       setLocationWeather([])
       setLoading(false)
@@ -169,8 +170,10 @@ export default function DashboardPage() {
     setLoading(true); 
   
     try {
+      console.log(user_locations_endpoint)
       const response = await axios.get(user_locations_endpoint, { headers });
-        if (response.status !== 200) {
+      console.log(response)
+      if (response.status !== 200) {
         console.warn(`Unexpected response status: ${response.status}`);
         setUserLocations([]);
         get_location_weather([]);
