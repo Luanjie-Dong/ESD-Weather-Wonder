@@ -159,9 +159,8 @@ export default function DashboardPage() {
     setLocationWeather(formatted_weather_data);
     } catch (error) {
       console.error("Error fetching weather data:", error);
-    }finally {
-      console.log('Extracted Weather',locationWeather)
-      setLoading(false);
+    } finally {
+      console.log('Extracted Weather', locationWeather);
       setDeleteLoading(false);
     }
   }
@@ -200,12 +199,10 @@ export default function DashboardPage() {
       get_location_weather(clean_user_data);
   
     } catch (error) {
-      console.error("Error fetching user locations:", error);
+      console.log("Error fetching user locations:", error);
       setUserLocations([]);
       get_location_weather([]);
-    } finally {
-      setLoading(false); 
-    }
+    } 
   };
 
   const addLocation = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -360,6 +357,16 @@ export default function DashboardPage() {
     logout()
     router.push("/")
   }
+
+  useEffect(() => {
+    if (!loading && locationWeather.length === 0 && !deleteLoading) {
+      return;
+    }
+  
+    if (locationWeather.length > 0) {
+      setLoading(false);
+    }
+  }, [locationWeather, deleteLoading]);
   
   return (
     <AuthCheck>
